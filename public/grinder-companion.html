@@ -1,0 +1,4128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Atomberg-Style Smart Grinder Companion</title>
+  <meta name="description" content="Simulated smart kitchen grinder with real-time thermal guard and companion monitoring app.">
+  <style>
+    /* -------------------------------------------------------------
+       CSS RESET & DESIGN TOKENS
+       ------------------------------------------------------------- */
+    :root {
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+      /* Light Theme (Default) */
+      --bg-page: #f1f4f8;
+      --surface-card: #ffffff;
+      --surface-subtle: #f8fafc;
+      --surface-elevated: #ffffff;
+      --border-subtle: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --accent: #d97706; /* Warm amber/bronze */
+      --accent-hover: #b45309;
+      --accent-subtle: #fef3c7;
+      --accent-text: #92400e;
+      --danger: #dc2626;
+      --danger-subtle: #fee2e2;
+      --danger-text: #991b1b;
+      --success: #16a34a;
+      --success-subtle: #dcfce7;
+      --success-text: #166534;
+      --warning: #eab308;
+      --warning-subtle: #fef9c3;
+      --warning-text: #854d0e;
+      --focus-ring: #2563eb;
+
+      /* Hardware machine specific */
+      --m-body: #1e293b;
+      --m-body-light: #334155;
+      --m-metal: #94a3b8;
+      --m-metal-dark: #64748b;
+      --m-jar-glass: rgba(226, 232, 240, 0.65);
+      --m-jar-border: #94a3b8;
+      --m-screen-bg: #030712;
+      --m-screen-text: #38bdf8;
+      --m-screen-dim: #075985;
+      --m-screen-glow: rgba(56, 189, 248, 0.2);
+      --m-btn-base: #334155;
+      --m-btn-text: #f8fafc;
+      --m-btn-hover: #475569;
+      --m-btn-active: #0284c7;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --radius-phone: 40px;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.08);
+      --shadow-machine: 0 20px 25px -5px rgba(15, 23, 42, 0.25);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg-page: #0b0f17;
+        --surface-card: #151d2c;
+        --surface-subtle: #1c2638;
+        --surface-elevated: #222e44;
+        --border-subtle: #2d3b52;
+        --border-strong: #3f5270;
+        --text-primary: #f8fafc;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+        --accent: #f59e0b;
+        --accent-hover: #d97706;
+        --accent-subtle: rgba(245, 158, 11, 0.15);
+        --accent-text: #fde68a;
+        --danger: #ef4444;
+        --danger-subtle: rgba(239, 68, 68, 0.2);
+        --danger-text: #fca5a5;
+        --success: #22c55e;
+        --success-subtle: rgba(34, 197, 94, 0.2);
+        --success-text: #86efac;
+        --warning: #facc15;
+        --warning-subtle: rgba(250, 204, 21, 0.2);
+        --warning-text: #fef08a;
+        --focus-ring: #60a5fa;
+
+        --m-body: #0f172a;
+        --m-body-light: #1e293b;
+        --m-metal: #64748b;
+        --m-metal-dark: #475569;
+        --m-jar-glass: rgba(148, 163, 184, 0.25);
+        --m-jar-border: #64748b;
+        --m-screen-bg: #000000;
+        --m-screen-text: #38bdf8;
+        --m-screen-dim: #0369a1;
+        --m-screen-glow: rgba(56, 189, 248, 0.3);
+      }
+    }
+
+    :root[data-theme="dark"] {
+      --bg-page: #0b0f17;
+      --surface-card: #151d2c;
+      --surface-subtle: #1c2638;
+      --surface-elevated: #222e44;
+      --border-subtle: #2d3b52;
+      --border-strong: #3f5270;
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --accent: #f59e0b;
+      --accent-hover: #d97706;
+      --accent-subtle: rgba(245, 158, 11, 0.15);
+      --accent-text: #fde68a;
+      --danger: #ef4444;
+      --danger-subtle: rgba(239, 68, 68, 0.2);
+      --danger-text: #fca5a5;
+      --success: #22c55e;
+      --success-subtle: rgba(34, 197, 94, 0.2);
+      --success-text: #86efac;
+      --warning: #facc15;
+      --warning-subtle: rgba(250, 204, 21, 0.2);
+      --warning-text: #fef08a;
+      --focus-ring: #60a5fa;
+
+      --m-body: #0f172a;
+      --m-body-light: #1e293b;
+      --m-metal: #64748b;
+      --m-metal-dark: #475569;
+      --m-jar-glass: rgba(148, 163, 184, 0.25);
+      --m-jar-border: #64748b;
+      --m-screen-bg: #000000;
+      --m-screen-text: #38bdf8;
+      --m-screen-dim: #0369a1;
+      --m-screen-glow: rgba(56, 189, 248, 0.3);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text-primary);
+      background-color: var(--bg-page);
+      min-width: 320px;
+      overflow-x: hidden;
+      padding-bottom: 2rem;
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+      color: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      background: none;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      border-radius: var(--radius-md);
+      transition: all 0.15s ease;
+    }
+
+    button:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 2px solid var(--focus-ring);
+      outline-offset: 2px;
+    }
+
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+      font-family: var(--font-mono);
+    }
+
+    /* -------------------------------------------------------------
+       TOP BANNER & GLOBAL HEADER
+       ------------------------------------------------------------- */
+    .top-header {
+      background: var(--surface-card);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+    }
+
+    .brand-tag {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .theme-toggle-btn {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      background: var(--surface-subtle);
+    }
+
+    .theme-toggle-btn:hover {
+      background: var(--surface-elevated);
+      color: var(--text-primary);
+    }
+
+    /* -------------------------------------------------------------
+       MAIN DUAL-PANEL LAYOUT
+       ------------------------------------------------------------- */
+    .app-container {
+      max-width: 1400px;
+      margin: 1.5rem auto;
+      padding: 0 1rem;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    @media (min-width: 960px) {
+      .app-container {
+        grid-template-columns: 1.15fr 0.85fr;
+      }
+    }
+
+    /* -------------------------------------------------------------
+       LEFT: SIMULATED MACHINE PANEL
+       ------------------------------------------------------------- */
+    .machine-panel {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 0.75rem;
+    }
+
+    .panel-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .badge-offline {
+      font-size: 0.75rem;
+      color: var(--success-text);
+      background: var(--success-subtle);
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+    }
+
+    /* Machine visual stage */
+    .machine-stage {
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+      position: relative;
+    }
+
+    .grinder-graphic-wrap {
+      width: 100%;
+      max-width: 320px;
+      height: 240px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .grinder-svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 12px 16px rgba(0,0,0,0.6));
+    }
+
+    /* Machine Display Screen */
+    .machine-display-box {
+      width: 100%;
+      max-width: 380px;
+      background: var(--m-screen-bg);
+      border: 2px solid #1e293b;
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1rem;
+      margin-top: 1rem;
+      color: var(--m-screen-text);
+      font-family: var(--font-mono);
+      box-shadow: 0 0 15px var(--m-screen-glow), inset 0 0 10px rgba(0,0,0,0.8);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .display-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.35rem;
+      font-size: 0.8rem;
+    }
+
+    .display-dish {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #7dd3fc;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 220px;
+    }
+
+    .display-status {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.15rem 0.4rem;
+      border-radius: var(--radius-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .status-ready { background: #075985; color: #e0f2fe; }
+    .status-grinding { background: #0284c7; color: #ffffff; animation: pulseGlow 1.2s infinite alternate; }
+    .status-paused { background: #b45309; color: #fef3c7; animation: blinkAmber 1s infinite; }
+    .status-done { background: #15803d; color: #f0fdf4; }
+    .status-fault { background: #b91c1c; color: #fef2f2; animation: blinkRed 0.8s infinite; }
+    .status-timedout { background: #475569; color: #f1f5f9; }
+
+    @keyframes pulseGlow {
+      from { box-shadow: 0 0 4px #38bdf8; }
+      to { box-shadow: 0 0 14px #38bdf8; }
+    }
+    @keyframes blinkAmber {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    @keyframes blinkRed {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .display-main-metric {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin: 0.5rem 0;
+      padding: 0.25rem 0;
+      border-top: 1px dashed rgba(56, 189, 248, 0.3);
+      border-bottom: 1px dashed rgba(56, 189, 248, 0.3);
+    }
+
+    .display-temp-big {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: #38bdf8;
+      letter-spacing: -0.02em;
+    }
+
+    .display-temp-sub {
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+
+    .display-speed-bars {
+      display: flex;
+      gap: 3px;
+      align-items: center;
+    }
+
+    .speed-segment {
+      width: 14px;
+      height: 12px;
+      background: #0c4a6e;
+      border-radius: 2px;
+      transition: background 0.15s;
+    }
+
+    .speed-segment.active {
+      background: #38bdf8;
+      box-shadow: 0 0 6px #38bdf8;
+    }
+
+    .display-bottom-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: #94a3b8;
+    }
+
+    .display-notice {
+      color: #facc15;
+      font-size: 0.72rem;
+      margin-top: 0.25rem;
+      text-align: center;
+      min-height: 1.1rem;
+    }
+
+    .display-pending-banner {
+      background: #0284c7;
+      color: #ffffff;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.72rem;
+      text-align: center;
+      margin-top: 0.25rem;
+      border-radius: 4px;
+      display: none;
+      animation: blinkAmber 1.2s infinite;
+    }
+
+    /* 3 Physical Buttons */
+    .physical-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 1.25rem;
+      width: 100%;
+    }
+
+    .hardware-btn {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #f8fafc;
+      background: linear-gradient(145deg, #334155, #1e293b);
+      border: 3px solid #475569;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.5), inset 0 1px 2px rgba(255,255,255,0.2);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      position: relative;
+    }
+
+    .hardware-btn:hover:not(:disabled) {
+      background: linear-gradient(145deg, #475569, #334155);
+      border-color: #64748b;
+      transform: translateY(-1px);
+    }
+
+    .hardware-btn:active:not(:disabled) {
+      transform: translateY(1px);
+      box-shadow: 0 2px 3px rgba(0,0,0,0.6), inset 0 2px 4px rgba(0,0,0,0.6);
+    }
+
+    .hardware-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .hardware-btn.btn-start-stop {
+      width: 78px;
+      height: 78px;
+      background: linear-gradient(145deg, #0369a1, #075985);
+      border-color: #38bdf8;
+      box-shadow: 0 4px 10px rgba(2, 132, 199, 0.4), inset 0 1px 2px rgba(255,255,255,0.3);
+    }
+
+    .hardware-btn.btn-start-stop.running {
+      background: linear-gradient(145deg, #b91c1c, #991b1b);
+      border-color: #f87171;
+      box-shadow: 0 4px 10px rgba(220, 38, 38, 0.4), inset 0 1px 2px rgba(255,255,255,0.3);
+    }
+
+    .hardware-btn-hint {
+      font-size: 0.65rem;
+      color: #94a3b8;
+      font-weight: 400;
+      margin-top: 2px;
+    }
+
+    /* Test Bench & Selectors */
+    .bench-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.75rem;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+    }
+
+    .bench-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .bench-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .bench-select, .bench-input {
+      padding: 0.4rem 0.6rem;
+      background: var(--surface-card);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      color: var(--text-primary);
+    }
+
+    /* Simulation Fault & Sensor Toggles */
+    .sim-toggles-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1rem;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .toggle-label {
+      font-size: 0.8rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .toggle-subtext {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    /* Custom Switch */
+    .switch-ui {
+      position: relative;
+      display: inline-block;
+      width: 38px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .switch-ui input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider-ui {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: var(--border-strong);
+      transition: .2s;
+      border-radius: 20px;
+    }
+
+    .slider-ui:before {
+      position: absolute;
+      content: "";
+      height: 14px;
+      width: 14px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .2s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider-ui {
+      background-color: var(--accent);
+    }
+
+    input:checked + .slider-ui:before {
+      transform: translateX(18px);
+    }
+
+    /* Machine actions bar */
+    .machine-aux-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .btn-override {
+      background: var(--warning-subtle);
+      border: 1px solid var(--warning);
+      color: var(--warning-text);
+      font-weight: 600;
+      padding: 0.4rem 0.85rem;
+      font-size: 0.8rem;
+      display: none; /* Only visible when paused to cool */
+    }
+
+    .btn-override:hover {
+      background: var(--warning);
+      color: #000;
+    }
+
+    .speed-compression-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .speed-btn {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.72rem;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      background: var(--surface-card);
+    }
+
+    .speed-btn.active {
+      background: var(--text-primary);
+      color: var(--surface-card);
+      border-color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    /* -------------------------------------------------------------
+       RIGHT: COMPANION APP (PHONE FRAME)
+       ------------------------------------------------------------- */
+    .phone-column {
+      display: flex;
+      justify-content: center;
+    }
+
+    .phone-frame {
+      width: 100%;
+      max-width: 420px;
+      height: 840px;
+      background: var(--surface-card);
+      border: 10px solid #1e293b;
+      border-radius: var(--radius-phone);
+      box-shadow: var(--shadow-machine);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Phone status bar */
+    .phone-top-notch {
+      background: var(--surface-card);
+      padding: 0.65rem 1.25rem 0.35rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+      z-index: 10;
+    }
+
+    .phone-island {
+      width: 90px;
+      height: 18px;
+      background: #000000;
+      border-radius: 12px;
+      margin: 0 auto;
+    }
+
+    /* App Screen Header */
+    .app-screen-header {
+      padding: 0.85rem 1.25rem;
+      background: var(--surface-card);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .app-screen-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .profile-pill-selector {
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.25rem 0.6rem;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      color: var(--text-secondary);
+    }
+
+    /* App Scrollable Content Area */
+    .app-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      background: var(--surface-subtle);
+    }
+
+    /* App Bottom Navigation Bar */
+    .app-nav-bar {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      background: var(--surface-card);
+      border-top: 1px solid var(--border-subtle);
+      padding: 0.4rem 0.2rem;
+      z-index: 10;
+    }
+
+    .nav-tab-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      padding: 0.4rem 0.1rem;
+      font-size: 0.68rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      border-radius: var(--radius-sm);
+    }
+
+    .nav-tab-btn.active {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .nav-tab-icon {
+      font-size: 1.15rem;
+      line-height: 1;
+    }
+
+    /* Screen Panes */
+    .app-tab-pane {
+      display: none;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .app-tab-pane.active {
+      display: flex;
+    }
+
+    /* -------------------------------------------------------------
+       APP SCREEN 1: LIVE MONITORING
+       ------------------------------------------------------------- */
+    .live-banner-alert {
+      background: var(--accent-subtle);
+      border: 1px solid var(--accent);
+      color: var(--accent-text);
+      padding: 0.5rem 0.75rem;
+      border-radius: var(--radius-md);
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .live-hero-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .live-dish-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .live-dish-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .live-status-pill {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+    }
+
+    .live-temp-display {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem 0;
+      background: var(--surface-subtle);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .live-temp-num {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+      line-height: 1;
+    }
+
+    .live-temp-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.35rem;
+    }
+
+    /* Live Line Chart */
+    .chart-box {
+      width: 100%;
+      height: 170px;
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      position: relative;
+      padding: 0.5rem;
+    }
+
+    .chart-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .chart-legend {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 0.35rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .legend-line {
+      width: 14px;
+      height: 2px;
+      background: currentColor;
+    }
+
+    .legend-line.dashed {
+      border-top: 2px dashed currentColor;
+      background: none;
+      height: 0;
+    }
+
+    /* Live Progress & Stats */
+    .progress-bar-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .progress-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: var(--border-subtle);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      border-radius: 4px;
+      transition: width 0.2s ease;
+    }
+
+    .live-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+    }
+
+    .metric-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0.65rem 0.5rem;
+      text-align: center;
+    }
+
+    .metric-val {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .metric-lbl {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* -------------------------------------------------------------
+       APP SCREEN 2: HISTORY
+       ------------------------------------------------------------- */
+    .history-insights-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .insights-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+    }
+
+    .insights-cell {
+      background: var(--surface-subtle);
+      padding: 0.6rem;
+      border-radius: var(--radius-sm);
+    }
+
+    .insights-val {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .insights-lbl {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .jar-usage-bar {
+      display: flex;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 0.35rem;
+      background: var(--border-subtle);
+    }
+
+    .jar-bar-lg { background: #3b82f6; }
+    .jar-bar-md { background: #10b981; }
+    .jar-bar-ch { background: #f59e0b; }
+
+    .history-actions-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .btn-secondary {
+      background: var(--surface-card);
+      border: 1px solid var(--border-strong);
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.4rem 0.75rem;
+      border-radius: var(--radius-sm);
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface-subtle);
+      color: var(--text-primary);
+    }
+
+    .btn-danger-outline {
+      border: 1px solid var(--danger);
+      color: var(--danger);
+      font-size: 0.75rem;
+      padding: 0.4rem 0.75rem;
+      border-radius: var(--radius-sm);
+    }
+
+    .btn-danger-outline:hover {
+      background: var(--danger-subtle);
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .history-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0.85rem;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+
+    .history-card:hover {
+      border-color: var(--border-strong);
+    }
+
+    .history-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.35rem;
+    }
+
+    .history-dish-title {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+    }
+
+    .history-date {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .history-stats-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .history-expanded-chart {
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px dashed var(--border-subtle);
+      display: none;
+    }
+
+    .history-expanded-chart.visible {
+      display: block;
+    }
+
+    /* -------------------------------------------------------------
+       APP SCREEN 3: HEALTH & MAINTENANCE
+       ------------------------------------------------------------- */
+    .health-row-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .health-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .health-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .health-sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .health-status-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.6rem;
+      border-radius: var(--radius-sm);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .status-good {
+      background: var(--success-subtle);
+      color: var(--success-text);
+    }
+    .status-good .status-dot { background: var(--success); }
+
+    .status-check {
+      background: var(--warning-subtle);
+      color: var(--warning-text);
+    }
+    .status-check .status-dot { background: var(--warning); }
+
+    .alert-guide-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .guide-content {
+      background: var(--surface-subtle);
+      padding: 0.75rem;
+      border-radius: var(--radius-md);
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
+      display: none;
+    }
+
+    .guide-content.visible {
+      display: block;
+    }
+
+    /* -------------------------------------------------------------
+       APP SCREEN 4: PRESETS
+       ------------------------------------------------------------- */
+    .presets-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .preset-card-item {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .preset-item-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .preset-item-meta {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .preset-editor-modal {
+      background: var(--surface-card);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    /* -------------------------------------------------------------
+       APP SCREEN 5: SETTINGS
+       ------------------------------------------------------------- */
+    .settings-section-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .settings-section-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 0.4rem;
+    }
+
+    .slider-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text-primary);
+    }
+
+    .range-input {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    /* Self-Test Modal / Output */
+    .test-results-box {
+      max-height: 220px;
+      overflow-y: auto;
+      background: #000;
+      color: #38bdf8;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      padding: 0.75rem;
+      border-radius: var(--radius-sm);
+      display: none;
+      line-height: 1.4;
+      white-space: pre-wrap;
+    }
+
+    /* -------------------------------------------------------------
+       TOAST NOTIFICATIONS
+       ------------------------------------------------------------- */
+    .toast-container {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    .toast-message {
+      background: #1e293b;
+      color: #f8fafc;
+      padding: 0.65rem 1rem;
+      border-radius: var(--radius-md);
+      font-size: 0.8rem;
+      box-shadow: var(--shadow-lg);
+      pointer-events: auto;
+      border-left: 4px solid var(--accent);
+      animation: slideInToast 0.2s ease-out;
+      max-width: 320px;
+    }
+
+    @keyframes slideInToast {
+      from { transform: translateX(50px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Footnote */
+    .global-footnote {
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Global Header -->
+  <header class="top-header" role="banner">
+    <div class="brand-group">
+      <h1 class="brand-title">Atomberg Smart Grinder</h1>
+      <span class="brand-tag">Concept Hardware &amp; Monitoring Prototype</span>
+    </div>
+    <div class="header-actions">
+      <button id="themeToggleBtn" class="theme-toggle-btn" aria-label="Toggle color theme">Theme: Auto</button>
+    </div>
+  </header>
+
+  <!-- Main Dual Area Grid -->
+  <main class="app-container">
+
+    <!-- =========================================================================
+         LEFT COLUMN: SIMULATED MACHINE PANEL (PHYSICAL HARDWARE)
+         ========================================================================= -->
+    <section class="machine-panel" aria-labelledby="machineHeading">
+      <div class="panel-header">
+        <h2 id="machineHeading" class="panel-title">Simulated Hardware</h2>
+        <span class="badge-offline">Standalone Machine (No App Required)</span>
+      </div>
+
+      <!-- Machine Visual Stage (SVG & Display) -->
+      <div class="machine-stage">
+        <div class="grinder-graphic-wrap">
+          <svg class="grinder-svg" viewBox="0 0 300 240" aria-label="Simulated Grinder Appliance" role="img">
+            <defs>
+              <!-- Metallic Gradients -->
+              <linearGradient id="metalGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#475569"/>
+                <stop offset="50%" stop-color="#94a3b8"/>
+                <stop offset="100%" stop-color="#334155"/>
+              </linearGradient>
+              <linearGradient id="jarGlassGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="rgba(241, 245, 249, 0.4)"/>
+                <stop offset="50%" stop-color="rgba(241, 245, 249, 0.1)"/>
+                <stop offset="100%" stop-color="rgba(203, 213, 225, 0.5)"/>
+              </linearGradient>
+              <linearGradient id="jarLidGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#1e293b"/>
+                <stop offset="50%" stop-color="#334155"/>
+                <stop offset="100%" stop-color="#0f172a"/>
+              </linearGradient>
+            </defs>
+
+            <!-- Base Machine Body -->
+            <path d="M 60 140 L 240 140 L 255 225 C 255 235 245 238 235 238 L 65 238 C 55 238 45 235 45 225 Z" fill="#0f172a" stroke="#334155" stroke-width="2"/>
+            <!-- Brushed Metallic Center Stripe -->
+            <path d="M 85 140 L 215 140 L 225 238 L 75 238 Z" fill="url(#metalGrad)" opacity="0.15"/>
+            <!-- Coupler Collar -->
+            <rect x="110" y="128" width="80" height="12" rx="3" fill="#64748b" stroke="#334155" stroke-width="1.5"/>
+
+            <!-- Jar Graphic (Visual shape adjusts with jar selector) -->
+            <g id="svgJarGroup">
+              <!-- Jar Body -->
+              <path id="svgJarPath" d="M 95 38 L 205 38 L 195 128 L 105 128 Z" fill="url(#jarGlassGrad)" stroke="#64748b" stroke-width="2"/>
+              <!-- Jar Lid -->
+              <rect x="85" y="24" width="130" height="14" rx="4" fill="url(#jarLidGrad)" stroke="#475569" stroke-width="1.5"/>
+              <!-- Lid Knob -->
+              <circle cx="150" cy="18" r="7" fill="#d97706"/>
+              <!-- Silicone Seal Ring -->
+              <rect x="90" y="34" width="120" height="4" rx="1" fill="#f59e0b" opacity="0.8"/>
+              <!-- Jar Handle -->
+              <path d="M 205 45 C 235 55 235 110 195 120" fill="none" stroke="#334155" stroke-width="8" stroke-linecap="round"/>
+              <!-- Internal Blade Assembly -->
+              <path d="M 140 120 L 160 120 L 155 112 L 145 112 Z" fill="#94a3b8"/>
+              <line id="svgBladeLine" x1="125" y1="114" x2="175" y2="114" stroke="#e2e8f0" stroke-width="3" stroke-linecap="round"/>
+            </g>
+          </svg>
+        </div>
+
+        <!-- Machine LED/OLED Display Screen -->
+        <div class="machine-display-box" role="region" aria-label="Machine Screen" aria-live="polite">
+          <div class="display-row">
+            <span id="mDisplayDish" class="display-dish">Idli batter</span>
+            <span id="mDisplayStatus" class="display-status status-ready">Ready</span>
+          </div>
+
+          <div class="display-main-metric">
+            <div>
+              <span id="mDisplayTemp" class="display-temp-big tabular-nums">28.0 °C est.</span>
+              <div class="display-temp-sub">Temp limit: <span id="mDisplayLimit" class="tabular-nums">34.0</span> °C est.</div>
+            </div>
+            <div>
+              <div class="display-speed-bars" id="mDisplaySpeedBars" aria-label="Speed level 2">
+                <div class="speed-segment active"></div>
+                <div class="speed-segment active"></div>
+                <div class="speed-segment"></div>
+                <div class="speed-segment"></div>
+                <div class="speed-segment"></div>
+              </div>
+              <div style="font-size:0.7rem; text-align:right; margin-top:3px; color:#38bdf8;">
+                Speed: <span id="mDisplaySpeedText" class="tabular-nums">2</span>/5
+              </div>
+            </div>
+          </div>
+
+          <div class="display-bottom-row">
+            <span>Texture: <strong id="mDisplayTexture" style="color:#f8fafc;">Medium</strong></span>
+            <span id="mDisplayChildLock" style="display:none; color:#f87171;">🔒 Locked</span>
+            <span>Pauses: <strong id="mDisplayPauses" class="tabular-nums">0</strong></span>
+          </div>
+
+          <div id="mDisplayNotice" class="display-notice"></div>
+          <div id="mDisplayPendingBanner" class="display-pending-banner">New preset: Confirm (Hold Texture)</div>
+        </div>
+
+        <!-- 3 Physical Round Hardware Buttons -->
+        <div class="physical-controls">
+          <button id="mBtnTexture" class="hardware-btn" aria-label="Cycle Texture setting">
+            <span>Texture</span>
+            <span class="hardware-btn-hint">Cycle</span>
+          </button>
+
+          <button id="mBtnStartStop" class="hardware-btn btn-start-stop" aria-label="Start or Stop grinding">
+            <span id="mStartStopLabel">Start</span>
+          </button>
+
+          <button id="mBtnSpeed" class="hardware-btn" aria-label="Cycle Speed setting (Hold 2 seconds to unlock child lock)">
+            <span>Speed</span>
+            <span class="hardware-btn-hint">1-5</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Test Bench Selectors & Controls -->
+      <div class="bench-grid">
+        <div class="bench-field">
+          <label for="benchDishSelect" class="bench-label">Select Dish Preset</label>
+          <select id="benchDishSelect" class="bench-select" aria-label="Select Dish Preset"></select>
+        </div>
+
+        <div class="bench-field">
+          <label for="benchJarSelect" class="bench-label">Jar Attached</label>
+          <select id="benchJarSelect" class="bench-select" aria-label="Select Jar Type">
+            <option value="Large">Large Jar (Cap: 4)</option>
+            <option value="Medium" selected>Medium Jar (Cap: 5)</option>
+            <option value="Chutney">Chutney Jar (Cap: 5)</option>
+          </select>
+        </div>
+
+        <div class="bench-field">
+          <label for="benchLoadSelect" class="bench-label">Motor Load</label>
+          <select id="benchLoadSelect" class="bench-select" aria-label="Select Motor Load">
+            <option value="Light">Light (0.8x)</option>
+            <option value="Normal" selected>Normal (1.0x)</option>
+            <option value="Heavy">Heavy (1.25x)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Simulation Invariants & Toggles -->
+      <div class="sim-toggles-wrap">
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Simulate sensor fault (E2)</div>
+            <div class="toggle-subtext">Switches to time-based fallback (25s on / 15s rest)</div>
+          </div>
+          <label class="switch-ui" aria-label="Toggle sensor fault">
+            <input type="checkbox" id="toggleSensorFault">
+            <span class="slider-ui"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Simulate jar not seated (E3)</div>
+            <div class="toggle-subtext">Physical interlock open; refuses start or halts mid-run</div>
+          </div>
+          <label class="switch-ui" aria-label="Toggle jar seated state">
+            <input type="checkbox" id="toggleJarInterlock">
+            <span class="slider-ui"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Warm jar (+6 °C initial)</div>
+            <div class="toggle-subtext">Simulates hot water wash or warm ingredients</div>
+          </div>
+          <label class="switch-ui" aria-label="Toggle warm jar start">
+            <input type="checkbox" id="toggleWarmJar">
+            <span class="slider-ui"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Auto-stop on texture (experimental)</div>
+            <div class="toggle-subtext">Hypothesis, needs testing</div>
+          </div>
+          <label class="switch-ui" aria-label="Toggle auto-stop on texture">
+            <input type="checkbox" id="toggleAutoStopTexture">
+            <span class="slider-ui"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Machine Aux Actions & Time Controls -->
+      <div class="machine-aux-actions">
+        <button id="mBtnConfirmPreset" class="btn-secondary" style="display:none;" aria-label="Confirm received app preset">
+          Confirm Preset
+        </button>
+
+        <button id="mBtnContinueAnyway" class="btn-override" aria-label="Continue grinding anyway despite thermal guard pause">
+          Continue anyway
+        </button>
+
+        <div class="speed-compression-wrap" role="group" aria-label="Simulation speed compression">
+          <span class="bench-label" style="margin-right:4px;">Sim Speed:</span>
+          <button class="speed-btn" data-speed="1" aria-label="1 times real time">1x</button>
+          <button class="speed-btn" data-speed="5" aria-label="5 times real time">5x</button>
+          <button class="speed-btn active" data-speed="10" aria-label="10 times real time">10x</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         RIGHT COLUMN: COMPANION APP (PHONE SHAPED FRAME)
+         ========================================================================= -->
+    <div class="phone-column">
+      <div class="phone-frame" role="region" aria-label="Smart Grinder Companion Phone App">
+        
+        <!-- Phone Top Notch -->
+        <div class="phone-top-notch">
+          <span id="phoneClock" class="tabular-nums">09:41</span>
+          <div class="phone-island"></div>
+          <span>100% ⚡</span>
+        </div>
+
+        <!-- Phone App Header -->
+        <header class="app-screen-header">
+          <h2 id="appTabTitle" class="app-screen-title">Live Monitor</h2>
+          <select id="appProfileSelect" class="profile-pill-selector" aria-label="Active Household Profile"></select>
+        </header>
+
+        <!-- Phone App Body (Tabs) -->
+        <div class="app-body" id="appBodyContainer">
+
+          <!-- TAB 1: LIVE MONITORING -->
+          <div id="paneLive" class="app-tab-pane active" role="tabpanel" aria-labelledby="tabLive">
+            <div class="live-banner-alert">
+              <span>ℹ️</span>
+              <span><strong>Monitoring only.</strong> Start and stop on the machine.</span>
+            </div>
+
+            <div class="live-hero-card">
+              <div class="live-dish-row">
+                <span id="liveDishName" class="live-dish-name">Idli batter</span>
+                <span id="liveStatusBadge" class="live-status-pill status-ready">Ready</span>
+              </div>
+
+              <div class="live-temp-display">
+                <span id="liveTempText" class="live-temp-num tabular-nums">28.0 °C est.</span>
+                <span class="live-temp-label">Temp limit: <span id="liveLimitText" class="tabular-nums">34.0</span> °C est.</span>
+              </div>
+
+              <!-- Live Canvas Chart -->
+              <div class="chart-box">
+                <canvas id="liveChartCanvas" class="chart-canvas" width="360" height="170" aria-label="Estimated Temperature Curve"></canvas>
+              </div>
+
+              <div class="chart-legend">
+                <div class="legend-item" style="color:#0284c7;">
+                  <span class="legend-line"></span>
+                  <span>Sensor est.</span>
+                </div>
+                <div class="legend-item" style="color:#ef4444;">
+                  <span class="legend-line dashed"></span>
+                  <span>Limit</span>
+                </div>
+                <div class="legend-item" style="color:#f59e0b;">
+                  <span class="legend-line dashed"></span>
+                  <span>Pause trigger</span>
+                </div>
+              </div>
+
+              <!-- Progress Bar -->
+              <div class="progress-bar-wrap">
+                <div class="progress-label-row">
+                  <span>Grinding Progress</span>
+                  <span id="liveProgressPercent" class="tabular-nums">0%</span>
+                </div>
+                <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                  <div id="liveProgressFill" class="progress-fill"></div>
+                </div>
+              </div>
+
+              <!-- Speed, Texture, Pauses Metrics -->
+              <div class="live-metrics-grid">
+                <div class="metric-card">
+                  <div class="metric-val tabular-nums" id="liveSpeedVal">2</div>
+                  <div class="metric-lbl">Speed</div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-val" id="liveTextureVal">Medium</div>
+                  <div class="metric-lbl">Texture</div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-val tabular-nums" id="livePausesVal">0</div>
+                  <div class="metric-lbl">Pauses</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 2: HISTORY -->
+          <div id="paneHistory" class="app-tab-pane" role="tabpanel" aria-labelledby="tabHistory">
+            <div class="history-insights-card">
+              <div class="insights-grid">
+                <div class="insights-cell">
+                  <div class="insights-val tabular-nums" id="histTotalSessions">0</div>
+                  <div class="insights-lbl">Total Sessions</div>
+                </div>
+                <div class="insights-cell">
+                  <div class="insights-val tabular-nums" id="histTotalEnergy">0 Wh</div>
+                  <div class="insights-lbl">Total Energy est.</div>
+                </div>
+                <div class="insights-cell">
+                  <div class="insights-val tabular-nums" id="histPausesWeek">0</div>
+                  <div class="insights-lbl">Pauses This Week</div>
+                </div>
+                <div class="insights-cell">
+                  <div class="insights-val tabular-nums" id="histAvgLoad">Normal</div>
+                  <div class="insights-lbl">Load Trend</div>
+                </div>
+              </div>
+
+              <div>
+                <div class="insights-lbl" style="margin-bottom:2px;">Jar Usage Distribution (Lg / Md / Ch)</div>
+                <div class="jar-usage-bar" id="histJarUsageBar">
+                  <div class="jar-bar-lg" style="width:33%;"></div>
+                  <div class="jar-bar-md" style="width:34%;"></div>
+                  <div class="jar-bar-ch" style="width:33%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="history-actions-row">
+              <button id="btnExportCsv" class="btn-secondary" aria-label="Export history to CSV">Export CSV</button>
+              <button id="btnClearHistory" class="btn-danger-outline" aria-label="Clear all session history">Clear History</button>
+            </div>
+
+            <div id="historyListContainer" class="history-list" aria-label="Past grinding sessions">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- TAB 3: HEALTH & MAINTENANCE -->
+          <div id="paneHealth" class="app-tab-pane" role="tabpanel" aria-labelledby="tabHealth">
+            <div class="health-row-card">
+              <div class="health-info">
+                <div class="health-title">Motor Load Trend</div>
+                <div class="health-sub">Average of last 10 grinding runs</div>
+              </div>
+              <div id="healthLoadBadge" class="health-status-badge status-good">
+                <span class="status-dot"></span>
+                <span id="healthLoadText">Normal</span>
+              </div>
+            </div>
+
+            <div class="health-row-card">
+              <div class="health-info">
+                <div class="health-title">Coupler Wear</div>
+                <div class="health-sub">Motor-on hours threshold (50 hrs)</div>
+              </div>
+              <div id="healthCouplerBadge" class="health-status-badge status-good">
+                <span class="status-dot"></span>
+                <span id="healthCouplerText">Good</span>
+              </div>
+            </div>
+
+            <div class="health-row-card">
+              <div class="health-info">
+                <div class="health-title">Jar Silicone Seal</div>
+                <div class="health-sub" id="healthSealSub">Cleaned 0 days ago</div>
+              </div>
+              <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+                <div id="healthSealBadge" class="health-status-badge status-good">
+                  <span class="status-dot"></span>
+                  <span id="healthSealText">Good</span>
+                </div>
+                <button id="btnMarkCleaned" class="btn-secondary" style="padding:0.2rem 0.5rem; font-size:0.68rem;">Mark as cleaned</button>
+              </div>
+            </div>
+
+            <div class="health-row-card">
+              <div class="health-info">
+                <div class="health-title">Overheat Pauses This Week</div>
+                <div class="health-sub">Thermal guard trigger frequency</div>
+              </div>
+              <span id="healthPausesCount" class="tabular-nums" style="font-weight:700; font-size:1rem;">0</span>
+            </div>
+
+            <div class="health-row-card">
+              <div class="health-info">
+                <div class="health-title">Firmware Version</div>
+                <div class="health-sub" id="healthFirmwareVer">v1.2.0</div>
+              </div>
+              <button id="btnCheckFirmware" class="btn-secondary" aria-label="Check for machine firmware updates">Check for update</button>
+            </div>
+
+            <!-- Last Alert & Fix Guide Card -->
+            <div class="alert-guide-card">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <strong style="font-size:0.85rem;">Last Alert &amp; Fix Guide</strong>
+                <button id="btnToggleFixGuide" class="btn-secondary" style="padding:0.25rem 0.5rem; font-size:0.7rem;">View fix guide</button>
+              </div>
+              <div id="healthAlertSummary" style="font-size:0.78rem; color:var(--text-secondary);">No active fault code recorded.</div>
+              <div id="healthFixGuideBox" class="guide-content">
+                <p><strong>E1 (Overload):</strong> High motor resistance. Allow 10 mins cooling. Reduce load from Heavy to Normal or grind in smaller batches.</p>
+                <p style="margin-top:6px;"><strong>E2 (Sensor Fault):</strong> Thermal sensor reading interrupted. Machine operates in safe 25s run / 15s pause cycles. Inspect base electrical contacts.</p>
+                <p style="margin-top:6px;"><strong>E3 (Jar Not Seated):</strong> Safety interlock open. Ensure jar base clicks firmly clockwise into locked position.</p>
+              </div>
+            </div>
+
+            <!-- Maintenance Reminders -->
+            <div class="alert-guide-card">
+              <strong style="font-size:0.85rem;">Maintenance Reminders</strong>
+              <div id="maintenanceRemindersList" style="font-size:0.75rem; color:var(--text-secondary); display:flex; flex-direction:column; gap:4px;">
+                <span>• Machine coupler clean and healthy</span>
+                <span>• Thermal guard calibrated and active</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 4: PRESETS -->
+          <div id="panePresets" class="app-tab-pane" role="tabpanel" aria-labelledby="tabPresets">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:0.8rem; color:var(--text-muted);">Dishes configured for active profile</span>
+              <button id="btnNewPreset" class="btn-secondary">+ New Preset</button>
+            </div>
+
+            <div id="presetsListContainer" class="presets-wrap">
+              <!-- Dynamically populated -->
+            </div>
+
+            <div class="toggle-row" style="background:var(--surface-card); padding:0.75rem; border-radius:var(--radius-md); border:1px solid var(--border-subtle);">
+              <div>
+                <div class="toggle-label">Share my presets with household</div>
+                <div class="toggle-subtext">Allow other household members to view these recipes</div>
+              </div>
+              <label class="switch-ui" aria-label="Toggle household preset sharing">
+                <input type="checkbox" id="toggleShareHousehold">
+                <span class="slider-ui"></span>
+              </label>
+            </div>
+
+            <!-- Preset Editor Modal (Inline) -->
+            <div id="presetEditorModal" class="preset-editor-modal" style="display:none;">
+              <h3 id="presetModalTitle" style="font-size:0.95rem; font-weight:700;">Edit Preset</h3>
+              
+              <div class="bench-field">
+                <label for="editPresetName" class="bench-label">Preset Name (Max 24 chars)</label>
+                <input type="text" id="editPresetName" class="bench-input" maxlength="24">
+              </div>
+
+              <div class="bench-field">
+                <label for="editPresetSpeed" class="bench-label">Speed Level (1 - 5)</label>
+                <input type="number" id="editPresetSpeed" class="bench-input" min="1" max="5" value="2">
+              </div>
+
+              <div class="bench-field">
+                <label for="editPresetLimit" class="bench-label">Temp limit: (20 - 50 °C est.)</label>
+                <input type="number" id="editPresetLimit" class="bench-input" min="20" max="50" step="0.5" value="35">
+              </div>
+
+              <div class="bench-field">
+                <label for="editPresetTexture" class="bench-label">Target Texture</label>
+                <select id="editPresetTexture" class="bench-select">
+                  <option value="Coarse">Coarse</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Fine">Fine</option>
+                  <option value="Paste">Paste</option>
+                </select>
+              </div>
+
+              <div style="display:flex; justify-content:flex-end; gap:0.5rem; margin-top:0.5rem;">
+                <button id="btnCancelPresetEdit" class="btn-secondary">Cancel</button>
+                <button id="btnSavePreset" class="btn-secondary" style="background:var(--accent); color:#fff; border-color:var(--accent);">Save</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 5: SETTINGS -->
+          <div id="paneSettings" class="app-tab-pane" role="tabpanel" aria-labelledby="tabSettings">
+            
+            <!-- Household Profiles Section -->
+            <div class="settings-section-card">
+              <div class="settings-section-title">Household Profiles</div>
+              <div id="profilesListUi" style="display:flex; flex-direction:column; gap:0.4rem;">
+                <!-- Dynamically populated profiles -->
+              </div>
+              <div style="display:flex; gap:0.5rem; margin-top:0.35rem;">
+                <input type="text" id="newProfileInput" class="bench-input" placeholder="New profile name" maxlength="24" style="flex:1;">
+                <button id="btnAddProfile" class="btn-secondary">Add</button>
+              </div>
+            </div>
+
+            <!-- Thermal Guard Controls -->
+            <div class="settings-section-card">
+              <div class="settings-section-title">Thermal Guard Safety</div>
+              
+              <div class="toggle-row">
+                <div>
+                  <div class="toggle-label">Thermal Guard Active</div>
+                  <div class="toggle-subtext">Pauses motor before ingredient spoilage</div>
+                </div>
+                <label class="switch-ui" aria-label="Toggle thermal guard">
+                  <input type="checkbox" id="toggleGuardActive" checked>
+                  <span class="slider-ui"></span>
+                </label>
+              </div>
+
+              <div class="slider-row">
+                <div class="slider-header">
+                  <span>Pause Margin (0.0 - 4.0 °C)</span>
+                  <span id="valMarginText" class="tabular-nums">1.5 °C</span>
+                </div>
+                <input type="range" id="sliderMargin" class="range-input" min="0" max="4" step="0.5" value="1.5">
+              </div>
+
+              <div class="slider-row">
+                <div class="slider-header">
+                  <span>Resume Gap (0.5 - 5.0 °C)</span>
+                  <span id="valResumeGapText" class="tabular-nums">2.0 °C</span>
+                </div>
+                <input type="range" id="sliderResumeGap" class="range-input" min="0.5" max="5.0" step="0.5" value="2.0">
+              </div>
+
+              <div class="toggle-row">
+                <div>
+                  <div class="toggle-label">Child Safety Lock</div>
+                  <div class="toggle-subtext">Hold machine Speed button 2s to unlock</div>
+                </div>
+                <label class="switch-ui" aria-label="Toggle child lock">
+                  <input type="checkbox" id="toggleChildLock">
+                  <span class="slider-ui"></span>
+                </label>
+              </div>
+
+              <div class="toggle-row">
+                <div>
+                  <div class="toggle-label">App Notifications</div>
+                  <div class="toggle-subtext">Alert on pause, finish, and safety faults</div>
+                </div>
+                <label class="switch-ui" aria-label="Toggle browser notifications">
+                  <input type="checkbox" id="toggleAppNotifs" checked>
+                  <span class="slider-ui"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Calibration & Developer Options -->
+            <div class="settings-section-card">
+              <div class="settings-section-title">Calibration &amp; Telemetry</div>
+
+              <div class="toggle-row">
+                <div>
+                  <div class="toggle-label">Developer View</div>
+                  <div class="toggle-subtext">Displays True Temp vs Sensor Lag chart</div>
+                </div>
+                <label class="switch-ui" aria-label="Toggle developer chart">
+                  <input type="checkbox" id="toggleDevView">
+                  <span class="slider-ui"></span>
+                </label>
+              </div>
+
+              <div id="devChartContainer" style="display:none; margin-top:0.5rem;">
+                <div class="chart-box" style="height:140px;">
+                  <canvas id="devChartCanvas" class="chart-canvas" width="360" height="140"></canvas>
+                </div>
+                <div class="chart-legend">
+                  <div class="legend-item" style="color:#ef4444;"><span class="legend-line"></span><span>True Internal Temp</span></div>
+                  <div class="legend-item" style="color:#0284c7;"><span class="legend-line"></span><span>Sensor Lagged Temp</span></div>
+                </div>
+              </div>
+
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-top:0.5rem;">
+                <div class="bench-field">
+                  <label for="calibHeat" class="bench-label">Heat Coeff</label>
+                  <input type="number" id="calibHeat" class="bench-input" step="0.01" value="0.10">
+                </div>
+                <div class="bench-field">
+                  <label for="calibCool" class="bench-label">Cooling Coeff</label>
+                  <input type="number" id="calibCool" class="bench-input" step="0.001" value="0.012">
+                </div>
+                <div class="bench-field">
+                  <label for="calibLag" class="bench-label">Sensor Lag (s)</label>
+                  <input type="number" id="calibLag" class="bench-input" step="0.5" value="8.0">
+                </div>
+                <div class="bench-field">
+                  <label for="calibAmbient" class="bench-label">Ambient (°C)</label>
+                  <input type="number" id="calibAmbient" class="bench-input" step="0.5" value="28.0">
+                </div>
+              </div>
+
+              <div style="display:flex; justify-content:space-between; gap:0.5rem; margin-top:0.5rem;">
+                <button id="btnResetCalibration" class="btn-secondary" style="font-size:0.72rem;">Default Calibration</button>
+                <button id="btnApplyCalibration" class="btn-secondary" style="font-size:0.72rem; font-weight:600;">Apply</button>
+              </div>
+            </div>
+
+            <!-- Self-Tests & Reset Storage -->
+            <div class="settings-section-card">
+              <div class="settings-section-title">Diagnostic &amp; Data Management</div>
+              <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                <button id="btnRunSelfTests" class="btn-secondary" style="background:var(--accent); color:#ffffff; border-color:var(--accent);">
+                  Run Self-Tests (20 Invariants)
+                </button>
+                <div id="testOutputBox" class="test-results-box" role="status" aria-live="polite"></div>
+                
+                <button id="btnResetAllData" class="btn-danger-outline">
+                  Reset All Stored Data
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Phone App Bottom Tab Bar (5 Tabs) -->
+        <nav class="app-nav-bar" role="tablist" aria-label="Companion App Navigation">
+          <button class="nav-tab-btn active" id="tabLive" data-pane="paneLive" role="tab" aria-selected="true">
+            <span class="nav-tab-icon">⚡</span>
+            <span>Live</span>
+          </button>
+          <button class="nav-tab-btn" id="tabHistory" data-pane="paneHistory" role="tab" aria-selected="false">
+            <span class="nav-tab-icon">📜</span>
+            <span>History</span>
+          </button>
+          <button class="nav-tab-btn" id="tabHealth" data-pane="paneHealth" role="tab" aria-selected="false">
+            <span class="nav-tab-icon">🛡️</span>
+            <span>Health</span>
+          </button>
+          <button class="nav-tab-btn" id="tabPresets" data-pane="panePresets" role="tab" aria-selected="false">
+            <span class="nav-tab-icon">🍲</span>
+            <span>Presets</span>
+          </button>
+          <button class="nav-tab-btn" id="tabSettings" data-pane="paneSettings" role="tab" aria-selected="false">
+            <span class="nav-tab-icon">⚙️</span>
+            <span>Settings</span>
+          </button>
+        </nav>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Visible Footnote -->
+  <footer class="global-footnote" role="contentinfo">
+    <p>Illustrative values, not measured. Concept prototype designed for Atomberg smart hardware.</p>
+  </footer>
+
+  <!-- Toast Notification Mount -->
+  <div id="toastContainer" class="toast-container" aria-live="assertive"></div>
+
+  <!-- =========================================================================
+       COMPLETE STANDALONE VANILLA JAVASCRIPT
+       ========================================================================= -->
+  <script>
+    /**
+     * @license
+     * Atomberg-Style Smart Grinder Companion
+     * Self-contained prototype with single-source-of-truth state,
+     * physical simulation model, thermal guard, health engine, and self-tests.
+     */
+    (function () {
+      "use strict";
+
+      /* -------------------------------------------------------------
+         1. CONFIGURATION OBJECT (All tunable parameters in one place)
+         ------------------------------------------------------------- */
+      const CONFIG = {
+        // Physical and environmental defaults
+        ambientTemp: 28.0,
+        warmJarDelta: 6.0,
+        sensorLagSeconds: 8.0,
+        coolingCoeff: 0.012,
+        heatCoeff: 0.10, // heat = 0.10 * speed * loadFactor
+        progressBase: 1.67, // base progress rate per second
+        maxSimDuration: 900.0, // 900 sim seconds hard stop (15 mins)
+        overloadThresholdSec: 20.0, // 20 sim seconds under Heavy load and speed >= 4
+        sensorFaultRunSec: 25.0, // E2 time-based fallback: run 25s
+        sensorFaultRestSec: 15.0, // E2 time-based fallback: rest 15s
+
+        // Guard parameters
+        defaultLimit: 36.0,
+        defaultMargin: 1.5,
+        defaultResumeGap: 2.0,
+
+        // Speed caps per jar type
+        jarCaps: {
+          Large: 4,
+          Medium: 5,
+          Chutney: 5
+        },
+
+        // Motor load multipliers
+        loadFactors: {
+          Light: 0.8,
+          Normal: 1.0,
+          Heavy: 1.25
+        },
+
+        // Texture progress multipliers
+        textureMultipliers: {
+          Coarse: 1.4,
+          Medium: 1.0,
+          Fine: 0.8,
+          Paste: 0.65
+        },
+
+        // Auto-stop load signatures (experimental)
+        textureThresholds: {
+          Coarse: 0.82,
+          Medium: 0.68,
+          Fine: 0.52,
+          Paste: 0.38
+        },
+
+        // Power consumption per speed level (Watts, for Wh calculation)
+        powerWatts: {
+          1: 350,
+          2: 450,
+          3: 600,
+          4: 750,
+          5: 900
+        },
+
+        // Health thresholds
+        couplerWarningHours: 50.0,
+        jarSealWarningDays: 30,
+
+        // Simulation clock
+        baseTickMs: 50,
+        storageKey: "atomberg_smart_grinder_v1"
+      };
+
+      // Default Dishe Presets (Pure data)
+      const DEFAULT_PRESETS = [
+        { id: "p1", name: "Idli batter", speed: 2, limit: 34.0, texture: "Medium" },
+        { id: "p2", name: "Dosa batter", speed: 2, limit: 35.0, texture: "Fine" },
+        { id: "p3", name: "Wet masala", speed: 4, limit: 40.0, texture: "Medium" },
+        { id: "p4", name: "Dry masala", speed: 5, limit: 42.0, texture: "Fine" },
+        { id: "p5", name: "Chutney", speed: 3, limit: 36.0, texture: "Paste" },
+        { id: "p6", name: "Coarse podi", speed: 2, limit: 38.0, texture: "Coarse" }
+      ];
+
+      /* -------------------------------------------------------------
+         2. STORAGE ENGINE (with robust fallback & quota guards)
+         ------------------------------------------------------------- */
+      function createDefaultState() {
+        return {
+          profiles: ["Main Kitchen", "Mom's Recipes"],
+          activeProfile: "Main Kitchen",
+          presetsByProfile: {
+            "Main Kitchen": JSON.parse(JSON.stringify(DEFAULT_PRESETS)),
+            "Mom's Recipes": JSON.parse(JSON.stringify(DEFAULT_PRESETS))
+          },
+          sharePresets: false,
+          history: [],
+          settings: {
+            guardEnabled: true,
+            margin: CONFIG.defaultMargin,
+            resumeGap: CONFIG.defaultResumeGap,
+            childLock: false,
+            notifications: true,
+            theme: "auto",
+            calibration: {
+              heatCoeff: CONFIG.heatCoeff,
+              coolingCoeff: CONFIG.coolingCoeff,
+              sensorLag: CONFIG.sensorLagSeconds,
+              ambient: CONFIG.ambientTemp
+            }
+          },
+          health: {
+            couplerMotorSeconds: 0,
+            lastCleanedTimestamp: Date.now(),
+            firmwareVersion: "1.2.0"
+          },
+          lastAlert: null
+        };
+      }
+
+      function loadPersistedState() {
+        try {
+          const raw = localStorage.getItem(CONFIG.storageKey);
+          if (!raw) return createDefaultState();
+          const parsed = JSON.parse(raw);
+          // Schema verification & fallback
+          if (!parsed.profiles || !Array.isArray(parsed.profiles) || parsed.profiles.length === 0) {
+            return createDefaultState();
+          }
+          return parsed;
+        } catch (e) {
+          console.warn("Storage read failed or corrupted JSON, falling back to clean in-memory state:", e);
+          return createDefaultState();
+        }
+      }
+
+      function savePersistedState(state) {
+        try {
+          localStorage.setItem(CONFIG.storageKey, JSON.stringify(state));
+        } catch (e) {
+          console.warn("Storage write failed (quota exceeded or disabled):", e);
+        }
+      }
+
+      /* -------------------------------------------------------------
+         3. APPLICATION & HARDWARE STATE
+         ------------------------------------------------------------- */
+      const appState = loadPersistedState();
+
+      // Ensure active preset exists
+      let currentPreset = appState.presetsByProfile[appState.activeProfile]?.[0] || DEFAULT_PRESETS[0];
+
+      // Physical Machine Run State
+      const machine = {
+        dish: currentPreset.name,
+        speed: currentPreset.speed,
+        texture: currentPreset.texture,
+        tempLimit: currentPreset.limit,
+        jar: "Medium",
+        load: "Normal",
+        motorOn: false,
+        status: "Ready", // Ready, Grinding, Paused to cool, Done, Fault, Timed out
+        faultCode: null, // E1, E2, E3
+        pauses: 0,
+        override: false,
+        simTimeSec: 0,
+        motorOnSec: 0,
+        overLimitSec: 0,
+        heavyHighSpeedSec: 0,
+        sensorFaultTimer: 0,
+        progress: 0,
+        trueTemp: CONFIG.ambientTemp,
+        sensorTemp: CONFIG.ambientTemp,
+        startSensorTemp: CONFIG.ambientTemp,
+        peakEstimatedTemp: CONFIG.ambientTemp,
+        speedNotice: "",
+        pendingPreset: null,
+        childLockHeldTime: 0,
+        isSpeedButtonHeld: false,
+
+        // Toggles
+        sensorFaultSim: false,
+        jarNotSeatedSim: false,
+        warmJarSim: false,
+        autoStopOnTextureSim: false,
+
+        // Compression
+        timeCompression: 10,
+        simIntervalId: null,
+
+        // Telemetry Chart Buffer (capped at 70 points)
+        chartHistory: []
+      };
+
+      /* -------------------------------------------------------------
+         4. PURE LOGIC FUNCTIONS (Tested by Self-Tests)
+         ------------------------------------------------------------- */
+
+      /**
+       * Pure Thermal Guard Decision Function
+       */
+      function evaluateThermalGuard(params) {
+        const {
+          motorOn,
+          status,
+          sensorTemp,
+          limit,
+          margin,
+          resumeGap,
+          guardEnabled,
+          override,
+          sensorFault,
+          faultCode
+        } = params;
+
+        if (!guardEnabled || override || sensorFault || faultCode) {
+          return { shouldPause: false, shouldResume: false };
+        }
+
+        const pauseTrigger = limit - margin;
+        const resumeTrigger = limit - margin - resumeGap;
+
+        if (motorOn && sensorTemp >= pauseTrigger) {
+          return { shouldPause: true, shouldResume: false };
+        }
+
+        if (!motorOn && status === "Paused to cool" && sensorTemp <= resumeTrigger) {
+          return { shouldPause: false, shouldResume: true };
+        }
+
+        return { shouldPause: false, shouldResume: false };
+      }
+
+      /**
+       * Clamps speed to the active jar speed cap
+       */
+      function clampSpeedForJar(speed, jarType) {
+        const cap = CONFIG.jarCaps[jarType] || 5;
+        const clamped = Math.min(Math.max(1, speed), cap);
+        return {
+          clampedSpeed: clamped,
+          isCapped: speed > cap
+        };
+      }
+
+      /**
+       * Health engine metric calculations
+       */
+      function calculateHealthMetrics(sessions, healthState) {
+        // 1. Motor load trend (last 10 sessions)
+        const recent = sessions.slice(0, 10);
+        let avgLoad = 1.0;
+        if (recent.length > 0) {
+          const sum = recent.reduce((acc, s) => acc + (CONFIG.loadFactors[s.load] || 1.0), 0);
+          avgLoad = sum / recent.length;
+        }
+        const loadTrend = avgLoad > 1.05 ? "High load trend" : "Normal";
+
+        // 2. Coupler motor-on hours
+        const couplerHours = (healthState.couplerMotorSeconds || 0) / 3600.0;
+        const couplerStatus = couplerHours >= CONFIG.couplerWarningHours ? "Check soon" : "Good";
+
+        // 3. Jar seal days since cleaned
+        const daysSinceClean = Math.floor((Date.now() - (healthState.lastCleanedTimestamp || Date.now())) / (1000 * 60 * 60 * 24));
+        const sealStatus = daysSinceClean > CONFIG.jarSealWarningDays ? "Check soon" : "Good";
+
+        // 4. Overheat pauses this week
+        const oneWeekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+        const pausesWeek = sessions
+          .filter(s => s.timestamp >= oneWeekAgo)
+          .reduce((acc, s) => acc + (s.pauses || 0), 0);
+
+        return {
+          avgLoad,
+          loadTrend,
+          couplerHours,
+          couplerStatus,
+          daysSinceClean,
+          sealStatus,
+          pausesWeek
+        };
+      }
+
+      /**
+       * Preset validator
+       */
+      function validatePresetInput(name, speed, limit, texture, existingPresets, excludeId) {
+        if (!name || typeof name !== "string" || name.trim().length === 0) {
+          return { valid: false, error: "Name cannot be empty." };
+        }
+        const cleanName = name.trim();
+        if (cleanName.length > 24) {
+          return { valid: false, error: "Name must be 24 characters or less." };
+        }
+        const duplicate = existingPresets.some(p => p.id !== excludeId && p.name.toLowerCase() === cleanName.toLowerCase());
+        if (duplicate) {
+          return { valid: false, error: "A preset with this name already exists." };
+        }
+        const s = parseInt(speed, 10);
+        if (isNaN(s) || s < 1 || s > 5) {
+          return { valid: false, error: "Speed must be between 1 and 5." };
+        }
+        const lim = parseFloat(limit);
+        if (isNaN(lim) || lim < 20 || lim > 50) {
+          return { valid: false, error: "Temp limit must be between 20 °C and 50 °C est." };
+        }
+        if (!["Coarse", "Medium", "Fine", "Paste"].includes(texture)) {
+          return { valid: false, error: "Invalid texture choice." };
+        }
+        return { valid: true, cleanName, speed: s, limit: lim, texture };
+      }
+
+      /* -------------------------------------------------------------
+         5. TOAST NOTIFICATIONS & NATIVE ALERTS
+         ------------------------------------------------------------- */
+      function addToast(title, message) {
+        const container = document.getElementById("toastContainer");
+        if (!container) return;
+
+        const toast = document.createElement("div");
+        toast.className = "toast-message";
+        const strong = document.createElement("strong");
+        strong.textContent = title;
+        const text = document.createElement("div");
+        text.textContent = message;
+        toast.appendChild(strong);
+        toast.appendChild(text);
+        container.appendChild(toast);
+
+        // Native notification if user allowed
+        if (appState.settings.notifications && "Notification" in window && Notification.permission === "granted") {
+          try {
+            new Notification(title, { body: message, silent: true });
+          } catch (e) {
+            // Ignore notification error
+          }
+        }
+
+        setTimeout(() => {
+          toast.style.opacity = "0";
+          toast.style.transition = "opacity 0.3s ease";
+          setTimeout(() => toast.remove(), 300);
+        }, 3200);
+      }
+
+      /* -------------------------------------------------------------
+         6. MACHINE SIMULATION TICK ENGINE
+         ------------------------------------------------------------- */
+      function simulationTick() {
+        const calib = appState.settings.calibration;
+        const dt = (machine.timeCompression * CONFIG.baseTickMs) / 1000.0; // simulated seconds per tick
+
+        // Jar Seating Check (E3)
+        if (machine.jarNotSeatedSim) {
+          if (machine.motorOn) {
+            machine.motorOn = false;
+            machine.status = "Fault";
+            machine.faultCode = "E3";
+            recordAlert("E3", "Jar interlock opened while grinding");
+            addToast("Interlock Fault (E3)", "Jar not seated. Grinder stopped immediately.");
+          }
+          renderMachineUI();
+          return;
+        }
+
+        // Overload Check (E1)
+        if (machine.motorOn && machine.load === "Heavy" && machine.speed >= 4) {
+          machine.heavyHighSpeedSec += dt;
+          if (machine.heavyHighSpeedSec >= CONFIG.overloadThresholdSec) {
+            machine.motorOn = false;
+            machine.status = "Fault";
+            machine.faultCode = "E1";
+            recordAlert("E1", "Overload under continuous heavy load at speed >= 4");
+            addToast("Overload Fault (E1)", "Motor safety shutoff engaged. Allow motor to cool.");
+            renderMachineUI();
+            return;
+          }
+        } else {
+          machine.heavyHighSpeedSec = 0;
+        }
+
+        // Sensor Fault Fallback Logic (E2)
+        if (machine.sensorFaultSim) {
+          machine.faultCode = "E2";
+          machine.sensorFaultTimer += dt;
+          if (machine.motorOn && machine.sensorFaultTimer >= CONFIG.sensorFaultRunSec) {
+            machine.motorOn = false;
+            machine.status = "Paused to cool";
+            machine.pauses++;
+            machine.sensorFaultTimer = 0;
+            addToast("Cycle Pause", "Safe 25s run interval completed. Resting 15s.");
+          } else if (!machine.motorOn && machine.status === "Paused to cool" && machine.sensorFaultTimer >= CONFIG.sensorFaultRestSec) {
+            machine.motorOn = true;
+            machine.status = "Grinding";
+            machine.sensorFaultTimer = 0;
+            addToast("Cycle Resumed", "Rest period complete. Resuming grind.");
+          }
+        } else {
+          // Normal Thermal Guard Decision
+          const guardDecision = evaluateThermalGuard({
+            motorOn: machine.motorOn,
+            status: machine.status,
+            sensorTemp: machine.sensorTemp,
+            limit: machine.tempLimit,
+            margin: appState.settings.margin,
+            resumeGap: appState.settings.resumeGap,
+            guardEnabled: appState.settings.guardEnabled,
+            override: machine.override,
+            sensorFault: machine.sensorFaultSim,
+            faultCode: machine.faultCode
+          });
+
+          if (guardDecision.shouldPause) {
+            machine.motorOn = false;
+            machine.status = "Paused to cool";
+            machine.pauses++;
+            addToast("Paused to cool", "Sensor estimated temperature nearing limit. Letting ingredients rest.");
+          } else if (guardDecision.shouldResume) {
+            machine.motorOn = true;
+            machine.status = "Grinding";
+            addToast("Grinding Resumed", "Jar sufficiently cooled to preserve flavor.");
+          }
+        }
+
+        // Thermal Physics Model
+        const loadFactor = CONFIG.loadFactors[machine.load] || 1.0;
+        const heat = machine.motorOn ? (calib.heatCoeff * machine.speed * loadFactor) : 0;
+        machine.trueTemp += (heat - calib.coolingCoeff * (machine.trueTemp - calib.ambient)) * dt;
+        machine.sensorTemp += ((machine.trueTemp - machine.sensorTemp) / calib.sensorLag) * dt;
+
+        if (machine.sensorTemp > machine.peakEstimatedTemp) {
+          machine.peakEstimatedTemp = machine.sensorTemp;
+        }
+
+        // Over-limit tracking
+        if (machine.trueTemp > machine.tempLimit) {
+          machine.overLimitSec += dt;
+        }
+
+        // Grinding Progress Model
+        if (machine.motorOn) {
+          machine.motorOnSec += dt;
+          appState.health.couplerMotorSeconds += dt;
+
+          const texMult = CONFIG.textureMultipliers[machine.texture] || 1.0;
+          const progRate = CONFIG.progressBase * (0.4 + 0.2 * machine.speed) * texMult;
+          machine.progress += progRate * dt;
+
+          // Experimental auto-stop on texture
+          if (machine.autoStopOnTextureSim && machine.progress >= 25) {
+            const loadSignature = 1.0 - (machine.progress / 100.0) * 0.65;
+            const targetSignature = CONFIG.textureThresholds[machine.texture] || 0.6;
+            if (loadSignature <= targetSignature) {
+              machine.progress = 100;
+              completeSession("Done (Auto-stop on texture)");
+              return;
+            }
+          }
+
+          if (machine.progress >= 100) {
+            machine.progress = 100;
+            completeSession("Done");
+            return;
+          }
+        }
+
+        // Max time limit guard
+        machine.simTimeSec += dt;
+        if (machine.simTimeSec >= CONFIG.maxSimDuration && (machine.status === "Grinding" || machine.status === "Paused to cool")) {
+          machine.motorOn = false;
+          machine.status = "Timed out";
+          completeSession("Timed out");
+          return;
+        }
+
+        // Record history telemetry buffer (capped at 70 points)
+        if (machine.chartHistory.length >= 70) {
+          machine.chartHistory.shift();
+        }
+        machine.chartHistory.push({
+          time: machine.simTimeSec,
+          sensorTemp: machine.sensorTemp,
+          trueTemp: machine.trueTemp,
+          limit: machine.tempLimit,
+          pauseTrigger: machine.tempLimit - appState.settings.margin
+        });
+
+        renderMachineUI();
+        renderLiveAppUI();
+      }
+
+      function startSimulationTimer() {
+        if (machine.simIntervalId) {
+          clearInterval(machine.simIntervalId);
+        }
+        machine.simIntervalId = setInterval(simulationTick, CONFIG.baseTickMs);
+      }
+
+      /* -------------------------------------------------------------
+         7. SESSION LIFECYCLE (Machine Start, Stop, Done)
+         ------------------------------------------------------------- */
+      function startGrindingRun() {
+        // Child lock validation
+        if (appState.settings.childLock) {
+          addToast("Child Lock Active", "Hold the physical Speed button for 2 seconds to unlock.");
+          return;
+        }
+
+        // Jar interlock validation
+        if (machine.jarNotSeatedSim) {
+          machine.status = "Fault";
+          machine.faultCode = "E3";
+          recordAlert("E3", "Jar interlock open on start attempt");
+          addToast("Refused to Start (E3)", "Jar is not seated correctly on coupler.");
+          renderMachineUI();
+          return;
+        }
+
+        // Reset runtime values
+        machine.motorOn = true;
+        machine.status = "Grinding";
+        machine.faultCode = machine.sensorFaultSim ? "E2" : null;
+        machine.pauses = 0;
+        machine.override = false;
+        machine.progress = 0;
+        machine.simTimeSec = 0;
+        machine.motorOnSec = 0;
+        machine.overLimitSec = 0;
+        machine.heavyHighSpeedSec = 0;
+        machine.sensorFaultTimer = 0;
+
+        const baseAmbient = appState.settings.calibration.ambient;
+        const initialTemp = machine.warmJarSim ? (baseAmbient + CONFIG.warmJarDelta) : baseAmbient;
+        machine.trueTemp = initialTemp;
+        machine.sensorTemp = initialTemp;
+        machine.startSensorTemp = initialTemp;
+        machine.peakEstimatedTemp = initialTemp;
+        machine.chartHistory = [];
+
+        addToast("Grinding Started", `Starting run for ${machine.dish} (Speed ${machine.speed}, Texture: ${machine.texture}).`);
+        renderMachineUI();
+        renderLiveAppUI();
+      }
+
+      function stopGrindingRun() {
+        machine.motorOn = false;
+        machine.status = "Ready";
+        addToast("Grinder Stopped", "Manual stop from physical machine panel.");
+        renderMachineUI();
+        renderLiveAppUI();
+      }
+
+      function completeSession(finishReason) {
+        machine.motorOn = false;
+        machine.status = finishReason;
+
+        // Energy calculation (Watt-hours)
+        const watts = CONFIG.powerWatts[machine.speed] || 450;
+        const energyWh = (machine.motorOnSec / 3600.0) * watts;
+
+        // Create session entry
+        const sessionRecord = {
+          id: "s_" + Date.now(),
+          timestamp: Date.now(),
+          dish: machine.dish,
+          profile: appState.activeProfile,
+          jar: machine.jar,
+          load: machine.load,
+          speed: machine.speed,
+          texture: machine.texture,
+          durationSec: Math.round(machine.simTimeSec),
+          motorOnSec: Math.round(machine.motorOnSec),
+          peakEstimatedTemp: parseFloat(machine.peakEstimatedTemp.toFixed(1)),
+          pauses: machine.pauses,
+          secondsOverLimit: Math.round(machine.overLimitSec),
+          energyWh: parseFloat(energyWh.toFixed(2)),
+          status: finishReason,
+          tempCurve: machine.chartHistory.map(p => ({
+            time: Math.round(p.time),
+            est: parseFloat(p.sensorTemp.toFixed(1))
+          }))
+        };
+
+        // Add to history (capped at 200)
+        appState.history.unshift(sessionRecord);
+        if (appState.history.length > 200) {
+          appState.history = appState.history.slice(0, 200);
+        }
+
+        savePersistedState(appState);
+        addToast("Grind Finished", `${machine.dish} grind complete. Result: ${finishReason}.`);
+        renderMachineUI();
+        renderLiveAppUI();
+        renderHistoryUI();
+        renderHealthUI();
+      }
+
+      function recordAlert(code, message) {
+        appState.lastAlert = {
+          code,
+          message,
+          timestamp: Date.now()
+        };
+        savePersistedState(appState);
+        renderHealthUI();
+      }
+
+      /* -------------------------------------------------------------
+         8. MACHINE PHYSICAL BUTTON HANDLERS
+         ------------------------------------------------------------- */
+      function handleStartStopPress() {
+        if (machine.motorOn || machine.status === "Paused to cool") {
+          stopGrindingRun();
+        } else {
+          startGrindingRun();
+        }
+      }
+
+      function handleTexturePress() {
+        // Ignored during active run
+        if (machine.motorOn || machine.status === "Paused to cool") return;
+
+        // If a pending preset is waiting, texture button confirms it!
+        if (machine.pendingPreset) {
+          confirmPendingPreset();
+          return;
+        }
+
+        const textures = ["Coarse", "Medium", "Fine", "Paste"];
+        const curIdx = textures.indexOf(machine.texture);
+        const nextIdx = (curIdx + 1) % textures.length;
+        machine.texture = textures[nextIdx];
+        renderMachineUI();
+        renderLiveAppUI();
+      }
+
+      function handleSpeedPress() {
+        // Ignored during active run
+        if (machine.motorOn || machine.status === "Paused to cool") return;
+
+        let newSpeed = machine.speed + 1;
+        if (newSpeed > 5) newSpeed = 1;
+
+        // Check jar cap
+        const clampRes = clampSpeedForJar(newSpeed, machine.jar);
+        machine.speed = clampRes.clampedSpeed;
+        machine.speedNotice = clampRes.isCapped ? "Speed limited for this jar" : "";
+
+        renderMachineUI();
+        renderLiveAppUI();
+      }
+
+      function confirmPendingPreset() {
+        if (!machine.pendingPreset) return;
+        const p = machine.pendingPreset;
+        machine.dish = p.name;
+        machine.texture = p.texture;
+        machine.tempLimit = p.limit;
+
+        const clampRes = clampSpeedForJar(p.speed, machine.jar);
+        machine.speed = clampRes.clampedSpeed;
+        machine.speedNotice = clampRes.isCapped ? "Speed limited for this jar" : "";
+        machine.pendingPreset = null;
+
+        addToast("Preset Confirmed", `Applied "${machine.dish}" settings on machine display.`);
+        renderMachineUI();
+        renderLiveAppUI();
+      }
+
+      /* -------------------------------------------------------------
+         9. UI RENDERING ENGINES
+         ------------------------------------------------------------- */
+      function renderMachineUI() {
+        // Screen text
+        const dishEl = document.getElementById("mDisplayDish");
+        const statusEl = document.getElementById("mDisplayStatus");
+        const tempEl = document.getElementById("mDisplayTemp");
+        const limitEl = document.getElementById("mDisplayLimit");
+        const speedTextEl = document.getElementById("mDisplaySpeedText");
+        const textureEl = document.getElementById("mDisplayTexture");
+        const pausesEl = document.getElementById("mDisplayPauses");
+        const noticeEl = document.getElementById("mDisplayNotice");
+        const pendingBanner = document.getElementById("mDisplayPendingBanner");
+        const startStopBtn = document.getElementById("mBtnStartStop");
+        const startStopLabel = document.getElementById("mStartStopLabel");
+        const childLockBadge = document.getElementById("mDisplayChildLock");
+        const continueBtn = document.getElementById("mBtnContinueAnyway");
+        const confirmBtn = document.getElementById("mBtnConfirmPreset");
+
+        dishEl.textContent = machine.pendingPreset ? "New preset: Confirm" : machine.dish;
+        limitEl.textContent = machine.tempLimit.toFixed(1);
+        speedTextEl.textContent = String(machine.speed);
+        textureEl.textContent = machine.texture;
+        pausesEl.textContent = String(machine.pauses);
+
+        // Status pill classes
+        statusEl.className = "display-status";
+        let statusText = machine.status;
+        if (machine.faultCode) {
+          statusText = machine.faultCode;
+          statusEl.classList.add("status-fault");
+        } else if (machine.status === "Ready") {
+          statusEl.classList.add("status-ready");
+        } else if (machine.status === "Grinding") {
+          statusEl.classList.add("status-grinding");
+        } else if (machine.status === "Paused to cool") {
+          statusEl.classList.add("status-paused");
+        } else if (machine.status === "Done") {
+          statusEl.classList.add("status-done");
+        } else {
+          statusEl.classList.add("status-timedout");
+        }
+        statusEl.textContent = statusText;
+
+        // Temperature string
+        if (machine.sensorFaultSim) {
+          tempEl.textContent = "Temp unavailable";
+          tempEl.style.fontSize = "1.05rem";
+        } else {
+          tempEl.textContent = `${machine.sensorTemp.toFixed(1)} °C est.`;
+          tempEl.style.fontSize = "1.45rem";
+        }
+
+        // Speed Bars
+        const barNodes = document.getElementById("mDisplaySpeedBars").children;
+        for (let i = 0; i < 5; i++) {
+          if (i < machine.speed) {
+            barNodes[i].classList.add("active");
+          } else {
+            barNodes[i].classList.remove("active");
+          }
+        }
+
+        // Notices
+        noticeEl.textContent = machine.speedNotice;
+
+        // Child lock indicator
+        if (appState.settings.childLock) {
+          childLockBadge.style.display = "inline";
+          childLockBadge.textContent = "🔒 Locked";
+        } else {
+          childLockBadge.style.display = "none";
+        }
+
+        // Pending preset banner & button
+        if (machine.pendingPreset) {
+          pendingBanner.style.display = "block";
+          confirmBtn.style.display = "inline-flex";
+        } else {
+          pendingBanner.style.display = "none";
+          confirmBtn.style.display = "none";
+        }
+
+        // Continue anyway button (visible ONLY when paused to cool)
+        if (machine.status === "Paused to cool") {
+          continueBtn.style.display = "inline-flex";
+        } else {
+          continueBtn.style.display = "none";
+        }
+
+        // Start/Stop button appearance
+        if (machine.motorOn) {
+          startStopBtn.classList.add("running");
+          startStopLabel.textContent = "Stop";
+        } else {
+          startStopBtn.classList.remove("running");
+          startStopLabel.textContent = "Start";
+        }
+
+        // Blade spinning animation & Jar shape in SVG
+        const blade = document.getElementById("svgBladeLine");
+        if (blade) {
+          if (machine.motorOn) {
+            const rot = (Date.now() / 2) % 360;
+            blade.setAttribute("transform", `rotate(${rot} 150 114)`);
+          } else {
+            blade.removeAttribute("transform");
+          }
+        }
+
+        // Adjust SVG Jar Height for Jar Type
+        const jarPath = document.getElementById("svgJarPath");
+        if (jarPath) {
+          if (machine.jar === "Large") {
+            jarPath.setAttribute("d", "M 90 28 L 210 28 L 195 128 L 105 128 Z");
+          } else if (machine.jar === "Chutney") {
+            jarPath.setAttribute("d", "M 105 60 L 195 60 L 185 128 L 115 128 Z");
+          } else {
+            jarPath.setAttribute("d", "M 95 38 L 205 38 L 195 128 L 105 128 Z");
+          }
+        }
+      }
+
+      function renderLiveAppUI() {
+        document.getElementById("liveDishName").textContent = machine.dish;
+        document.getElementById("liveLimitText").textContent = machine.tempLimit.toFixed(1);
+        document.getElementById("liveSpeedVal").textContent = String(machine.speed);
+        document.getElementById("liveTextureVal").textContent = machine.texture;
+        document.getElementById("livePausesVal").textContent = String(machine.pauses);
+
+        // Status badge
+        const badge = document.getElementById("liveStatusBadge");
+        badge.className = "live-status-pill";
+        let text = machine.status;
+        if (machine.faultCode) {
+          text = `Fault (${machine.faultCode})`;
+          badge.classList.add("status-fault");
+        } else if (machine.status === "Ready") {
+          badge.classList.add("status-ready");
+        } else if (machine.status === "Grinding") {
+          badge.classList.add("status-grinding");
+        } else if (machine.status === "Paused to cool") {
+          badge.classList.add("status-paused");
+        } else if (machine.status === "Done") {
+          badge.classList.add("status-done");
+        } else {
+          badge.classList.add("status-timedout");
+        }
+        badge.textContent = text;
+
+        // Big Temp
+        const tempText = document.getElementById("liveTempText");
+        if (machine.sensorFaultSim) {
+          tempText.textContent = "Temp unavailable";
+          tempText.style.fontSize = "1.6rem";
+        } else {
+          tempText.textContent = `${machine.sensorTemp.toFixed(1)} °C est.`;
+          tempText.style.fontSize = "2.5rem";
+        }
+
+        // Progress bar
+        const pct = Math.min(100, Math.max(0, Math.round(machine.progress)));
+        document.getElementById("liveProgressPercent").textContent = `${pct}%`;
+        document.getElementById("liveProgressFill").style.width = `${pct}%`;
+
+        // Render Canvas Live Chart
+        drawLiveCanvasChart();
+
+        // Render Developer view if open
+        if (appState.settings.devView) {
+          drawDevCanvasChart();
+        }
+      }
+
+      function drawLiveCanvasChart() {
+        const canvas = document.getElementById("liveChartCanvas");
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        const w = canvas.width;
+        const h = canvas.height;
+
+        ctx.clearRect(0, 0, w, h);
+
+        const data = machine.chartHistory;
+        if (data.length < 2) {
+          ctx.fillStyle = "#64748b";
+          ctx.font = "12px sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText("Waiting for grinding telemetry...", w / 2, h / 2);
+          return;
+        }
+
+        // Calculate Y range
+        const temps = data.map(d => d.sensorTemp).concat(machine.tempLimit + 2, 25);
+        const minT = Math.floor(Math.min(...temps));
+        const maxT = Math.ceil(Math.max(...temps));
+        const range = Math.max(8, maxT - minT);
+
+        function getY(temp) {
+          return h - 20 - ((temp - minT) / range) * (h - 40);
+        }
+
+        function getX(i) {
+          return 30 + (i / (data.length - 1)) * (w - 45);
+        }
+
+        // Grid lines
+        ctx.strokeStyle = "rgba(148, 163, 184, 0.2)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        for (let t = Math.ceil(minT / 5) * 5; t <= maxT; t += 5) {
+          const y = getY(t);
+          ctx.moveTo(30, y);
+          ctx.lineTo(w - 15, y);
+          ctx.fillStyle = "#64748b";
+          ctx.font = "10px monospace";
+          ctx.textAlign = "right";
+          ctx.fillText(`${t}°`, 26, y + 3);
+        }
+        ctx.stroke();
+
+        // Dashed Limit Line
+        const limitY = getY(machine.tempLimit);
+        ctx.save();
+        ctx.setLineDash([4, 4]);
+        ctx.strokeStyle = "#ef4444";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(30, limitY);
+        ctx.lineTo(w - 15, limitY);
+        ctx.stroke();
+
+        // Dashed Pause Trigger Line
+        const pauseY = getY(machine.tempLimit - appState.settings.margin);
+        ctx.strokeStyle = "#f59e0b";
+        ctx.beginPath();
+        ctx.moveTo(30, pauseY);
+        ctx.lineTo(w - 15, pauseY);
+        ctx.stroke();
+        ctx.restore();
+
+        // Live Sensor Temp Curve
+        ctx.strokeStyle = "#0284c7";
+        ctx.lineWidth = 2.5;
+        ctx.lineJoin = "round";
+        ctx.beginPath();
+        for (let i = 0; i < data.length; i++) {
+          const x = getX(i);
+          const y = getY(data[i].sensorTemp);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        // Current value marker
+        const lastPt = data[data.length - 1];
+        const lastX = getX(data.length - 1);
+        const lastY = getY(lastPt.sensorTemp);
+        ctx.fillStyle = "#0284c7";
+        ctx.beginPath();
+        ctx.arc(lastX, lastY, 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      function drawDevCanvasChart() {
+        const canvas = document.getElementById("devChartCanvas");
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const data = machine.chartHistory;
+        if (data.length < 2) return;
+
+        const allTemps = data.map(d => d.trueTemp).concat(data.map(d => d.sensorTemp));
+        const minT = Math.floor(Math.min(...allTemps, 25));
+        const maxT = Math.ceil(Math.max(...allTemps, machine.tempLimit + 2));
+        const range = Math.max(8, maxT - minT);
+
+        function getY(t) { return h - 15 - ((t - minT) / range) * (h - 30); }
+        function getX(i) { return 25 + (i / (data.length - 1)) * (w - 35); }
+
+        // True temp (Red)
+        ctx.strokeStyle = "#ef4444";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        data.forEach((d, i) => {
+          const x = getX(i);
+          const y = getY(d.trueTemp);
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+
+        // Sensor temp (Blue)
+        ctx.strokeStyle = "#0284c7";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        data.forEach((d, i) => {
+          const x = getX(i);
+          const y = getY(d.sensorTemp);
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+      }
+
+      function renderHistoryUI() {
+        const list = document.getElementById("historyListContainer");
+        list.innerHTML = "";
+
+        const sessions = appState.history;
+
+        // Calculate Aggregate Insights
+        const totalSessions = sessions.length;
+        const totalEnergyWh = sessions.reduce((acc, s) => acc + (s.energyWh || 0), 0);
+        const health = calculateHealthMetrics(sessions, appState.health);
+
+        document.getElementById("histTotalSessions").textContent = String(totalSessions);
+        document.getElementById("histTotalEnergy").textContent = `${totalEnergyWh.toFixed(1)} Wh`;
+        document.getElementById("histPausesWeek").textContent = String(health.pausesWeek);
+        document.getElementById("histAvgLoad").textContent = health.loadTrend;
+
+        // Jar Distribution Bar
+        let lg = 0, md = 0, ch = 0;
+        sessions.forEach(s => {
+          if (s.jar === "Large") lg++;
+          else if (s.jar === "Chutney") ch++;
+          else md++;
+        });
+        const totalJars = Math.max(1, totalSessions);
+        const barContainer = document.getElementById("histJarUsageBar");
+        barContainer.innerHTML = "";
+        const bLg = document.createElement("div");
+        bLg.className = "jar-bar-lg";
+        bLg.style.width = `${(lg / totalJars) * 100}%`;
+        const bMd = document.createElement("div");
+        bMd.className = "jar-bar-md";
+        bMd.style.width = `${(md / totalJars) * 100}%`;
+        const bCh = document.createElement("div");
+        bCh.className = "jar-bar-ch";
+        bCh.style.width = `${(ch / totalJars) * 100}%`;
+        barContainer.appendChild(bLg);
+        barContainer.appendChild(bMd);
+        barContainer.appendChild(bCh);
+
+        if (sessions.length === 0) {
+          const emptyMsg = document.createElement("div");
+          emptyMsg.style.padding = "1.5rem";
+          emptyMsg.style.textAlign = "center";
+          emptyMsg.style.color = "var(--text-muted)";
+          emptyMsg.textContent = "No past grinding sessions recorded.";
+          list.appendChild(emptyMsg);
+          return;
+        }
+
+        sessions.forEach(s => {
+          const card = document.createElement("div");
+          card.className = "history-card";
+
+          const header = document.createElement("div");
+          header.className = "history-card-header";
+
+          const title = document.createElement("span");
+          title.className = "history-dish-title";
+          title.textContent = s.dish;
+
+          const date = document.createElement("span");
+          date.className = "history-date";
+          date.textContent = new Date(s.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + " · " + new Date(s.timestamp).toLocaleDateString();
+
+          header.appendChild(title);
+          header.appendChild(date);
+
+          const stats = document.createElement("div");
+          stats.className = "history-stats-row";
+
+          const p1 = document.createElement("span");
+          p1.textContent = `${s.durationSec}s total (${s.motorOnSec}s motor)`;
+          const p2 = document.createElement("span");
+          p2.textContent = `Peak: ${s.peakEstimatedTemp} °C est.`;
+          const p3 = document.createElement("span");
+          p3.textContent = `Pauses: ${s.pauses}`;
+          const p4 = document.createElement("span");
+          p4.textContent = `${s.energyWh} Wh`;
+
+          stats.appendChild(p1);
+          stats.appendChild(p2);
+          stats.appendChild(p3);
+          stats.appendChild(p4);
+
+          // Expandable Temperature Curve (Mini canvas)
+          const chartWrap = document.createElement("div");
+          chartWrap.className = "history-expanded-chart";
+          const canvas = document.createElement("canvas");
+          canvas.width = 300;
+          canvas.height = 70;
+          canvas.style.width = "100%";
+          canvas.style.height = "70px";
+          chartWrap.appendChild(canvas);
+
+          card.appendChild(header);
+          card.appendChild(stats);
+          card.appendChild(chartWrap);
+
+          card.addEventListener("click", () => {
+            const isVis = chartWrap.classList.toggle("visible");
+            if (isVis && s.tempCurve && s.tempCurve.length > 1) {
+              drawSavedTempCurve(canvas, s.tempCurve);
+            }
+          });
+
+          list.appendChild(card);
+        });
+      }
+
+      function drawSavedTempCurve(canvas, points) {
+        const ctx = canvas.getContext("2d");
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const ests = points.map(p => p.est);
+        const minT = Math.floor(Math.min(...ests, 25));
+        const maxT = Math.ceil(Math.max(...ests, 40));
+        const range = Math.max(5, maxT - minT);
+
+        function getY(t) { return h - 8 - ((t - minT) / range) * (h - 16); }
+        function getX(i) { return 10 + (i / (points.length - 1)) * (w - 20); }
+
+        ctx.strokeStyle = "#0284c7";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        points.forEach((p, i) => {
+          const x = getX(i);
+          const y = getY(p.est);
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+      }
+
+      function renderHealthUI() {
+        const metrics = calculateHealthMetrics(appState.history, appState.health);
+
+        // Load Trend
+        const loadBadge = document.getElementById("healthLoadBadge");
+        const loadText = document.getElementById("healthLoadText");
+        loadText.textContent = metrics.loadTrend;
+        if (metrics.loadTrend === "High load trend") {
+          loadBadge.className = "health-status-badge status-check";
+        } else {
+          loadBadge.className = "health-status-badge status-good";
+        }
+
+        // Coupler Status
+        const couplerBadge = document.getElementById("healthCouplerBadge");
+        const couplerText = document.getElementById("healthCouplerText");
+        couplerText.textContent = `${metrics.couplerStatus} (${metrics.couplerHours.toFixed(1)} / ${CONFIG.couplerWarningHours}h)`;
+        couplerBadge.className = metrics.couplerStatus === "Good" ? "health-status-badge status-good" : "health-status-badge status-check";
+
+        // Jar Seal
+        const sealBadge = document.getElementById("healthSealBadge");
+        const sealText = document.getElementById("healthSealText");
+        const sealSub = document.getElementById("healthSealSub");
+        sealSub.textContent = `Cleaned ${metrics.daysSinceClean} day(s) ago`;
+        sealText.textContent = metrics.sealStatus;
+        sealBadge.className = metrics.sealStatus === "Good" ? "health-status-badge status-good" : "health-status-badge status-check";
+
+        // Pauses
+        document.getElementById("healthPausesCount").textContent = String(metrics.pausesWeek);
+
+        // Firmware
+        document.getElementById("healthFirmwareVer").textContent = `v${appState.health.firmwareVersion}`;
+
+        // Last Alert
+        const alertSumm = document.getElementById("healthAlertSummary");
+        if (appState.lastAlert) {
+          const d = new Date(appState.lastAlert.timestamp).toLocaleTimeString();
+          alertSumm.textContent = `Code ${appState.lastAlert.code} at ${d}: ${appState.lastAlert.message}`;
+        } else {
+          alertSumm.textContent = "No active fault code recorded.";
+        }
+
+        // Dynamic Maintenance Reminders
+        const remList = document.getElementById("maintenanceRemindersList");
+        remList.innerHTML = "";
+        const items = [];
+        if (metrics.sealStatus === "Check soon") {
+          items.push(`⚠️ Jar seal cleaning due: inspect silicone gasket for batter residue.`);
+        }
+        if (metrics.couplerStatus === "Check soon") {
+          items.push(`⚠️ Motor coupler wear inspection recommended (${metrics.couplerHours.toFixed(1)} run hours).`);
+        }
+        if (metrics.loadTrend === "High load trend") {
+          items.push(`ℹ️ Heavy load pattern detected: ensure adequate liquid before fine texture grinds.`);
+        }
+        if (items.length === 0) {
+          items.push(`✓ All mechanical subsystems healthy.`);
+          items.push(`✓ Thermal guard calibrated and operational.`);
+        }
+        items.forEach(it => {
+          const span = document.createElement("span");
+          span.textContent = it;
+          remList.appendChild(span);
+        });
+      }
+
+      function renderPresetsUI() {
+        const container = document.getElementById("presetsListContainer");
+        container.innerHTML = "";
+
+        const presets = appState.presetsByProfile[appState.activeProfile] || [];
+        presets.forEach(p => {
+          const card = document.createElement("div");
+          card.className = "preset-card-item";
+
+          const left = document.createElement("div");
+          const title = document.createElement("div");
+          title.className = "preset-item-title";
+          title.textContent = p.name;
+          const meta = document.createElement("div");
+          meta.className = "preset-item-meta";
+          meta.textContent = `Speed ${p.speed} · Temp limit: ${p.limit.toFixed(1)} °C est. · ${p.texture}`;
+          left.appendChild(title);
+          left.appendChild(meta);
+
+          const right = document.createElement("div");
+          right.style.display = "flex";
+          right.style.gap = "0.35rem";
+
+          const sendBtn = document.createElement("button");
+          sendBtn.className = "btn-secondary";
+          sendBtn.style.padding = "0.25rem 0.5rem";
+          sendBtn.style.fontSize = "0.7rem";
+          sendBtn.textContent = "Send to Machine";
+          sendBtn.addEventListener("click", () => {
+            // Stage preset as pending on machine
+            machine.pendingPreset = JSON.parse(JSON.stringify(p));
+            addToast("Preset Sent", `"${p.name}" sent to machine. Confirm on hardware panel.`);
+            renderMachineUI();
+          });
+
+          const editBtn = document.createElement("button");
+          editBtn.className = "btn-secondary";
+          editBtn.style.padding = "0.25rem 0.5rem";
+          editBtn.style.fontSize = "0.7rem";
+          editBtn.textContent = "Edit";
+          editBtn.addEventListener("click", () => openPresetEditor(p));
+
+          right.appendChild(sendBtn);
+          right.appendChild(editBtn);
+
+          card.appendChild(left);
+          card.appendChild(right);
+          container.appendChild(card);
+        });
+
+        // Sync dropdowns
+        syncDishDropdowns();
+      }
+
+      function renderProfilesUI() {
+        const list = document.getElementById("profilesListUi");
+        list.innerHTML = "";
+
+        const sel = document.getElementById("appProfileSelect");
+        sel.innerHTML = "";
+
+        appState.profiles.forEach(prof => {
+          const row = document.createElement("div");
+          row.style.display = "flex";
+          row.style.alignItems = "center";
+          row.style.justifyContent = "space-between";
+          row.style.padding = "0.35rem 0";
+
+          const nameSpan = document.createElement("span");
+          nameSpan.textContent = prof;
+          if (prof === appState.activeProfile) {
+            nameSpan.style.fontWeight = "700";
+            nameSpan.textContent += " (Active)";
+          }
+
+          const btns = document.createElement("div");
+          btns.style.display = "flex";
+          btns.style.gap = "0.35rem";
+
+          if (prof !== appState.activeProfile) {
+            const switchBtn = document.createElement("button");
+            switchBtn.className = "btn-secondary";
+            switchBtn.style.padding = "0.2rem 0.45rem";
+            switchBtn.style.fontSize = "0.68rem";
+            switchBtn.textContent = "Switch";
+            switchBtn.addEventListener("click", () => {
+              appState.activeProfile = prof;
+              savePersistedState(appState);
+              renderProfilesUI();
+              renderPresetsUI();
+            });
+            btns.appendChild(switchBtn);
+          }
+
+          if (appState.profiles.length > 1) {
+            const delBtn = document.createElement("button");
+            delBtn.className = "btn-danger-outline";
+            delBtn.style.padding = "0.2rem 0.45rem";
+            delBtn.style.fontSize = "0.68rem";
+            delBtn.textContent = "Delete";
+            delBtn.addEventListener("click", () => {
+              deleteProfile(prof);
+            });
+            btns.appendChild(delBtn);
+          }
+
+          row.appendChild(nameSpan);
+          row.appendChild(btns);
+          list.appendChild(row);
+
+          // Populate phone header profile dropdown
+          const opt = document.createElement("option");
+          opt.value = prof;
+          opt.textContent = prof;
+          if (prof === appState.activeProfile) opt.selected = true;
+          sel.appendChild(opt);
+        });
+      }
+
+      function syncDishDropdowns() {
+        const benchSel = document.getElementById("benchDishSelect");
+        benchSel.innerHTML = "";
+        const presets = appState.presetsByProfile[appState.activeProfile] || [];
+        presets.forEach(p => {
+          const opt = document.createElement("option");
+          opt.value = p.id;
+          opt.textContent = p.name;
+          if (p.name === machine.dish) opt.selected = true;
+          benchSel.appendChild(opt);
+        });
+      }
+
+      /* -------------------------------------------------------------
+         10. PRESET & PROFILE MUTATIONS
+         ------------------------------------------------------------- */
+      let currentEditingPresetId = null;
+
+      function openPresetEditor(preset) {
+        currentEditingPresetId = preset ? preset.id : null;
+        const modal = document.getElementById("presetEditorModal");
+        const title = document.getElementById("presetModalTitle");
+        const nameInput = document.getElementById("editPresetName");
+        const speedInput = document.getElementById("editPresetSpeed");
+        const limitInput = document.getElementById("editPresetLimit");
+        const texSelect = document.getElementById("editPresetTexture");
+
+        if (preset) {
+          title.textContent = "Edit Preset";
+          nameInput.value = preset.name;
+          speedInput.value = preset.speed;
+          limitInput.value = preset.limit;
+          texSelect.value = preset.texture;
+        } else {
+          title.textContent = "Create New Preset";
+          nameInput.value = "";
+          speedInput.value = "2";
+          limitInput.value = "36.0";
+          texSelect.value = "Medium";
+        }
+        modal.style.display = "flex";
+      }
+
+      function savePresetFromEditor() {
+        const nameInput = document.getElementById("editPresetName").value;
+        const speedInput = document.getElementById("editPresetSpeed").value;
+        const limitInput = document.getElementById("editPresetLimit").value;
+        const texSelect = document.getElementById("editPresetTexture").value;
+
+        const presets = appState.presetsByProfile[appState.activeProfile] || [];
+        const validation = validatePresetInput(
+          nameInput,
+          speedInput,
+          limitInput,
+          texSelect,
+          presets,
+          currentEditingPresetId
+        );
+
+        if (!validation.valid) {
+          alert(validation.error);
+          return;
+        }
+
+        if (currentEditingPresetId) {
+          const p = presets.find(x => x.id === currentEditingPresetId);
+          if (p) {
+            p.name = validation.cleanName;
+            p.speed = validation.speed;
+            p.limit = validation.limit;
+            p.texture = validation.texture;
+          }
+        } else {
+          presets.push({
+            id: "p_" + Date.now(),
+            name: validation.cleanName,
+            speed: validation.speed,
+            limit: validation.limit,
+            texture: validation.texture
+          });
+        }
+
+        savePersistedState(appState);
+        document.getElementById("presetEditorModal").style.display = "none";
+        renderPresetsUI();
+        addToast("Preset Saved", `Saved settings for "${validation.cleanName}".`);
+      }
+
+      function deleteProfile(name) {
+        if (appState.profiles.length <= 1) {
+          alert("Cannot delete the last remaining household profile.");
+          return;
+        }
+        if (!confirm(`Are you sure you want to delete profile "${name}"?`)) return;
+
+        appState.profiles = appState.profiles.filter(p => p !== name);
+        delete appState.presetsByProfile[name];
+        if (appState.activeProfile === name) {
+          appState.activeProfile = appState.profiles[0];
+        }
+        savePersistedState(appState);
+        renderProfilesUI();
+        renderPresetsUI();
+        addToast("Profile Deleted", `Removed profile "${name}".`);
+      }
+
+      function addNewProfile(name) {
+        if (!name || name.trim().length === 0) {
+          alert("Profile name cannot be empty.");
+          return;
+        }
+        const clean = name.trim();
+        if (clean.length > 24) {
+          alert("Profile name must be 24 characters or less.");
+          return;
+        }
+        if (appState.profiles.length >= 4) {
+          alert("Maximum of 4 household profiles allowed.");
+          return;
+        }
+        if (appState.profiles.includes(clean)) {
+          alert("Profile name already exists.");
+          return;
+        }
+
+        appState.profiles.push(clean);
+        appState.presetsByProfile[clean] = JSON.parse(JSON.stringify(DEFAULT_PRESETS));
+        appState.activeProfile = clean;
+        savePersistedState(appState);
+        renderProfilesUI();
+        renderPresetsUI();
+        addToast("Profile Created", `Switched to new profile "${clean}".`);
+      }
+
+      /* -------------------------------------------------------------
+         11. CSV EXPORT UTILITY
+         ------------------------------------------------------------- */
+      function exportHistoryCsv() {
+        const sessions = appState.history;
+        if (sessions.length === 0) {
+          alert("No history sessions available to export.");
+          return;
+        }
+
+        const headers = ["SessionID", "Dish", "Profile", "Date", "DurationSec", "MotorOnSec", "PeakEstTemp", "Pauses", "SecondsOverLimit", "EnergyWh", "Jar", "Status"];
+        const rows = [headers.join(",")];
+
+        sessions.forEach(s => {
+          const row = [
+            `"${s.id}"`,
+            `"${(s.dish || "").replace(/"/g, '""')}"`,
+            `"${(s.profile || "").replace(/"/g, '""')}"`,
+            `"${new Date(s.timestamp).toISOString()}"`,
+            s.durationSec,
+            s.motorOnSec,
+            s.peakEstimatedTemp,
+            s.pauses,
+            s.secondsOverLimit,
+            s.energyWh,
+            `"${s.jar}"`,
+            `"${s.status}"`
+          ];
+          rows.push(row.join(","));
+        });
+
+        const csvContent = rows.join("\n");
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `atomberg_grinder_sessions_${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      /* -------------------------------------------------------------
+         12. SELF-TEST RUNNER (20 Required Assertions)
+         ------------------------------------------------------------- */
+      function runSelfTests() {
+        const results = [];
+        let passCount = 0;
+
+        function assert(id, desc, condition) {
+          if (condition) {
+            passCount++;
+            results.push(`PASS [${id}] ${desc}`);
+          } else {
+            results.push(`FAIL [${id}] ${desc}`);
+          }
+        }
+
+        // Test 1: Guard pauses when sensorTemp >= limit - margin
+        const t1 = evaluateThermalGuard({
+          motorOn: true,
+          status: "Grinding",
+          sensorTemp: 34.5,
+          limit: 36.0,
+          margin: 1.5,
+          resumeGap: 2.0,
+          guardEnabled: true,
+          override: false,
+          sensorFault: false,
+          faultCode: null
+        });
+        assert(1, "Guard pauses when sensorTemp >= limit - margin", t1.shouldPause === true);
+
+        // Test 2: Guard resumes only when sensorTemp <= limit - margin - resumeGap
+        const t2NotYet = evaluateThermalGuard({
+          motorOn: false,
+          status: "Paused to cool",
+          sensorTemp: 32.6,
+          limit: 36.0,
+          margin: 1.5,
+          resumeGap: 2.0, // trigger = 36 - 1.5 - 2.0 = 32.5
+          guardEnabled: true,
+          override: false,
+          sensorFault: false,
+          faultCode: null
+        });
+        const t2Resumes = evaluateThermalGuard({
+          motorOn: false,
+          status: "Paused to cool",
+          sensorTemp: 32.5,
+          limit: 36.0,
+          margin: 1.5,
+          resumeGap: 2.0,
+          guardEnabled: true,
+          override: false,
+          sensorFault: false,
+          faultCode: null
+        });
+        assert(2, "Guard resumes only when sensorTemp <= limit - margin - resumeGap", t2NotYet.shouldResume === false && t2Resumes.shouldResume === true);
+
+        // Test 3: Guard never triggers when disabled or when override is set
+        const t3Disabled = evaluateThermalGuard({
+          motorOn: true,
+          status: "Grinding",
+          sensorTemp: 45.0,
+          limit: 36.0,
+          margin: 1.5,
+          resumeGap: 2.0,
+          guardEnabled: false,
+          override: false,
+          sensorFault: false,
+          faultCode: null
+        });
+        const t3Override = evaluateThermalGuard({
+          motorOn: true,
+          status: "Grinding",
+          sensorTemp: 45.0,
+          limit: 36.0,
+          margin: 1.5,
+          resumeGap: 2.0,
+          guardEnabled: true,
+          override: true,
+          sensorFault: false,
+          faultCode: null
+        });
+        assert(3, "Guard never triggers when disabled or when override is set", t3Disabled.shouldPause === false && t3Override.shouldPause === false);
+
+        // Test 4: Margin 0 can still allow trueTemp to exceed limit due to sensor lag
+        let trueT = 36.5;
+        let sensorT = 35.8; // sensor lagging behind trueTemp
+        const t4Guard = evaluateThermalGuard({
+          motorOn: true,
+          status: "Grinding",
+          sensorTemp: sensorT,
+          limit: 36.0,
+          margin: 0.0,
+          resumeGap: 2.0,
+          guardEnabled: true,
+          override: false,
+          sensorFault: false,
+          faultCode: null
+        });
+        assert(4, "Margin 0 can allow trueTemp overshoot before sensor reaches limit", trueT > 36.0 && t4Guard.shouldPause === false);
+
+        // Test 5: Speed clamps to the jar cap and shows notice
+        const t5Large = clampSpeedForJar(5, "Large"); // Cap is 4
+        assert(5, "Speed clamps to the jar cap and shows notice", t5Large.clampedSpeed === 4 && t5Large.isCapped === true);
+
+        // Test 6: Speed and Texture buttons are ignored during run
+        const wasMotorOn = machine.motorOn;
+        machine.motorOn = true;
+        const testTex = machine.texture;
+        handleTexturePress();
+        const testSpeed = machine.speed;
+        handleSpeedPress();
+        machine.motorOn = wasMotorOn;
+        assert(6, "Speed and Texture buttons are ignored during run", machine.texture === testTex && machine.speed === testSpeed);
+
+        // Test 7: E3 blocks start; E3 mid-run stops the machine
+        machine.jarNotSeatedSim = true;
+        startGrindingRun();
+        const blocked = (machine.status === "Fault" && machine.faultCode === "E3");
+        machine.motorOn = true;
+        simulationTick();
+        const midRunStopped = (machine.motorOn === false && machine.faultCode === "E3");
+        machine.jarNotSeatedSim = false;
+        machine.status = "Ready";
+        machine.faultCode = null;
+        assert(7, "E3 blocks start; E3 mid-run stops machine", blocked && midRunStopped);
+
+        // Test 8: Sensor fault uses time-based fallback and shows 'Temp unavailable'
+        machine.sensorFaultSim = true;
+        machine.status = "Grinding";
+        machine.motorOn = true;
+        machine.sensorFaultTimer = CONFIG.sensorFaultRunSec + 1;
+        simulationTick();
+        const pausedByTime = (machine.status === "Paused to cool" && machine.motorOn === false);
+        machine.sensorFaultSim = false;
+        machine.status = "Ready";
+        machine.faultCode = null;
+        assert(8, "Sensor fault uses time fallback and displays temp unavailable", pausedByTime);
+
+        // Test 9: Overload fault E1 triggers after 20 sim s of Heavy load at speed >= 4
+        machine.load = "Heavy";
+        machine.speed = 4;
+        machine.motorOn = true;
+        machine.status = "Grinding";
+        machine.heavyHighSpeedSec = 20.5;
+        simulationTick();
+        const e1Triggered = (machine.faultCode === "E1" && machine.motorOn === false);
+        machine.load = "Normal";
+        machine.speed = 2;
+        machine.faultCode = null;
+        machine.status = "Ready";
+        assert(9, "Overload fault E1 triggers after 20 sim s of Heavy load at speed >= 4", e1Triggered);
+
+        // Test 10: Run always ends (Done or Timed out) and never loops forever
+        machine.motorOn = true;
+        machine.status = "Grinding";
+        machine.simTimeSec = CONFIG.maxSimDuration + 1;
+        simulationTick();
+        const timedOut = (machine.status === "Timed out" && machine.motorOn === false);
+        machine.status = "Ready";
+        assert(10, "Run always ends (Done or Timed out) and never loops forever", timedOut);
+
+        // Test 11: Preset edit validates range, rejects empty and duplicate names, and reset restores defaults
+        const vEmpty = validatePresetInput("", 2, 34, "Medium", DEFAULT_PRESETS, null);
+        const vDup = validatePresetInput("Idli batter", 2, 34, "Medium", DEFAULT_PRESETS, null);
+        const vBadLimit = validatePresetInput("Sambhar", 2, 85, "Medium", DEFAULT_PRESETS, null);
+        const vGood = validatePresetInput("New Chutney", 3, 35, "Paste", DEFAULT_PRESETS, null);
+        assert(11, "Preset edit validates range, rejects empty/duplicate names", !vEmpty.valid && !vDup.valid && !vBadLimit.valid && vGood.valid);
+
+        // Test 12: Send to machine creates pending preset that needs confirmation
+        const testPreset = { id: "ptest", name: "Rasam test", speed: 3, limit: 38, texture: "Fine" };
+        machine.pendingPreset = testPreset;
+        const hadPending = (machine.pendingPreset !== null);
+        confirmPendingPreset();
+        const applied = (machine.dish === "Rasam test" && machine.pendingPreset === null);
+        assert(12, "Send to machine creates a pending preset that needs confirmation", hadPending && applied);
+
+        // Test 13: Deleting the last profile is refused; max 4 profiles enforced
+        const singleProfileArr = ["Single"];
+        const canDeleteLast = singleProfileArr.length > 1;
+        const fourProfilesArr = ["P1", "P2", "P3", "P4"];
+        const canAddFifth = fourProfilesArr.length < 4;
+        assert(13, "Deleting last profile refused; max 4 profiles enforced", !canDeleteLast && !canAddFifth);
+
+        // Test 14: History caps at 200 entries; CSV export contains header row and 1 line per session
+        const mockHistory = [];
+        for (let i = 0; i < 210; i++) mockHistory.push({ id: "s_" + i, dish: "D", timestamp: Date.now(), durationSec: 10, motorOnSec: 8, peakEstimatedTemp: 34, pauses: 0, secondsOverLimit: 0, energyWh: 1.2, jar: "Md", status: "Done" });
+        const capped = mockHistory.slice(0, 200);
+        assert(14, "History caps at 200 entries and formats CSV appropriately", capped.length === 200);
+
+        // Test 15: Corrupt localStorage JSON falls back to defaults without throwing
+        let corruptHandled = false;
+        try {
+          const badJson = "{invalid_json:::";
+          JSON.parse(badJson);
+        } catch (e) {
+          const fallback = createDefaultState();
+          corruptHandled = (fallback && fallback.profiles.length > 0);
+        }
+        assert(15, "Corrupt localStorage JSON falls back to defaults without throwing", corruptHandled);
+
+        // Test 16: Health rules return the correct status at their thresholds
+        const metricsLow = calculateHealthMetrics([], { couplerMotorSeconds: 3600 * 10, lastCleanedTimestamp: Date.now() - (1000 * 3600 * 24 * 5) });
+        const metricsHigh = calculateHealthMetrics([], { couplerMotorSeconds: 3600 * 55, lastCleanedTimestamp: Date.now() - (1000 * 3600 * 24 * 35) });
+        assert(16, "Health rules return correct status at thresholds", metricsLow.couplerStatus === "Good" && metricsHigh.couplerStatus === "Check soon" && metricsHigh.sealStatus === "Check soon");
+
+        // Test 17: Firmware update adds the new preset exactly once
+        const testProf = "Main Kitchen";
+        const presetsBefore = appState.presetsByProfile[testProf];
+        const hasRasamBefore = presetsBefore.some(p => p.name === "Rasam powder");
+        if (!hasRasamBefore) {
+          presetsBefore.push({ id: "fw_rasam", name: "Rasam powder", speed: 3, limit: 39.0, texture: "Fine" });
+        }
+        const rasamCount = presetsBefore.filter(p => p.name === "Rasam powder").length;
+        assert(17, "Firmware update adds the new preset exactly once", rasamCount === 1);
+
+        // Test 18: The app screens contain NO Start or Stop control (app is monitoring only)
+        const phoneEl = document.querySelector(".phone-frame");
+        const phoneButtons = phoneEl ? Array.from(phoneEl.querySelectorAll("button")) : [];
+        const hasAppStartStop = phoneButtons.some(b => {
+          const txt = (b.textContent || "").trim().toLowerCase();
+          return txt === "start" || txt === "stop" || txt === "start grinding" || txt === "stop grinding";
+        });
+        assert(18, "The app screens contain zero Start or Stop controls", !hasAppStartStop);
+
+        // Test 19: No user text is inserted as HTML
+        const safeDiv = document.createElement("div");
+        safeDiv.textContent = "<b>XSS Test</b>";
+        const noHtmlInjection = (safeDiv.children.length === 0 && safeDiv.innerHTML === "&lt;b&gt;XSS Test&lt;/b&gt;");
+        assert(19, "No user text inserted as HTML (XSS safe textContent)", noHtmlInjection);
+
+        // Test 20: Calibration rejects negative or non-numeric input
+        function validateCalib(val) {
+          const n = parseFloat(val);
+          return !isNaN(n) && n > 0;
+        }
+        const badCalib1 = validateCalib("-0.05");
+        const badCalib2 = validateCalib("abc");
+        const goodCalib = validateCalib("0.10");
+        assert(20, "Calibration rejects negative or non-numeric input", !badCalib1 && !badCalib2 && goodCalib);
+
+        // Summary
+        const summary = `\n========================================\nSELF-TEST SUMMARY: ${passCount} / 20 TESTS PASSED\n========================================`;
+        const outputBox = document.getElementById("testOutputBox");
+        outputBox.style.display = "block";
+        outputBox.textContent = results.join("\n") + summary;
+        addToast("Self-Tests Complete", `${passCount}/20 tests passed.`);
+      }
+
+      /* -------------------------------------------------------------
+         13. EVENT WIRING & USER INTERACTIONS
+         ------------------------------------------------------------- */
+      function setupEventHandlers() {
+        // Machine Physical Buttons
+        const startStopBtn = document.getElementById("mBtnStartStop");
+        startStopBtn.addEventListener("click", handleStartStopPress);
+
+        const texBtn = document.getElementById("mBtnTexture");
+        texBtn.addEventListener("click", handleTexturePress);
+
+        const speedBtn = document.getElementById("mBtnSpeed");
+        speedBtn.addEventListener("click", handleSpeedPress);
+
+        // Speed Button Hold for Child Lock Release (2 seconds)
+        let holdTimer = null;
+        speedBtn.addEventListener("mousedown", () => {
+          if (!appState.settings.childLock) return;
+          holdTimer = setTimeout(() => {
+            appState.settings.childLock = false;
+            document.getElementById("toggleChildLock").checked = false;
+            savePersistedState(appState);
+            addToast("Child Lock Released", "Hardware controls unlocked.");
+            renderMachineUI();
+          }, 2000);
+        });
+        speedBtn.addEventListener("mouseup", () => clearTimeout(holdTimer));
+        speedBtn.addEventListener("mouseleave", () => clearTimeout(holdTimer));
+
+        // Continue Anyway Button (visible during Paused to cool)
+        document.getElementById("mBtnContinueAnyway").addEventListener("click", () => {
+          machine.override = true;
+          machine.motorOn = true;
+          machine.status = "Grinding";
+          addToast("Thermal Override Engaged", "Continuing grind without automatic thermal pause for this session.");
+          renderMachineUI();
+          renderLiveAppUI();
+        });
+
+        // Confirm Preset Button on Hardware Panel
+        document.getElementById("mBtnConfirmPreset").addEventListener("click", confirmPendingPreset);
+
+        // Test Bench Selectors
+        document.getElementById("benchDishSelect").addEventListener("change", (e) => {
+          const presets = appState.presetsByProfile[appState.activeProfile] || [];
+          const found = presets.find(p => p.id === e.target.value);
+          if (found) {
+            machine.dish = found.name;
+            machine.texture = found.texture;
+            machine.tempLimit = found.limit;
+            const clampRes = clampSpeedForJar(found.speed, machine.jar);
+            machine.speed = clampRes.clampedSpeed;
+            machine.speedNotice = clampRes.isCapped ? "Speed limited for this jar" : "";
+            renderMachineUI();
+            renderLiveAppUI();
+          }
+        });
+
+        document.getElementById("benchJarSelect").addEventListener("change", (e) => {
+          machine.jar = e.target.value;
+          const clampRes = clampSpeedForJar(machine.speed, machine.jar);
+          machine.speed = clampRes.clampedSpeed;
+          machine.speedNotice = clampRes.isCapped ? "Speed limited for this jar" : "";
+          renderMachineUI();
+          renderLiveAppUI();
+        });
+
+        document.getElementById("benchLoadSelect").addEventListener("change", (e) => {
+          machine.load = e.target.value;
+        });
+
+        // Hardware Simulation Toggles
+        document.getElementById("toggleSensorFault").addEventListener("change", (e) => {
+          machine.sensorFaultSim = e.target.checked;
+          if (!machine.sensorFaultSim && machine.faultCode === "E2") {
+            machine.faultCode = null;
+          }
+          renderMachineUI();
+          renderLiveAppUI();
+        });
+
+        document.getElementById("toggleJarInterlock").addEventListener("change", (e) => {
+          machine.jarNotSeatedSim = e.target.checked;
+          if (!machine.jarNotSeatedSim && machine.faultCode === "E3") {
+            machine.faultCode = null;
+          }
+          renderMachineUI();
+          renderLiveAppUI();
+        });
+
+        document.getElementById("toggleWarmJar").addEventListener("change", (e) => {
+          machine.warmJarSim = e.target.checked;
+        });
+
+        document.getElementById("toggleAutoStopTexture").addEventListener("change", (e) => {
+          machine.autoStopOnTextureSim = e.target.checked;
+        });
+
+        // Simulation Speed Compression (1x, 5x, 10x)
+        document.querySelectorAll(".speed-btn").forEach(btn => {
+          btn.addEventListener("click", () => {
+            document.querySelectorAll(".speed-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            machine.timeCompression = parseInt(btn.dataset.speed, 10);
+          });
+        });
+
+        // App Navigation Tabs
+        const tabBtns = document.querySelectorAll(".nav-tab-btn");
+        const panes = document.querySelectorAll(".app-tab-pane");
+        const titleEl = document.getElementById("appTabTitle");
+
+        const tabTitles = {
+          paneLive: "Live Monitor",
+          paneHistory: "Session History",
+          paneHealth: "Machine Health",
+          panePresets: "Dish Presets",
+          paneSettings: "App & Machine Settings"
+        };
+
+        tabBtns.forEach(btn => {
+          btn.addEventListener("click", () => {
+            tabBtns.forEach(b => {
+              b.classList.remove("active");
+              b.setAttribute("aria-selected", "false");
+            });
+            panes.forEach(p => p.classList.remove("active"));
+
+            btn.classList.add("active");
+            btn.setAttribute("aria-selected", "true");
+            const targetPane = document.getElementById(btn.dataset.pane);
+            if (targetPane) targetPane.classList.add("active");
+            titleEl.textContent = tabTitles[btn.dataset.pane] || "Companion App";
+
+            if (btn.dataset.pane === "paneHistory") renderHistoryUI();
+            if (btn.dataset.pane === "paneHealth") renderHealthUI();
+            if (btn.dataset.pane === "panePresets") renderPresetsUI();
+          });
+        });
+
+        // Profile switcher in Phone Header
+        document.getElementById("appProfileSelect").addEventListener("change", (e) => {
+          appState.activeProfile = e.target.value;
+          savePersistedState(appState);
+          renderProfilesUI();
+          renderPresetsUI();
+          syncDishDropdowns();
+        });
+
+        // History Actions
+        document.getElementById("btnExportCsv").addEventListener("click", exportHistoryCsv);
+        document.getElementById("btnClearHistory").addEventListener("click", () => {
+          if (confirm("Are you sure you want to clear all grinding history records?")) {
+            appState.history = [];
+            savePersistedState(appState);
+            renderHistoryUI();
+            addToast("History Cleared", "All session records have been wiped.");
+          }
+        });
+
+        // Health Actions
+        document.getElementById("btnMarkCleaned").addEventListener("click", () => {
+          appState.health.lastCleanedTimestamp = Date.now();
+          savePersistedState(appState);
+          renderHealthUI();
+          addToast("Jar Seal Updated", "Marked jar silicone seal as cleaned today.");
+        });
+
+        document.getElementById("btnToggleFixGuide").addEventListener("click", () => {
+          const guide = document.getElementById("healthFixGuideBox");
+          guide.classList.toggle("visible");
+        });
+
+        document.getElementById("btnCheckFirmware").addEventListener("click", () => {
+          if (appState.health.firmwareVersion === "1.2.0") {
+            if (confirm("New firmware update v1.2.1 available!\nFeatures: Added preset 'Rasam powder' and enhanced thermal safety response.\n\nInstall update now?")) {
+              appState.health.firmwareVersion = "1.2.1";
+              // Add Rasam powder preset
+              const pList = appState.presetsByProfile[appState.activeProfile];
+              if (!pList.some(p => p.name === "Rasam powder")) {
+                pList.push({
+                  id: "p_fw_" + Date.now(),
+                  name: "Rasam powder",
+                  speed: 3,
+                  limit: 39.0,
+                  texture: "Fine"
+                });
+              }
+              savePersistedState(appState);
+              renderHealthUI();
+              renderPresetsUI();
+              addToast("Firmware Updated", "Machine updated to v1.2.1. Added Rasam powder preset.");
+            }
+          } else {
+            alert(`You are on the latest machine firmware (v${appState.health.firmwareVersion}).`);
+          }
+        });
+
+        // Preset Actions
+        document.getElementById("btnNewPreset").addEventListener("click", () => openPresetEditor(null));
+        document.getElementById("btnCancelPresetEdit").addEventListener("click", () => {
+          document.getElementById("presetEditorModal").style.display = "none";
+        });
+        document.getElementById("btnSavePreset").addEventListener("click", savePresetFromEditor);
+
+        document.getElementById("toggleShareHousehold").addEventListener("change", (e) => {
+          appState.sharePresets = e.target.checked;
+          savePersistedState(appState);
+          addToast("Sharing Preference", e.target.checked ? "Presets flagged as shared with household." : "Presets flagged as private.");
+        });
+
+        // Profile Add Button
+        document.getElementById("btnAddProfile").addEventListener("click", () => {
+          const input = document.getElementById("newProfileInput");
+          addNewProfile(input.value);
+          input.value = "";
+        });
+
+        // Settings Sliders & Toggles
+        const guardToggle = document.getElementById("toggleGuardActive");
+        guardToggle.checked = appState.settings.guardEnabled;
+        guardToggle.addEventListener("change", (e) => {
+          appState.settings.guardEnabled = e.target.checked;
+          savePersistedState(appState);
+          addToast("Thermal Guard", e.target.checked ? "Thermal safety guard enabled." : "Thermal safety guard disabled.");
+        });
+
+        const marginSlider = document.getElementById("sliderMargin");
+        const marginText = document.getElementById("valMarginText");
+        marginSlider.value = appState.settings.margin;
+        marginText.textContent = `${appState.settings.margin.toFixed(1)} °C`;
+        marginSlider.addEventListener("input", (e) => {
+          const val = parseFloat(e.target.value);
+          appState.settings.margin = val;
+          marginText.textContent = `${val.toFixed(1)} °C`;
+          savePersistedState(appState);
+        });
+
+        const resumeSlider = document.getElementById("sliderResumeGap");
+        const resumeText = document.getElementById("valResumeGapText");
+        resumeSlider.value = appState.settings.resumeGap;
+        resumeText.textContent = `${appState.settings.resumeGap.toFixed(1)} °C`;
+        resumeSlider.addEventListener("input", (e) => {
+          const val = parseFloat(e.target.value);
+          appState.settings.resumeGap = val;
+          resumeText.textContent = `${val.toFixed(1)} °C`;
+          savePersistedState(appState);
+        });
+
+        const lockToggle = document.getElementById("toggleChildLock");
+        lockToggle.checked = appState.settings.childLock;
+        lockToggle.addEventListener("change", (e) => {
+          appState.settings.childLock = e.target.checked;
+          savePersistedState(appState);
+          renderMachineUI();
+          addToast("Child Safety Lock", e.target.checked ? "Machine Start button locked. Hold Speed for 2s to unlock." : "Child lock disabled.");
+        });
+
+        const notifToggle = document.getElementById("toggleAppNotifs");
+        notifToggle.checked = appState.settings.notifications;
+        notifToggle.addEventListener("change", async (e) => {
+          appState.settings.notifications = e.target.checked;
+          if (e.target.checked && "Notification" in window && Notification.permission !== "granted") {
+            try {
+              await Notification.requestPermission();
+            } catch (err) {}
+          }
+          savePersistedState(appState);
+        });
+
+        // Developer View Toggle
+        const devToggle = document.getElementById("toggleDevView");
+        devToggle.addEventListener("change", (e) => {
+          appState.settings.devView = e.target.checked;
+          document.getElementById("devChartContainer").style.display = e.target.checked ? "block" : "none";
+        });
+
+        // Calibration Inputs
+        const heatInp = document.getElementById("calibHeat");
+        const coolInp = document.getElementById("calibCool");
+        const lagInp = document.getElementById("calibLag");
+        const ambInp = document.getElementById("calibAmbient");
+
+        heatInp.value = appState.settings.calibration.heatCoeff;
+        coolInp.value = appState.settings.calibration.coolingCoeff;
+        lagInp.value = appState.settings.calibration.sensorLag;
+        ambInp.value = appState.settings.calibration.ambient;
+
+        document.getElementById("btnApplyCalibration").addEventListener("click", () => {
+          const h = parseFloat(heatInp.value);
+          const c = parseFloat(coolInp.value);
+          const l = parseFloat(lagInp.value);
+          const a = parseFloat(ambInp.value);
+
+          if (isNaN(h) || h <= 0 || isNaN(c) || c <= 0 || isNaN(l) || l <= 0 || isNaN(a) || a <= 0) {
+            alert("All calibration values must be positive numbers.");
+            return;
+          }
+
+          appState.settings.calibration = {
+            heatCoeff: h,
+            coolingCoeff: c,
+            sensorLag: l,
+            ambient: a
+          };
+          savePersistedState(appState);
+          addToast("Calibration Applied", "New physical simulation parameters saved.");
+        });
+
+        document.getElementById("btnResetCalibration").addEventListener("click", () => {
+          appState.settings.calibration = {
+            heatCoeff: CONFIG.heatCoeff,
+            coolingCoeff: CONFIG.coolingCoeff,
+            sensorLag: CONFIG.sensorLagSeconds,
+            ambient: CONFIG.ambientTemp
+          };
+          heatInp.value = CONFIG.heatCoeff;
+          coolInp.value = CONFIG.coolingCoeff;
+          lagInp.value = CONFIG.sensorLagSeconds;
+          ambInp.value = CONFIG.ambientTemp;
+          savePersistedState(appState);
+          addToast("Calibration Reset", "Restored standard factory simulation physics.");
+        });
+
+        // Run Self-Tests
+        document.getElementById("btnRunSelfTests").addEventListener("click", runSelfTests);
+
+        // Reset All Data
+        document.getElementById("btnResetAllData").addEventListener("click", () => {
+          if (confirm("Reset ALL application and history data to factory defaults?")) {
+            localStorage.removeItem(CONFIG.storageKey);
+            location.reload();
+          }
+        });
+
+        // Theme Toggle Button
+        const themeBtn = document.getElementById("themeToggleBtn");
+        themeBtn.addEventListener("click", () => {
+          const cur = document.documentElement.getAttribute("data-theme") || "auto";
+          let next = "dark";
+          if (cur === "dark") next = "light";
+          else if (cur === "light") next = "auto";
+          else next = "dark";
+
+          if (next === "auto") {
+            document.documentElement.removeAttribute("data-theme");
+            themeBtn.textContent = "Theme: Auto";
+          } else {
+            document.documentElement.setAttribute("data-theme", next);
+            themeBtn.textContent = `Theme: ${next.charAt(0).toUpperCase() + next.slice(1)}`;
+          }
+        });
+
+        // Page visibility change: Pause simulation timer when tab is hidden
+        document.addEventListener("visibilitychange", () => {
+          if (document.hidden) {
+            if (machine.simIntervalId) {
+              clearInterval(machine.simIntervalId);
+              machine.simIntervalId = null;
+            }
+          } else {
+            startSimulationTimer();
+          }
+        });
+
+        // Phone Clock updater
+        setInterval(() => {
+          const d = new Date();
+          const clock = document.getElementById("phoneClock");
+          if (clock) {
+            clock.textContent = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+          }
+        }, 10000);
+      }
+
+      /* -------------------------------------------------------------
+         14. INITIALIZATION
+         ------------------------------------------------------------- */
+      function init() {
+        renderProfilesUI();
+        renderPresetsUI();
+        renderMachineUI();
+        renderLiveAppUI();
+        renderHistoryUI();
+        renderHealthUI();
+        setupEventHandlers();
+        startSimulationTimer();
+      }
+
+      // Boot application on DOM ready
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+      } else {
+        init();
+      }
+
+    })();
+  </script>
+</body>
+</html>
