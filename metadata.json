@@ -1,0 +1,6 @@
+{
+  "name": "Atomberg Smart Grinder Companion",
+  "description": "Concept prototype of an Atomberg-style smart grinder with machine display, physical controls, thermal guard, and companion monitoring app.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
