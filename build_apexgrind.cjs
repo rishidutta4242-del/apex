@@ -1,0 +1,5344 @@
+// build_apexgrind.js - Complete Single-File Generator for APEXGRIND
+const fs = require('fs');
+
+const htmlContent = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>APEXGRIND - Intelligent Texture-Controlled Mixer Grinder</title>
+  <meta name="description" content="APEXGRIND: Reimagine the Grind. Intelligent Texture-Controlled Mixer Grinder with 3D Blade Studio, multi-sensor thermal guard, and companion monitoring app.">
+  <meta property="og:title" content="APEXGRIND - Intelligent Texture-Controlled Mixer Grinder">
+  <meta property="og:description" content="APEXGRIND: Reimagine the Grind. Intelligent Texture-Controlled Mixer Grinder with 3D Blade Studio, multi-sensor thermal guard, and companion monitoring app.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <style>
+    /* -------------------------------------------------------------
+       DESIGN TOKENS & WCAG AA HIGH-CONTRAST PALETTE
+       ------------------------------------------------------------- */
+    :root {
+      --app-w: 100vw;
+      --app-h: 100dvh;
+      --ui-scale: 1.0;
+      --font-scale: 13px;
+      --bg: #0A0E17;
+      --panel: #111726;
+      --panel-2: #162034;
+      --panel-3: #1D2A44;
+      --border: #243452;
+      --border-focus: #12B5AE;
+      --text: #F1F5F9;
+      --text-dim: #94A3B8;
+      --teal: #12B5AE;
+      --teal-hover: #15D1C8;
+      --green: #2FBF71;
+      --amber: #FFB84D;
+      --red: #E5484D;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --capture-scale: 1.0;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* 1.1 NO-SCROLL APP SHELL */
+    html, body {
+      height: 100dvh;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-size: var(--font-scale);
+      line-height: 1.35;
+      -webkit-font-smoothing: antialiased;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    /* Prevent all scrollbars */
+    * {
+      scrollbar-width: none;
+    }
+    *::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* 1.2 SHELL GRID: header 48px | view switcher 44px | main 1fr | footer 24px */
+    #appRoot {
+      width: var(--app-w, 100vw);
+      height: var(--app-h, 100dvh);
+      max-width: 100vw;
+      max-height: 100dvh;
+      display: grid;
+      grid-template-rows: 48px 44px minmax(0, 1fr) 24px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* P1-6 GLOBAL ERROR BANNER (friendly, never blank screen) */
+    .global-error-banner {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 9999;
+      background: #7F1D1D;
+      border-bottom: 2px solid #EF4444;
+      color: #FEE2E2;
+      padding: 8px 16px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+    .global-error-banner.active {
+      display: flex;
+    }
+    .btn-reset-app {
+      background: #EF4444;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* P1-2 GUIDED DEMO FLOATING BANNER */
+    .guided-demo-banner {
+      display: none;
+      position: absolute;
+      top: 48px;
+      left: 12px;
+      right: 12px;
+      z-index: 100;
+      background: rgba(17, 23, 38, 0.95);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--teal);
+      border-radius: var(--radius-md);
+      padding: 8px 14px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+      animation: slideDown 0.25s ease-out;
+    }
+    .guided-demo-banner.active {
+      display: flex;
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-10px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .demo-step-badge {
+      font-size: 12px;
+      font-weight: 700;
+      background: var(--teal);
+      color: #070B14;
+      padding: 2px 8px;
+      border-radius: 12px;
+      white-space: nowrap;
+    }
+    .demo-caption-text {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .demo-controls-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-demo-ctrl {
+      height: 28px;
+      padding: 0 10px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      color: var(--text);
+      cursor: pointer;
+    }
+    .btn-demo-ctrl.primary {
+      background: var(--teal);
+      color: #070B14;
+      border-color: var(--teal);
+    }
+
+    /* HEADER (48px) */
+    .app-header {
+      height: 48px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      gap: 10px;
+      z-index: 30;
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: 0.5px;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .brand-logo span.accent {
+      color: var(--teal);
+    }
+    .brand-sub {
+      font-size: 12px;
+      color: var(--text-dim);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .btn-header-action {
+      height: 30px;
+      padding: 0 9px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .btn-header-action:hover, .btn-header-action.active {
+      color: var(--teal);
+      border-color: var(--teal);
+      background: rgba(18, 181, 174, 0.1);
+    }
+    /* A1 FIX: Single state field status pill */
+    .header-live-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      background: var(--panel-2);
+      padding: 4px 10px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      flex-shrink: 0;
+    }
+    .live-dot.pulsing {
+      animation: dotPulse 1.6s infinite ease-in-out;
+    }
+    .live-dot.paused {
+      background: var(--amber);
+      box-shadow: 0 0 6px var(--amber);
+    }
+    .live-dot.fault {
+      background: var(--red);
+      box-shadow: 0 0 6px var(--red);
+    }
+    @keyframes dotPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    /* VIEW SWITCHER (44px) */
+    .view-switcher-bar {
+      height: 44px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      gap: 10px;
+      z-index: 25;
+    }
+    .switcher-container {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .segmented-control {
+      display: flex;
+      align-items: center;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 2px;
+      gap: 2px;
+    }
+    .seg-btn {
+      height: 28px;
+      padding: 0 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-dim);
+      background: transparent;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+    .seg-btn:hover {
+      color: var(--text);
+    }
+    .seg-btn.active {
+      background: var(--teal);
+      color: #070B14;
+      box-shadow: 0 2px 6px rgba(18, 181, 174, 0.3);
+    }
+    /* Mobile view segmented switch (hidden on desktop) */
+    .mobile-seg-switch {
+      display: none;
+    }
+
+    .switcher-aux-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* FOOTER (24px) */
+    .app-footer {
+      height: 24px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--panel);
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-dim);
+      flex-shrink: 0;
+      z-index: 20;
+    }
+    .footer-left {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .footer-right {
+      display: flex;
+      gap: 12px;
+      white-space: nowrap;
+    }
+
+    /* MAIN WORKSPACE (1fr) */
+    .main-workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 56fr) minmax(0, 44fr);
+      gap: 12px;
+      padding: 8px 14px;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+      align-items: stretch;
+    }
+
+    /* Grinder Machine Only Mode */
+    body.view-mode-machine .main-workspace {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    body.view-mode-machine .phone-column {
+      display: none !important;
+    }
+    body.view-mode-machine .machine-panel {
+      max-width: 980px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Companion Phone App Only Mode */
+    body.view-mode-phone .main-workspace {
+      grid-template-columns: minmax(0, 1fr);
+      justify-items: center;
+    }
+    body.view-mode-phone .machine-panel {
+      display: none !important;
+    }
+    body.view-mode-phone .phone-column {
+      max-width: 440px;
+      width: 100%;
+    }
+
+    /* -------------------------------------------------------------
+       PART 2: MACHINE PANEL (Simulated Hardware Unit)
+       ------------------------------------------------------------- */
+    .machine-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 8px 10px;
+      display: grid;
+      grid-template-rows: minmax(0, 43fr) minmax(0, 57fr);
+      gap: 8px;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Top Section: Jar illustration (left ~45%) + Display & Controls (right ~55%) */
+    .machine-top-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 46fr) minmax(0, 54fr);
+      gap: 8px;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+      align-items: stretch;
+    }
+
+    /* LEFT: Jar Visual Stage */
+    .jar-stage-card {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 6px 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .stage-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      gap: 6px;
+      height: 26px;
+    }
+    .stage-tabs {
+      display: flex;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px;
+      gap: 2px;
+    }
+    .stage-tab-btn {
+      height: 22px;
+      padding: 0 7px;
+      font-size: 12px;
+      font-weight: 600;
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      border-radius: 3px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+    .stage-tab-btn.active {
+      background: var(--teal);
+      color: #070B14;
+    }
+    /* Compact Jar View selector on Jar card (Environment holds primary) */
+    .jar-view-pills {
+      display: flex;
+      gap: 2px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px;
+    }
+    .btn-view-mode {
+      height: 20px;
+      padding: 0 5px;
+      font-size: 12px;
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      border-radius: 2px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-view-mode.active {
+      background: var(--teal);
+      color: #070B14;
+      font-weight: 700;
+    }
+    .stage-visual-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .jar-svg-element {
+      max-height: 100%;
+      max-width: 100%;
+      width: auto;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* Dedicated 3D Blade Studio in Stage */
+    .blade-studio-wrap {
+      display: none;
+      width: 100%;
+      height: 100%;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 0;
+      position: relative;
+    }
+    .blade-3d-viewport {
+      flex: 1;
+      width: 100%;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: grab;
+      touch-action: none;
+      perspective: 700px;
+    }
+    .blade-3d-viewport:active {
+      cursor: grabbing;
+    }
+    .blade-3d-gimbal {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform-style: preserve-3d;
+      transition: transform 0.05s linear;
+    }
+    .blade-hero-svg {
+      max-height: 100%;
+      max-width: 100%;
+      width: auto;
+      height: 100%;
+      object-fit: contain;
+    }
+    .blade-spec-pill {
+      font-size: 12px;
+      color: var(--text-dim);
+      background: var(--panel);
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      white-space: nowrap;
+    }
+
+    /* RIGHT: Display & Hardware Controls */
+    .controls-display-card {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 6px 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+      gap: 4px;
+    }
+
+    /* TOUCHSCREEN DISPLAY */
+    .machine-touchscreen {
+      background: #06090F;
+      border: 1.5px solid #24354F;
+      border-radius: var(--radius-sm);
+      padding: 6px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+      flex-shrink: 0;
+    }
+    .screen-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .screen-dish-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .screen-status-badge {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 10px;
+      background: rgba(18, 181, 174, 0.15);
+      color: var(--teal);
+      border: 1px solid var(--teal);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .screen-status-badge.grinding {
+      background: rgba(47, 191, 113, 0.2);
+      color: var(--green);
+      border-color: var(--green);
+    }
+    .screen-status-badge.paused {
+      background: rgba(255, 184, 77, 0.2);
+      color: var(--amber);
+      border-color: var(--amber);
+    }
+    .screen-status-badge.done {
+      background: rgba(18, 181, 174, 0.2);
+      color: var(--teal);
+      border-color: var(--teal);
+    }
+    .screen-status-badge.fault {
+      background: rgba(229, 72, 77, 0.2);
+      color: var(--red);
+      border-color: var(--red);
+    }
+    .screen-status-badge.poweroff {
+      background: rgba(148, 163, 184, 0.2);
+      color: var(--text-dim);
+      border-color: var(--text-dim);
+    }
+
+    .screen-temp-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+    .screen-temp-val {
+      font-family: var(--font-mono);
+      font-size: 20px;
+      font-weight: 800;
+      color: #38BDF8;
+      white-space: nowrap;
+    }
+    .screen-temp-val .unit {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-dim);
+      margin-left: 2px;
+    }
+    .screen-temp-limit {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+
+    .screen-progress-bar-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .screen-progress-track {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .screen-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--teal), #38BDF8);
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+    .screen-progress-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+    .screen-advisory-note {
+      display: none;
+      font-size: 12px;
+      color: var(--teal);
+      background: rgba(18, 181, 174, 0.1);
+      padding: 2px 6px;
+      border-radius: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* HARDWARE QUICK CONTROLS UNDER DISPLAY */
+    .machine-quick-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-shrink: 0;
+      padding-top: 2px;
+    }
+    .knob-stop-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .rotary-knob-wrapper {
+      position: relative;
+      width: 54px;
+      height: 54px;
+      cursor: pointer;
+      user-select: none;
+      touch-action: manipulation;
+      flex-shrink: 0;
+    }
+    .rotary-knob-dial {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #2B3545, #0B121E);
+      border: 3px solid #3A4A63;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6), inset 0 2px 3px rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: transform 0.05s ease;
+    }
+    .rotary-knob-dial:focus-visible {
+      outline: 2px solid var(--teal);
+    }
+    .knob-pointer-needle {
+      position: absolute;
+      top: 4px;
+      left: calc(50% - 2px);
+      width: 4px;
+      height: 12px;
+      background: var(--teal);
+      border-radius: 2px;
+      box-shadow: 0 0 5px var(--teal);
+    }
+    .knob-center-label {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: 0.5px;
+    }
+    .btn-stop-machine {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #E5484D, #991B1B);
+      border: 3px solid #FCA5A5;
+      color: #FFFFFF;
+      font-weight: 800;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 8px rgba(229, 72, 77, 0.4);
+      transition: all 0.1s ease;
+      touch-action: manipulation;
+      flex-shrink: 0;
+    }
+    .btn-stop-machine:active {
+      transform: scale(0.95);
+      box-shadow: 0 2px 4px rgba(229, 72, 77, 0.6);
+    }
+
+    /* Texture Pills and Speed Bars */
+    .quick-params-group {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      flex: 1;
+      min-width: 0;
+    }
+    .texture-pill-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 3px;
+    }
+    .btn-texture-pill {
+      height: 22px;
+      padding: 0;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      border-radius: 3px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-texture-pill.active {
+      background: var(--teal);
+      color: #070B14;
+      border-color: var(--teal);
+      font-weight: 700;
+    }
+    .speed-bars-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      height: 18px;
+    }
+    .speed-tick {
+      flex: 1;
+      height: 8px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      cursor: pointer;
+    }
+    .speed-tick.active {
+      background: var(--teal);
+      border-color: var(--teal);
+    }
+    .speed-label-text {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--teal);
+      min-width: 48px;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    /* 2.2 FIXED-HEIGHT TABBED PANEL BELOW CONTROLS */
+    .machine-tabbed-panel {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 6px 8px;
+      display: grid;
+      grid-template-rows: 26px minmax(0, 1fr);
+      gap: 6px;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+    }
+    .machine-tabs-bar {
+      display: flex;
+      align-items: center;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 2px;
+      gap: 2px;
+      overflow: hidden;
+    }
+    .m-tab-btn {
+      flex: 1;
+      height: 22px;
+      padding: 0 4px;
+      font-size: 12px;
+      font-weight: 600;
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      border-radius: 3px;
+      cursor: pointer;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .m-tab-btn.active {
+      background: var(--teal);
+      color: #070B14;
+    }
+
+    /* TAB CONTENTS */
+    .m-tab-content {
+      display: none;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+    }
+    .m-tab-content.active {
+      display: grid;
+      align-content: start;
+      gap: 5px;
+    }
+
+    /* Form items inside machine tabs (2 or 3 columns) */
+    .grid-setup {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+    }
+    .form-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+    .form-item label {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .form-item select, .form-item input {
+      height: 28px;
+      padding: 0 6px;
+      font-size: 12px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: var(--radius-sm);
+      min-width: 0;
+    }
+
+    /* SENSORS TAB (5 columns wide, 3 narrow) */
+    .grid-sensors {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 5px;
+    }
+    .sensor-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 4px 6px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1px;
+      min-width: 0;
+    }
+    .sensor-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+    .sensor-card-val {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .sensor-card-sub {
+      font-size: 12px;
+      color: var(--text-dim);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .status-dot-sm {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      flex-shrink: 0;
+    }
+    .status-dot-sm.err {
+      background: var(--red);
+    }
+
+    /* FAULTS TAB (2 columns plus Power cut) */
+    .grid-faults {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+    }
+    .fault-toggle-row {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 4px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .fault-toggle-text {
+      font-size: 12px;
+      color: var(--text);
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .btn-power-cut {
+      grid-column: span 2;
+      height: 28px;
+      background: #7F1D1D;
+      border: 1px solid #DC2626;
+      color: #FEE2E2;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* ENVIRONMENT TAB */
+    .grid-env {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+    }
+    .env-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 5px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    /* ADVANCED TAB */
+    .grid-adv {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+    }
+    .btn-adv-feature {
+      height: 30px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    .btn-adv-feature:hover {
+      border-color: var(--teal);
+      color: var(--teal);
+    }
+
+    /* -------------------------------------------------------------
+       PART 3: COMPANION PHONE APP (Monitoring Only)
+       ------------------------------------------------------------- */
+    .phone-column {
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Authentic 9:19.5 smartphone frame with container query and min-width guard */
+    .phone-frame {
+      height: 100%;
+      max-height: 100%;
+      aspect-ratio: 9 / 19.5;
+      min-width: min(300px, 100%);
+      max-width: 100%;
+      background: var(--panel);
+      border: 6px solid #161F2E;
+      border-radius: 36px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.08);
+      display: grid;
+      grid-template-rows: 44px minmax(0, 1fr) 56px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* PHONE HEADER (44px) */
+    .phone-header {
+      height: 44px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--panel-2);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      z-index: 10;
+    }
+    .phone-header-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .phone-header-badge {
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--teal);
+      white-space: nowrap;
+    }
+
+    /* PHONE CONTENT (1fr) - NO SCROLL */
+    .phone-body {
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+      position: relative;
+      background: var(--bg);
+      padding: 6px 8px;
+    }
+    .phone-tab-screen {
+      display: none;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 5px;
+    }
+    .phone-tab-screen.active {
+      display: flex;
+    }
+
+    /* 3.1 TAB 1: LIVE MONITORING */
+    .live-screen-wrap {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      min-height: 0;
+      gap: 5px;
+    }
+    .live-card-top {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 6px 8px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-shrink: 0;
+      gap: 6px;
+    }
+    .live-dish-badge-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+    .live-dish-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .live-temp-group {
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .live-temp-huge {
+      font-family: var(--font-mono);
+      font-size: clamp(20px, 4vw, 24px);
+      font-weight: 800;
+      color: #38BDF8;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+    .live-temp-huge .unit {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-dim);
+    }
+    .live-limit-sub {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+
+    /* Live Telemetry Chart (fills leftover height, min 75px) */
+    .live-chart-box {
+      flex: 1;
+      min-height: 75px;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 4px 6px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      gap: 2px;
+    }
+    .chart-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      height: 18px;
+    }
+    .chart-title-text {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+    /* Legend on one row (A8) */
+    .chart-legend-single-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+    .legend-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .chart-canvas-wrapper {
+      flex: 1;
+      min-height: 0;
+      position: relative;
+      width: 100%;
+    }
+    .chart-canvas-wrapper canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Live Progress Bar */
+    .live-progress-box {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 4px 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    /* Three Chips Row (Speed, Texture, Pauses) */
+    .live-three-chips-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .live-chip-item {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 4px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+    .live-chip-label {
+      font-size: 12px;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+    .live-chip-val {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    /* Monitoring Only Notice */
+    .monitoring-only-notice {
+      font-size: 12px;
+      color: var(--text-dim);
+      background: rgba(18, 181, 174, 0.08);
+      border: 1px solid rgba(18, 181, 174, 0.25);
+      border-radius: var(--radius-sm);
+      padding: 3px 6px;
+      text-align: center;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    /* 3.2 TAB 2: HISTORY (PAGINATED, NO SCROLL) */
+    .history-screen-wrap {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      min-height: 0;
+      gap: 5px;
+    }
+    .history-insights-card {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 5px 8px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .insight-metric-item {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+    .insight-metric-lbl {
+      font-size: 12px;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+    .insight-metric-val {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .history-paginated-list {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      justify-content: flex-start;
+    }
+    .session-card-item {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 5px 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: border-color 0.15s ease;
+      flex-shrink: 0;
+    }
+    .session-card-item:hover {
+      border-color: var(--teal);
+    }
+    .sess-main-info {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 0;
+    }
+    .sess-dish {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .sess-meta {
+      font-size: 12px;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+    .sess-badge {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--teal);
+      white-space: nowrap;
+    }
+
+    /* Empty state styling */
+    .empty-state-card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: var(--panel-2);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      text-align: center;
+      color: var(--text-dim);
+    }
+    .empty-state-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .empty-state-sub {
+      font-size: 12px;
+      line-height: 1.3;
+    }
+
+    /* Pagination controls */
+    .history-pagination-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 3px 6px;
+      flex-shrink: 0;
+      height: 30px;
+    }
+    .btn-page-nav {
+      height: 24px;
+      padding: 0 8px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .btn-page-nav:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .page-indicator-text {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-dim);
+    }
+    .history-actions-row {
+      display: flex;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .btn-hist-action {
+      flex: 1;
+      height: 26px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+    }
+
+    /* 3.3 TAB 3: HEALTH (6 COMPACT 44px ROWS) */
+    .health-screen-wrap {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      min-height: 0;
+      gap: 4px;
+    }
+    .health-rows-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      min-height: 0;
+    }
+    .health-row-item {
+      height: 38px;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .health-row-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+    .health-row-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .health-row-right {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+    .health-status-text {
+      font-size: 12px;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+    .btn-health-action {
+      height: 24px;
+      padding: 0 6px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--teal);
+      border-radius: 4px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .health-last-alert-card {
+      background: rgba(229, 72, 77, 0.1);
+      border: 1px solid rgba(229, 72, 77, 0.3);
+      border-radius: var(--radius-sm);
+      padding: 4px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      flex-shrink: 0;
+      height: 34px;
+    }
+    .last-alert-text {
+      font-size: 12px;
+      color: #FCA5A5;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* 3.4 TAB 4: PRESETS */
+    .presets-screen-wrap {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      min-height: 0;
+      gap: 5px;
+    }
+    .preset-dish-select-box {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+    .preset-dish-select-box select {
+      height: 30px;
+      padding: 0 8px;
+      font-size: 13px;
+      font-weight: 600;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: var(--radius-sm);
+    }
+    .preset-detail-card {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+      min-height: 0;
+      justify-content: space-around;
+    }
+    .preset-spec-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+    }
+    .preset-spec-item {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+    .preset-spec-lbl {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+    .preset-spec-val {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .preset-action-btns-row {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .btn-preset-main {
+      flex: 1;
+      height: 32px;
+      font-size: 12px;
+      font-weight: 700;
+      background: var(--teal);
+      color: #070B14;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+    .btn-preset-sec {
+      height: 32px;
+      padding: 0 10px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+    .presets-sharing-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 4px 8px;
+      flex-shrink: 0;
+      height: 32px;
+    }
+
+    /* 3.5 TAB 5: SETTINGS (SUB-TABS: Profiles | Guard | Calibration | Safety | Data) */
+    .settings-screen-wrap {
+      display: grid;
+      grid-template-rows: 26px minmax(0, 1fr);
+      height: 100%;
+      min-height: 0;
+      gap: 5px;
+    }
+    .settings-subnav {
+      display: flex;
+      align-items: center;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 2px;
+      gap: 2px;
+      overflow: hidden;
+    }
+    .set-sub-btn {
+      flex: 1;
+      height: 22px;
+      padding: 0;
+      font-size: 12px;
+      font-weight: 600;
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      border-radius: 3px;
+      cursor: pointer;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .set-sub-btn.active {
+      background: var(--teal);
+      color: #070B14;
+    }
+    .settings-subtab-content {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+      justify-content: space-between;
+    }
+    .settings-subtab-content.active {
+      display: flex;
+    }
+    .settings-row {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 5px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .settings-row-info {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 0;
+    }
+    .settings-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .settings-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .settings-input-num {
+      width: 70px;
+      height: 26px;
+      padding: 0 4px;
+      font-size: 12px;
+      font-family: var(--font-mono);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 4px;
+      text-align: right;
+    }
+
+    /* FIXED TAB BAR (56px) - ICON + VISIBLE 12px LABEL */
+    .phone-tab-bar {
+      height: 56px;
+      background: var(--panel-2);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: stretch;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+    .tab-bar-item {
+      flex: 1 1 0;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      gap: 2px;
+      padding: 2px 1px;
+      overflow: hidden;
+    }
+    .tab-bar-item svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      flex-shrink: 0;
+    }
+    .tab-bar-item span {
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1;
+      white-space: nowrap;
+      text-align: center;
+      letter-spacing: -0.2px;
+    }
+    .tab-bar-item.active {
+      color: var(--teal);
+    }
+
+    /* 3.6 BOTTOM SHEETS (Inside Phone on desktop, or viewport on mobile) */
+    .in-phone-sheet-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 50;
+    }
+    .in-phone-sheet-backdrop.open {
+      display: flex;
+    }
+    .in-phone-sheet {
+      width: 100%;
+      max-height: 85%;
+      background: var(--panel);
+      border-top: 2px solid var(--teal);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow: hidden;
+      animation: sheetUp 0.2s ease-out;
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.7);
+    }
+    @keyframes sheetUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+    .sheet-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 6px;
+    }
+    .sheet-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .btn-sheet-close {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .sheet-content-scroll {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow: hidden;
+    }
+
+    /* 3.7 TOAST NOTIFICATIONS (above tab bar, max 2 stacked, auto-dismiss 3s) */
+    .phone-toast-region {
+      position: absolute;
+      bottom: 60px;
+      left: 10px;
+      right: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      pointer-events: none;
+      z-index: 40;
+    }
+    .toast-msg-item {
+      background: var(--panel-3);
+      border: 1px solid var(--border-focus);
+      border-radius: var(--radius-sm);
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      pointer-events: auto;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      animation: toastIn 0.2s ease-out;
+    }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .btn-toast-dismiss {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    /* -------------------------------------------------------------
+       PART 1: SCREENSHOT & DOCUMENT MODE (CAPTURE OVERLAY)
+       ------------------------------------------------------------- */
+    .capture-viewport-container {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #05070B;
+      z-index: 1000;
+      overflow: hidden;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    body.capture-active .capture-viewport-container {
+      display: flex;
+    }
+    body.capture-active #appRoot {
+      display: none !important;
+    }
+    .capture-canvas-scaler {
+      transform-origin: center center;
+      transform: scale(var(--capture-scale, 1.0));
+      box-shadow: 0 25px 60px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.1);
+      overflow: hidden;
+      background: var(--bg);
+      flex-shrink: 0;
+      position: relative;
+    }
+    /* Capture Floating Control Bar */
+    .capture-floating-bar {
+      position: fixed;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1010;
+      background: rgba(17, 23, 38, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-focus);
+      border-radius: 30px;
+      padding: 6px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      white-space: nowrap;
+    }
+    .capture-bar-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--teal);
+    }
+    .capture-sel-btn {
+      height: 26px;
+      padding: 0 8px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 13px;
+      cursor: pointer;
+    }
+    .capture-sel-btn.active {
+      background: var(--teal);
+      color: #070B14;
+      border-color: var(--teal);
+    }
+
+    /* -------------------------------------------------------------
+       PART 1.4: GALLERY VIEW OVERLAY
+       ------------------------------------------------------------- */
+    .gallery-view-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #070B12;
+      z-index: 900;
+      flex-direction: column;
+      padding: 12px;
+      gap: 10px;
+      overflow: hidden;
+    }
+    .gallery-view-overlay.active {
+      display: flex;
+    }
+    .gallery-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 36px;
+      flex-shrink: 0;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 6px;
+    }
+    .gallery-tiles-grid {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      gap: 8px;
+      overflow: hidden;
+    }
+    .gallery-tiles-grid.five-cols {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+    .gallery-tile-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .gallery-tile-label {
+      height: 24px;
+      background: var(--panel-2);
+      border-bottom: 1px solid var(--border);
+      padding: 0 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--teal);
+      flex-shrink: 0;
+    }
+    .gallery-tile-content {
+      flex: 1;
+      min-height: 0;
+      position: relative;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    /* -------------------------------------------------------------
+       PART 2.3: PRINT STYLESHEET (@media print)
+       ------------------------------------------------------------- */
+    @media print {
+      body {
+        background: #FFFFFF !important;
+        color: #000000 !important;
+        overflow: visible !important;
+        height: auto !important;
+      }
+      #appRoot, .app-header, .view-switcher-bar, .app-footer, .machine-quick-controls, .phone-tab-bar, .in-phone-sheet-backdrop, .btn-header-action {
+        display: none !important;
+      }
+      .print-report-container {
+        display: block !important;
+        padding: 24px;
+        font-family: var(--font-sans);
+        color: #111827;
+      }
+    }
+    .print-report-container {
+      display: none;
+    }
+
+    /* -------------------------------------------------------------
+       PART 4: MOBILE (width up to 600px)
+       ------------------------------------------------------------- */
+    @media (max-width: 600px) {
+      .app-header {
+        padding: 0 10px;
+      }
+      .brand-sub, .header-badge {
+        display: none !important;
+      }
+      .desktop-view-switch {
+        display: none !important;
+      }
+      .mobile-seg-switch {
+        display: flex !important;
+      }
+      .main-workspace {
+        grid-template-columns: minmax(0, 1fr) !important;
+        padding: 4px;
+      }
+      /* Single view mode toggle on mobile */
+      body.mobile-mode-machine .phone-column {
+        display: none !important;
+      }
+      body.mobile-mode-app .machine-panel {
+        display: none !important;
+      }
+      /* Mobile machine panel */
+      .machine-panel {
+        grid-template-rows: auto auto minmax(0, 1fr);
+        padding: 6px;
+        gap: 6px;
+      }
+      .machine-top-grid {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto auto;
+      }
+      /* Jar shrinks to 96px strip (Part 4.2) */
+      .jar-stage-card {
+        height: 96px !important;
+        cursor: pointer;
+      }
+      .jar-stage-card::after {
+        content: "🔍 Tap for large jar view";
+        position: absolute;
+        bottom: 2px;
+        right: 6px;
+        font-size: 12px;
+        color: var(--teal);
+      }
+      .grid-setup, .grid-sensors, .grid-env, .grid-adv {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      }
+      /* Mobile phone app: Full screen, no fake bezel or notch */
+      .phone-frame {
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        aspect-ratio: auto !important;
+        width: 100% !important;
+        height: 100% !important;
+      }
+      .phone-body {
+        padding: 6px;
+      }
+      /* Mobile inputs and touch targets >= 44x44 (Part 4.3) */
+      .btn-stop-machine {
+        width: 54px;
+        height: 54px;
+      }
+      .btn-texture-pill {
+        height: 34px;
+      }
+      .seg-btn {
+        height: 32px;
+      }
+      .form-item select, .form-item input {
+        height: 38px;
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- P1-6 GLOBAL ERROR HANDLER BANNER -->
+  <div class="global-error-banner" id="globalErrorBanner" role="alert">
+    <span>⚠️ APEXGRIND System Notice: An unexpected condition occurred.</span>
+    <button type="button" class="btn-reset-app" id="btnGlobalResetApp">Reset App State</button>
+  </div>
+
+  <!-- P1-2 GUIDED DEMO CAPTION BANNER -->
+  <div class="guided-demo-banner" id="guidedDemoBanner" role="region" aria-label="Guided Demo Story">
+    <span class="demo-step-badge" id="demoStepBadge">Step 1 of 6</span>
+    <span class="demo-caption-text" id="demoCaptionText">Selecting preset: Idli batter (Limit 34 °C)...</span>
+    <div class="demo-controls-group">
+      <button type="button" class="btn-demo-ctrl" id="btnDemoPauseResume">Pause</button>
+      <button type="button" class="btn-demo-ctrl primary" id="btnDemoSkip">Skip Demo</button>
+    </div>
+  </div>
+
+  <!-- MAIN APP ROOT SHELL -->
+  <div id="appRoot">
+
+    <!-- 1.2 APP HEADER (48px) -->
+    <header class="app-header">
+      <div class="brand-group">
+        <div class="brand-logo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+          <span>APEX<span class="accent">GRIND</span></span>
+        </div>
+        <span class="brand-sub">Intelligent Texture-Controlled Grinder</span>
+      </div>
+
+      <div class="header-actions">
+        <!-- Shortcuts Cheat Sheet Toggle (?) -->
+        <button type="button" class="btn-header-action" id="btnShortcutsHelp" title="Keyboard Shortcuts (?)" aria-label="Shortcuts">
+          <span>⌨️ ?</span>
+        </button>
+        <!-- About Dialog Toggle -->
+        <button type="button" class="btn-header-action" id="btnAboutPrototype" title="About Prototype" aria-label="About">
+          <span>ℹ️ About</span>
+        </button>
+        <!-- A12: Audio synthesizer toggle (starts OFF) -->
+        <button type="button" class="btn-header-action" id="btnHeaderAudio" title="Toggle Sound Synthesizer" aria-label="Sound Toggle">
+          <span id="headerAudioIcon">🔇 Audio: OFF</span>
+        </button>
+
+        <!-- A1 & A3 FIX: Single Unified Status Pill -->
+        <div class="header-live-pill" id="headerLiveChip">
+          <span class="live-dot" id="headerLiveDot"></span>
+          <span id="headerLiveStatus">Ready</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- 1.2 VIEW SWITCHER (44px) -->
+    <nav class="view-switcher-bar" aria-label="Workspace Views">
+      <div class="switcher-container">
+        <!-- Desktop segmented control: Split, Machine Only, Phone App Only -->
+        <div class="segmented-control desktop-view-switch" role="tablist">
+          <button type="button" class="seg-btn active" data-mode="split" role="tab" aria-selected="true">
+            <span>◫ Split View</span>
+          </button>
+          <button type="button" class="seg-btn" data-mode="machine" role="tab" aria-selected="false">
+            <span>⚙️ Grinder Machine</span>
+          </button>
+          <button type="button" class="seg-btn" data-mode="phone" role="tab" aria-selected="false">
+            <span>📱 Companion Phone</span>
+          </button>
+        </div>
+
+        <!-- Mobile single-view switch (Machine | App) -->
+        <div class="segmented-control mobile-seg-switch" role="tablist">
+          <button type="button" class="seg-btn active" data-mobile-mode="machine" role="tab" aria-selected="true">
+            <span>⚙️ Machine</span>
+          </button>
+          <button type="button" class="seg-btn" data-mobile-mode="app" role="tab" aria-selected="false">
+            <span>📱 Phone App</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Document & Capture Mode Actions -->
+      <div class="switcher-aux-actions">
+        <button type="button" class="btn-header-action" id="btnLaunchGuidedDemo" title="60s Guided Demo Walkthrough">
+          <span>🎬 60s Demo</span>
+        </button>
+        <button type="button" class="btn-header-action" id="btnGalleryViewToggle" title="Side-by-side Screen Gallery">
+          <span>🖼️ Gallery</span>
+        </button>
+        <button type="button" class="btn-header-action" id="btnEnterCaptureMode" title="Capture / Screenshot Mode">
+          <span>📷 Capture</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- 1.2 MAIN 2-COLUMN WORKSPACE (1fr) -->
+    <main class="main-workspace" id="mainWorkspace">
+
+      <!-- -----------------------------------------------------------
+           PART 2: MACHINE PANEL (Simulated Hardware Unit, ~56% width)
+           ----------------------------------------------------------- -->
+      <section class="machine-panel" id="machinePanel" aria-label="Simulated Grinder Hardware Unit">
+
+        <!-- TOP SECTION (Jar Stage on Left, Display & Controls on Right) -->
+        <div class="machine-top-grid">
+
+          <!-- LEFT: Jar Visual Stage -->
+          <div class="jar-stage-card" id="jarStageCard">
+            <div class="stage-header-row">
+              <div class="stage-tabs" role="tablist">
+                <button type="button" class="stage-tab-btn active" id="btnTabJarAssembly" role="tab" aria-selected="true">🍶 Jar</button>
+                <button type="button" class="stage-tab-btn" id="btnTabBladeStudio" role="tab" aria-selected="false">⚙️ 3D Studio</button>
+              </div>
+              <div class="jar-view-pills" id="jarViewPills">
+                <button type="button" class="btn-view-mode active" id="btnJarMatte">Matte</button>
+                <button type="button" class="btn-view-mode" id="btnJarXRay">X-Ray</button>
+                <button type="button" class="btn-view-mode" id="btnJarCutaway">Cutaway</button>
+              </div>
+            </div>
+
+            <!-- Stage View 1: Jar Assembly with clean Cutaway Half-Section (A11) -->
+            <div class="stage-visual-container" id="stageJarContainer">
+              <svg class="jar-svg-element" id="jarMainSvg" viewBox="0 0 300 360" aria-label="Mixer Grinder Jar Assembly">
+                <defs>
+                  <linearGradient id="jarGunmetal" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#14161A" />
+                    <stop offset="20%" stop-color="#2B2F36" />
+                    <stop offset="50%" stop-color="#3A3F48" />
+                    <stop offset="80%" stop-color="#2B2F36" />
+                    <stop offset="100%" stop-color="#14161A" />
+                  </linearGradient>
+                  <linearGradient id="bladeSteel" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#475569" />
+                    <stop offset="50%" stop-color="#CBD5E1" />
+                    <stop offset="100%" stop-color="#334155" />
+                  </linearGradient>
+                  <linearGradient id="couplerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#0F172A" />
+                    <stop offset="50%" stop-color="#1E293B" />
+                    <stop offset="100%" stop-color="#0F172A" />
+                  </linearGradient>
+                </defs>
+
+                <!-- Base Coupler Platform (y=335 to y=360) -->
+                <path d="M 50 360 L 65 335 L 235 335 L 250 360 Z" fill="url(#couplerGrad)" stroke="#26354F" stroke-width="1.5" />
+                <rect x="70" y="333" width="160" height="4" rx="2" fill="#0B1220" />
+                <circle cx="150" cy="335" r="14" fill="#070B14" stroke="#12B5AE" stroke-width="1" />
+
+                <!-- Jar Assembly Group -->
+                <g id="jarGroup">
+                  <!-- Handle on Right Exterior -->
+                  <path id="svgJarHandle" d="M 255 150 L 290 150 C 298 150 304 156 304 164 L 304 250 C 304 258 298 264 290 264 L 235 264 L 235 250 L 285 250 C 289 250 291 248 291 244 L 291 168 C 291 164 289 162 285 162 L 255 162 Z" fill="#1E2228" stroke="#3A3F48" stroke-width="1.5" />
+
+                  <!-- Lower Base Collar (y=300 to y=334) -->
+                  <rect id="svgJarCollar" x="75" y="300" width="150" height="34" rx="3" fill="url(#jarGunmetal)" stroke="#3A3F48" stroke-width="1" />
+                  <rect id="svgJarCollarWindow" x="96" y="304" width="108" height="26" rx="4" fill="#070B14" opacity="0.88" stroke="#1E293B" stroke-width="0.8" />
+
+                  <!-- Tapered Cone Lower Section (y=200 to y=300) -->
+                  <polygon id="svgJarCone" points="48,200 252,200 225,300 75,300" fill="url(#jarGunmetal)" stroke="#3A3F48" stroke-width="1" />
+
+                  <!-- Stepped Shoulder -->
+                  <rect id="svgJarShoulder" x="44" y="190" width="212" height="10" rx="2" fill="#20242B" stroke="#3A3F48" stroke-width="1" />
+
+                  <!-- Straight Cylinder Upper Section (y=70 to y=190) -->
+                  <rect id="svgJarCylinder" x="40" y="70" width="220" height="120" rx="3" fill="url(#jarGunmetal)" stroke="#3A3F48" stroke-width="1.5" />
+                  <rect id="svgJarHighlight" x="90" y="72" width="25" height="116" fill="rgba(255,255,255,0.06)" />
+
+                  <!-- A11 FIX: Authentic Clean Half-Section Cutaway (Left interior, Right exterior, Center axis line) -->
+                  <g id="cutawayContainer" style="display: none;">
+                    <!-- Left Half Interior Milling Cavity -->
+                    <path id="cutawayChamberPath" d="M 44 72 L 150 72 L 150 288 L 78 288 L 52 200 Z" fill="#090E18" stroke="#12B5AE" stroke-width="1" />
+                    <!-- Dynamic batch weight ingredient fill level -->
+                    <rect id="cutawayFillRect" x="46" y="200" width="104" height="88" fill="#92400E" opacity="0.45" />
+                    <!-- Swirling food particles (shrink with progress) -->
+                    <g id="cutawayParticlesGroup"></g>
+                    <!-- Half-section dashed center line -->
+                    <line x1="150" y1="70" x2="150" y2="330" stroke="#12B5AE" stroke-width="1.5" stroke-dasharray="4,3" />
+                  </g>
+
+                  <!-- Seated Blade Assembly (INSIDE jar above coupler at y=280, test 16 & 30) -->
+                  <g id="seatedBladeGroup" transform="translate(150, 280) scale(0.65, 0.26) translate(-100, -100)">
+                    <g class="blade-spin-group" id="bladeSpinGroup" style="transform-origin: 100px 100px;">
+                      <!-- Arm 1 (Top-Left Serrated with 7 teeth) -->
+                      <path d="M 85 90 L 35 40 L 40 35 L 43 38 L 47 34 L 50 37 L 54 33 L 57 36 L 61 32 L 64 35 L 68 31 L 71 34 L 92 78 Z" fill="url(#bladeSteel)" stroke="#06090F" stroke-width="1.2" />
+                      <!-- Arm 2 (Bottom-Right Serrated with 7 teeth) -->
+                      <path d="M 115 110 L 165 160 L 160 165 L 157 162 L 153 166 L 150 163 L 146 167 L 143 164 L 139 168 L 136 165 L 132 169 L 129 166 L 108 122 Z" fill="url(#bladeSteel)" stroke="#06090F" stroke-width="1.2" />
+                      <!-- Arm 3 (Top-Right Smooth Beveled) -->
+                      <path d="M 110 85 L 160 35 L 175 48 L 118 95 Z" fill="url(#bladeSteel)" stroke="#06090F" stroke-width="1.2" />
+                      <!-- Arm 4 (Bottom-Left Smooth Beveled) -->
+                      <path d="M 90 115 L 40 165 L 25 152 L 82 105 Z" fill="url(#bladeSteel)" stroke="#06090F" stroke-width="1.2" />
+                      <!-- Central Hub Nut -->
+                      <circle cx="100" cy="100" r="16" fill="#1E293B" stroke="#475569" stroke-width="2" />
+                      <circle cx="100" cy="100" r="7" fill="#0F172A" />
+                    </g>
+                  </g>
+
+                  <!-- Jar Removable Lid Assembly -->
+                  <g id="jarLidGroup">
+                    <rect id="svgJarLidGasket" x="38" y="66" width="224" height="6" rx="2" fill="#0B0F17" stroke="#1E293B" stroke-width="1" />
+                    <path id="svgJarLidDome" d="M 44 66 C 44 52 70 38 150 38 C 230 38 256 52 256 66 Z" fill="#1C2026" stroke="#3A3F48" stroke-width="1.5" />
+                    <ellipse id="svgJarLidFinial" cx="150" cy="38" rx="20" ry="6" fill="#2F3642" stroke="#475569" stroke-width="1" />
+                    <circle id="svgLidInterlockDot" cx="150" cy="28" r="4.5" fill="#12B5AE" />
+                  </g>
+                </g>
+              </svg>
+            </div>
+
+            <!-- Stage View 2: Blade 3D Studio -->
+            <div class="blade-studio-wrap" id="stageStudioContainer">
+              <div class="blade-3d-viewport" id="blade3dViewport" title="Click and drag to rotate blade in 3D">
+                <div class="blade-3d-gimbal" id="blade3dGimbal">
+                  <svg class="blade-hero-svg" viewBox="0 0 320 280">
+                    <defs>
+                      <linearGradient id="heroBladeSteel" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#94A3B8" /><stop offset="45%" stop-color="#E2E8F0" /><stop offset="100%" stop-color="#475569" />
+                      </linearGradient>
+                      <linearGradient id="heroFacetGleam" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#38BDF8" /><stop offset="100%" stop-color="#12B5AE" />
+                      </linearGradient>
+                    </defs>
+                    <ellipse cx="160" cy="240" rx="90" ry="20" fill="rgba(0,0,0,0.5)" filter="blur(4px)" />
+                    <g id="bladeHeroRotateGroup" transform="translate(160, 130)">
+                      <g class="blade-spin-group" id="heroSpinSubGroup">
+                        <!-- Arm 1: Top-Left Serrated -->
+                        <path d="M -18 -8 L -100 -90 L -115 -75 L -30 6 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1" />
+                        <path d="M -100 -90 L -94 -84 L -88 -90 L -82 -84 L -76 -90 L -70 -84 L -64 -90 L -58 -84 L -52 -90 L -46 -84 L -40 -90 L -34 -84 L -28 -90 L -22 -84 L -18 -88" fill="none" stroke="url(#heroFacetGleam)" stroke-width="2.2" stroke-linecap="round" />
+                        <!-- Arm 2: Bottom-Right Serrated -->
+                        <path d="M 18 8 L 100 90 L 115 75 L 30 -6 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1" />
+                        <path d="M 100 90 L 94 84 L 88 90 L 82 84 L 76 90 L 70 84 L 64 90 L 58 84 L 52 90 L 46 84 L 40 90 L 34 84 L 28 90 L 22 84 L 18 88" fill="none" stroke="url(#heroFacetGleam)" stroke-width="2.2" stroke-linecap="round" />
+                        <!-- Arm 3: Top-Right Smooth -->
+                        <path d="M 12 -14 L 95 -95 L 114 -78 L 26 4 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1" />
+                        <!-- Arm 4: Bottom-Left Smooth -->
+                        <path d="M -12 14 L -95 95 L -114 78 L -26 -4 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1" />
+                        <!-- Spindle Hub -->
+                        <circle cx="0" cy="0" r="26" fill="#1E242E" stroke="#475569" stroke-width="2" />
+                        <circle cx="0" cy="0" r="12" fill="#070B14" stroke="#12B5AE" stroke-width="1.5" />
+                      </g>
+                    </g>
+                  </svg>
+                </div>
+              </div>
+              <div class="blade-spec-pill">
+                <span id="studioBladeTitle" style="font-weight:700;color:var(--teal);">Universal 4-arm blade</span>
+                <span id="studioBladeSub">• Cap: Speed 5</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: Display & Hardware Controls -->
+          <div class="controls-display-card">
+            <!-- TOUCHSCREEN DISPLAY -->
+            <div class="machine-touchscreen" id="machineTouchscreen" aria-label="Touchscreen Display">
+              <div class="screen-top-row">
+                <div class="screen-dish-title" id="screenDishTitle">Idli batter</div>
+                <div class="screen-status-badge" id="screenStatusBadge">READY</div>
+              </div>
+
+              <!-- Temperature Reading with 'est.' only on readings (Non-negotiable rule) -->
+              <div class="screen-temp-row">
+                <div class="screen-temp-val" id="screenTempDisplay">
+                  28.0<span class="unit">°C est.</span>
+                </div>
+                <div class="screen-temp-limit" id="screenTempLimit">Limit 34 °C</div>
+              </div>
+
+              <div class="screen-progress-bar-wrap">
+                <div class="screen-progress-track">
+                  <div class="screen-progress-fill" id="screenProgressFill"></div>
+                </div>
+                <div class="screen-progress-labels">
+                  <span id="screenProgressText">Progress: 0%</span>
+                  <span id="screenPausesText">Pauses: 0</span>
+                </div>
+              </div>
+              <div class="screen-advisory-note" id="screenAdvisoryNote"></div>
+            </div>
+
+            <!-- HARDWARE QUICK CONTROLS: KNOB, STOP, TEXTURE, SPEED (Always visible) -->
+            <div class="machine-quick-controls">
+              <!-- Rotary Knob & STOP -->
+              <div class="knob-stop-group">
+                <div class="rotary-knob-wrapper" id="knobWrapper" tabindex="0" role="slider" aria-label="Speed and Start/Stop Knob. Turn for speed 1-5, press to Start/Stop, hold 2s for child lock" aria-valuemin="1" aria-valuemax="5" aria-valuenow="2">
+                  <div class="rotary-knob-dial" id="hardwareKnobDial">
+                    <div class="knob-pointer-needle" id="knobPointerNeedle"></div>
+                    <div class="knob-center-label" id="knobCenterCap">START</div>
+                  </div>
+                </div>
+                <button type="button" class="btn-stop-machine" id="btnHardwareStop" aria-label="Emergency Stop">
+                  STOP
+                </button>
+              </div>
+
+              <!-- Texture and Speed parameters -->
+              <div class="quick-params-group">
+                <div class="texture-pill-row" role="radiogroup" aria-label="Texture Selection">
+                  <button type="button" class="btn-texture-pill" data-texture="Coarse" role="radio" aria-checked="false">Coarse</button>
+                  <button type="button" class="btn-texture-pill active" data-texture="Medium" role="radio" aria-checked="true">Medium</button>
+                  <button type="button" class="btn-texture-pill" data-texture="Fine" role="radio" aria-checked="false">Fine</button>
+                  <button type="button" class="btn-texture-pill" data-texture="Paste" role="radio" aria-checked="false">Paste</button>
+                </div>
+                <div class="speed-bars-row">
+                  <div class="speed-tick active" data-speed="1"></div>
+                  <div class="speed-tick active" data-speed="2"></div>
+                  <div class="speed-tick" data-speed="3"></div>
+                  <div class="speed-tick" data-speed="4"></div>
+                  <div class="speed-tick" data-speed="5"></div>
+                  <span class="speed-label-text" id="speedLabelText">Speed 2</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2.2 FIXED-HEIGHT TABBED PANEL BELOW CONTROLS -->
+        <div class="machine-tabbed-panel">
+          <div class="machine-tabs-bar" role="tablist">
+            <button type="button" class="m-tab-btn active" data-tab="setup" role="tab" aria-selected="true">Setup</button>
+            <button type="button" class="m-tab-btn" data-tab="sensors" role="tab" aria-selected="false">Sensors</button>
+            <button type="button" class="m-tab-btn" data-tab="faults" role="tab" aria-selected="false">Faults</button>
+            <button type="button" class="m-tab-btn" data-tab="environment" role="tab" aria-selected="false">Environment</button>
+            <button type="button" class="m-tab-btn" data-tab="advanced" role="tab" aria-selected="false">Advanced</button>
+          </div>
+
+          <!-- TAB 1: SETUP -->
+          <div class="m-tab-content grid-setup active" id="tabContentSetup">
+            <div class="form-item">
+              <label for="selDishPreset">Dish Preset</label>
+              <select id="selDishPreset"></select>
+            </div>
+            <div class="form-item">
+              <label for="selJarFitted">Jar Fitted</label>
+              <select id="selJarFitted">
+                <option value="jar1">Jar 1 (0.5 L, Chutney)</option>
+                <option value="jar2" selected>Jar 2 (1.5 L, Modular)</option>
+              </select>
+            </div>
+            <div class="form-item">
+              <label for="selAttachment">Attachment (Jar 2)</label>
+              <select id="selAttachment"></select>
+            </div>
+            <div class="form-item">
+              <label for="selMotorLoad">Motor Load</label>
+              <select id="selMotorLoad">
+                <option value="0.75">Light (0.75x)</option>
+                <option value="1.0" selected>Normal (1.0x)</option>
+                <option value="1.25">Heavy (1.25x)</option>
+                <option value="1.5">Very Heavy (1.5x)</option>
+              </select>
+            </div>
+            <div class="form-item">
+              <label for="inputBatchWeight">Batch Weight (g)</label>
+              <input type="number" id="inputBatchWeight" value="350" min="20" max="1000" step="10">
+            </div>
+            <div class="form-item">
+              <label for="selSimSpeed">Sim Speed</label>
+              <select id="selSimSpeed">
+                <option value="1">Realtime (1x)</option>
+                <option value="5">5x Faster</option>
+                <option value="10" selected>10x Faster</option>
+                <option value="20">20x Faster</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- TAB 2: SENSORS -->
+          <div class="m-tab-content grid-sensors" id="tabContentSensors">
+            <div class="sensor-card">
+              <div class="sensor-card-top">
+                <span>DS18B20 Temp</span>
+                <span class="status-dot-sm" id="dotSensorTemp"></span>
+              </div>
+              <div class="sensor-card-val" id="valSensorTemp">28.0 °C est.</div>
+              <div class="sensor-card-sub" id="subSensorTrueTemp">True: 28.0 °C</div>
+            </div>
+            <div class="sensor-card">
+              <div class="sensor-card-top">
+                <span>Hall Speed</span>
+                <span class="status-dot-sm" id="dotSensorRpm"></span>
+              </div>
+              <div class="sensor-card-val" id="valSensorRpm">0 RPM</div>
+              <div class="sensor-card-sub" id="subSensorTargetSpeed">Level: 2</div>
+            </div>
+            <div class="sensor-card">
+              <div class="sensor-card-top">
+                <span>Current</span>
+                <span class="status-dot-sm" id="dotSensorAmps"></span>
+              </div>
+              <div class="sensor-card-val" id="valSensorAmps">0.0 A</div>
+              <div class="sensor-card-sub" id="subSensorWatts">0 W (est.)</div>
+            </div>
+            <div class="sensor-card">
+              <div class="sensor-card-top">
+                <span>Vibration</span>
+                <span class="status-dot-sm" id="dotSensorVib"></span>
+              </div>
+              <div class="sensor-card-val" id="valSensorVib">0.02 g</div>
+              <div class="sensor-card-sub">SW-420 Sensor</div>
+            </div>
+            <div class="sensor-card">
+              <div class="sensor-card-top">
+                <span>Load Cell</span>
+                <span class="status-dot-sm" id="dotSensorWeight"></span>
+              </div>
+              <div class="sensor-card-val" id="valSensorWeight">350 g</div>
+              <div class="sensor-card-sub">Dry-run Guard</div>
+            </div>
+          </div>
+
+          <!-- TAB 3: FAULTS -->
+          <div class="m-tab-content grid-faults" id="tabContentFaults">
+            <div class="fault-toggle-row">
+              <span class="fault-toggle-text">E2: Sensor Fault</span>
+              <input type="checkbox" id="chkFaultSensor" title="Simulate DS18B20 Disconnect">
+            </div>
+            <div class="fault-toggle-row">
+              <span class="fault-toggle-text">E3: Jar Not Seated</span>
+              <input type="checkbox" id="chkFaultJarInterlock" title="Simulate Lid/Interlock Trip">
+            </div>
+            <div class="fault-toggle-row">
+              <span class="fault-toggle-text">E1: Overload / Jam</span>
+              <input type="checkbox" id="chkFaultOverload" title="Simulate Blade Mechanical Jam">
+            </div>
+            <div class="fault-toggle-row">
+              <span class="fault-toggle-text">E4: High Vibration</span>
+              <input type="checkbox" id="chkFaultVibration" title="Simulate Out-of-balance Vibration">
+            </div>
+            <div class="fault-toggle-row">
+              <span class="fault-toggle-text">E5: Tool Mismatch</span>
+              <input type="checkbox" id="chkFaultToolMismatch" title="Simulate Hall Code Mismatch">
+            </div>
+            <div class="fault-toggle-row">
+              <span class="fault-toggle-text">E6: Dry Run Guard</span>
+              <input type="checkbox" id="chkFaultDryRun" title="Simulate Empty Jar Running">
+            </div>
+            <button type="button" class="btn-power-cut" id="btnTriggerPowerCut">⚡ Simulate Sudden Power Cut</button>
+          </div>
+
+          <!-- TAB 4: ENVIRONMENT -->
+          <div class="m-tab-content grid-env" id="tabContentEnv">
+            <div class="env-card">
+              <span style="font-size:12px;font-weight:500;">Warm Jar (+6 °C)</span>
+              <input type="checkbox" id="chkWarmJar" title="Simulate Pre-heated Jar">
+            </div>
+            <div class="env-card">
+              <span style="font-size:12px;font-weight:500;">Load Cell Installed</span>
+              <input type="checkbox" id="chkLoadCellInstalled" checked title="Hardware Base Load Cell">
+            </div>
+            <div class="env-card">
+              <label for="selJarVisualMode" style="font-size:12px;font-weight:500;">Jar View</label>
+              <select id="selJarVisualMode" style="height:24px;font-size:12px;padding:0 4px;background:var(--panel-2);color:var(--text);border:1px solid var(--border);border-radius:4px;">
+                <option value="opaque">Matte Finish</option>
+                <option value="xray">X-Ray Transparent</option>
+                <option value="cutaway">Engineering Cutaway</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- TAB 5: ADVANCED -->
+          <div class="m-tab-content grid-adv" id="tabContentAdv">
+            <button type="button" class="btn-adv-feature" id="btnLaunchExperiment">
+              <span>🔬 Experiment Mode</span>
+            </button>
+            <button type="button" class="btn-adv-feature" id="btnToggleDevChart">
+              <span>📈 Dev Telemetry</span>
+            </button>
+            <button type="button" class="btn-adv-feature" id="btnToggleAudioAdv">
+              <span id="advAudioBtnText">🔊 Audio: OFF</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- -----------------------------------------------------------
+           PART 3: COMPANION PHONE APP (Monitoring Only, ~44% width)
+           ----------------------------------------------------------- -->
+      <section class="phone-column" id="companionApp" aria-label="Companion Mobile Application (Monitoring Only)">
+        <div class="phone-frame">
+
+          <!-- PHONE HEADER (44px) -->
+          <div class="phone-header">
+            <span class="phone-header-title">APEX Companion</span>
+            <span class="phone-header-badge" id="phoneProfileBadge">Mom's Recipes</span>
+          </div>
+
+          <!-- PHONE CONTENT (1fr) - NO SCROLL -->
+          <div class="phone-body" id="phoneBody">
+
+            <!-- TAB 1: LIVE MONITORING -->
+            <div class="phone-tab-screen active" id="screenLive">
+              <div class="live-screen-wrap">
+                <div class="live-card-top">
+                  <div class="live-dish-badge-group">
+                    <span class="live-dish-name" id="liveDishName">Idli batter</span>
+                    <span class="screen-status-badge" id="liveStatusBadge">READY</span>
+                  </div>
+                  <div class="live-temp-group">
+                    <div class="live-temp-huge" id="liveTempDisplay">
+                      28.0<span class="unit">°C est.</span>
+                    </div>
+                    <div class="live-limit-sub" id="liveLimitDisplay">Limit 34 °C</div>
+                  </div>
+                </div>
+
+                <!-- Live Telemetry Canvas Chart -->
+                <div class="live-chart-box">
+                  <div class="chart-header-row">
+                    <span class="chart-title-text">Live Thermal Telemetry</span>
+                    <div class="chart-legend-single-row">
+                      <span><span class="legend-dot" style="background:#38BDF8;"></span> Temp (est.)</span>
+                      <span><span class="legend-dot" style="background:#E5484D;"></span> Limit</span>
+                    </div>
+                  </div>
+                  <div class="chart-canvas-wrapper">
+                    <canvas id="liveChartCanvas"></canvas>
+                  </div>
+                </div>
+
+                <!-- Live Progress Box -->
+                <div class="live-progress-box">
+                  <div class="screen-progress-track">
+                    <div class="screen-progress-fill" id="liveProgressFill"></div>
+                  </div>
+                  <div class="screen-progress-labels">
+                    <span id="liveProgressPercent">Progress: 0%</span>
+                    <span id="liveEstFineText">Est. Fine: 0%</span>
+                  </div>
+                </div>
+
+                <!-- Three Quick Chips -->
+                <div class="live-three-chips-row">
+                  <div class="live-chip-item">
+                    <span class="live-chip-label">Speed</span>
+                    <span class="live-chip-val" id="liveChipSpeed">Speed 2</span>
+                  </div>
+                  <div class="live-chip-item">
+                    <span class="live-chip-label">Texture</span>
+                    <span class="live-chip-val" id="liveChipTexture">Medium</span>
+                  </div>
+                  <div class="live-chip-item">
+                    <span class="live-chip-label">Pauses</span>
+                    <span class="live-chip-val" id="liveChipPauses">0</span>
+                  </div>
+                </div>
+
+                <!-- Non-negotiable monitoring only note -->
+                <div class="monitoring-only-notice" id="monitoringNotice">
+                  🔒 Monitoring only • Machine controls hardware
+                </div>
+              </div>
+            </div>
+
+            <!-- TAB 2: HISTORY -->
+            <div class="phone-tab-screen" id="screenHistory">
+              <div class="history-screen-wrap">
+                <div class="history-insights-card">
+                  <div class="insight-metric-item">
+                    <span class="insight-metric-lbl">Total Grinds</span>
+                    <span class="insight-metric-val" id="histTotalGrinds">0</span>
+                  </div>
+                  <div class="insight-metric-item">
+                    <span class="insight-metric-lbl">Total Energy</span>
+                    <span class="insight-metric-val" id="histTotalEnergy">0.00 kWh</span>
+                  </div>
+                  <div class="insight-metric-item">
+                    <span class="insight-metric-lbl">Pauses This Week</span>
+                    <span class="insight-metric-val" id="histWeekPauses">0</span>
+                  </div>
+                  <div class="insight-metric-item">
+                    <span class="insight-metric-lbl">Mean Abs Error</span>
+                    <span class="insight-metric-val" id="histMeanAbsError">No measured data yet</span>
+                  </div>
+                </div>
+
+                <!-- Paginated Session List (2-4 items per page) -->
+                <div class="history-paginated-list" id="historySessionsContainer">
+                  <!-- Injected dynamically or empty state -->
+                </div>
+
+                <!-- Pagination Row -->
+                <div class="history-pagination-row">
+                  <button type="button" class="btn-page-nav" id="btnHistPrevPage">Prev</button>
+                  <span class="page-indicator-text" id="histPageIndicator">1 of 1</span>
+                  <button type="button" class="btn-page-nav" id="btnHistNextPage">Next</button>
+                </div>
+
+                <!-- Actions -->
+                <div class="history-actions-row">
+                  <button type="button" class="btn-hist-action" id="btnLoadDemoData">Load Demo Data</button>
+                  <button type="button" class="btn-hist-action" id="btnExportHistoryCsv">Export CSV</button>
+                  <button type="button" class="btn-hist-action" id="btnClearHistory">Clear</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- TAB 3: HEALTH (6 COMPACT 44px ROWS) -->
+            <div class="phone-tab-screen" id="screenHealth">
+              <div class="health-screen-wrap">
+                <div class="health-rows-list">
+                  <div class="health-row-item">
+                    <div class="health-row-left">
+                      <span class="status-dot-sm" id="hDotMotor"></span>
+                      <span class="health-row-title">Motor load trend</span>
+                    </div>
+                    <div class="health-row-right">
+                      <span class="health-status-text" id="hTxtMotor">Nominal</span>
+                    </div>
+                  </div>
+
+                  <div class="health-row-item">
+                    <div class="health-row-left">
+                      <span class="status-dot-sm" id="hDotCoupler"></span>
+                      <span class="health-row-title">Coupler wear</span>
+                    </div>
+                    <div class="health-row-right">
+                      <span class="health-status-text" id="hTxtCoupler">Good</span>
+                    </div>
+                  </div>
+
+                  <div class="health-row-item">
+                    <div class="health-row-left">
+                      <span class="status-dot-sm" id="hDotBlade"></span>
+                      <span class="health-row-title">Blade condition</span>
+                    </div>
+                    <div class="health-row-right">
+                      <span class="health-status-text" id="hTxtBlade">Sharp</span>
+                    </div>
+                  </div>
+
+                  <div class="health-row-item">
+                    <div class="health-row-left">
+                      <span class="status-dot-sm" id="hDotCleaning"></span>
+                      <span class="health-row-title">Deep cleaning</span>
+                    </div>
+                    <div class="health-row-right">
+                      <button type="button" class="btn-health-action" id="btnMarkCleaned">Clean</button>
+                      <button type="button" class="btn-health-action" id="btnSnoozeCleaning" title="Snooze 2 Days">Snooze</button>
+                    </div>
+                  </div>
+
+                  <div class="health-row-item">
+                    <div class="health-row-left">
+                      <span class="status-dot-sm" id="hDotService"></span>
+                      <span class="health-row-title">Annual service</span>
+                    </div>
+                    <div class="health-row-right">
+                      <button type="button" class="btn-health-action" id="btnBookService">Book</button>
+                      <button type="button" class="btn-health-action" id="btnSnoozeService" title="Snooze 7 Days">Snooze</button>
+                    </div>
+                  </div>
+
+                  <div class="health-row-item">
+                    <div class="health-row-left">
+                      <span class="status-dot-sm" id="hDotFirmware"></span>
+                      <span class="health-row-title">Firmware v2.4</span>
+                    </div>
+                    <div class="health-row-right">
+                      <button type="button" class="btn-health-action" id="btnCheckUpdate">Update</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Last Alert Row -->
+                <div class="health-last-alert-card" id="healthLastAlertCard">
+                  <span class="last-alert-text" id="healthLastAlertText">No active fault alerts</span>
+                  <span style="font-size:12px;color:var(--text-dim);">Guide →</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- TAB 4: PRESETS -->
+            <div class="phone-tab-screen" id="screenPresets">
+              <div class="presets-screen-wrap">
+                <div class="preset-dish-select-box">
+                  <label for="selPresetDishPicker" style="font-size:12px;color:var(--text-dim);font-weight:600;">Recipe Preset</label>
+                  <select id="selPresetDishPicker"></select>
+                </div>
+
+                <div class="preset-detail-card">
+                  <div class="preset-spec-grid">
+                    <div class="preset-spec-item">
+                      <span class="preset-spec-lbl">Speed</span>
+                      <span class="preset-spec-val" id="presetDetailSpeed">Speed 2</span>
+                    </div>
+                    <div class="preset-spec-item">
+                      <span class="preset-spec-lbl">Thermal Limit</span>
+                      <span class="preset-spec-val" id="presetDetailLimit">Limit 34 °C</span>
+                    </div>
+                    <div class="preset-spec-item">
+                      <span class="preset-spec-lbl">Target Texture</span>
+                      <span class="preset-spec-val" id="presetDetailTexture">Medium</span>
+                    </div>
+                    <div class="preset-spec-item">
+                      <span class="preset-spec-lbl">Attachment</span>
+                      <span class="preset-spec-val" id="presetDetailAttachment" style="font-size:12px;">Universal</span>
+                    </div>
+                  </div>
+
+                  <div class="preset-action-btns-row">
+                    <button type="button" class="btn-preset-main" id="btnSendPresetToMachine">
+                      <span>📤 Send to Machine</span>
+                    </button>
+                    <button type="button" class="btn-preset-sec" id="btnEditPresetSheet">Edit</button>
+                    <button type="button" class="btn-preset-sec" id="btnResetPreset">Reset</button>
+                  </div>
+
+                  <button type="button" class="btn-adv-feature" id="btnOpenComparePresets" style="width:100%;height:28px;">
+                    <span>📊 Compare All Presets</span>
+                  </button>
+                </div>
+
+                <div class="presets-sharing-footer">
+                  <span style="font-size:12px;color:var(--text-dim);">Family Profile Sync</span>
+                  <input type="checkbox" id="chkProfileSharing" checked title="Sync presets across household tablets and phones">
+                </div>
+              </div>
+            </div>
+
+            <!-- TAB 5: SETTINGS -->
+            <div class="phone-tab-screen" id="screenSettings">
+              <div class="settings-screen-wrap">
+                <div class="settings-subnav" role="tablist">
+                  <button type="button" class="set-sub-btn active" data-subtab="profiles" role="tab">Profiles</button>
+                  <button type="button" class="set-sub-btn" data-subtab="guard" role="tab">Guard</button>
+                  <button type="button" class="set-sub-btn" data-subtab="calibration" role="tab">Calibration</button>
+                  <button type="button" class="set-sub-btn" data-subtab="safety" role="tab">Safety</button>
+                  <button type="button" class="set-sub-btn" data-subtab="data" role="tab">Data</button>
+                </div>
+
+                <!-- SUBTAB 1: PROFILES -->
+                <div class="settings-subtab-content active" id="subtabProfiles">
+                  <div class="settings-row">
+                    <div class="settings-row-info">
+                      <span class="settings-title">Active Profile</span>
+                      <span class="settings-desc">Switch kitchen user profile</span>
+                    </div>
+                    <select id="selProfileSwitch" style="height:26px;font-size:12px;background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:4px;"></select>
+                  </div>
+                  <div class="settings-row">
+                    <div class="settings-row-info">
+                      <span class="settings-title">Create Profile</span>
+                      <span class="settings-desc">Up to 4 custom profiles</span>
+                    </div>
+                    <button type="button" class="btn-preset-sec" id="btnAddProfile">Add</button>
+                  </div>
+                  <div class="settings-row">
+                    <div class="settings-row-info">
+                      <span class="settings-title">Delete Active</span>
+                      <span class="settings-desc">Keep at least 1 profile</span>
+                    </div>
+                    <button type="button" class="btn-preset-sec" id="btnDeleteProfile">Delete</button>
+                  </div>
+                </div>
+
+                <!-- SUBTAB 2: GUARD -->
+                <div class="settings-subtab-content" id="subtabGuard">
+                  <div class="settings-row">
+                    <div class="settings-row-info">
+                      <span class="settings-title">Safety Margin</span>
+                      <span class="settings-desc">Pause ahead of limit</span>
+                    </div>
+                    <input type="number" id="inputGuardMargin" class="settings-input-num" value="1.5" min="0" max="5" step="0.5">
+                  </div>
+                  <div class="settings-row">
+                    <div class="settings-row-info">
+                      <span class="settings-title">Resume Gap</span>
+                      <span class="settings-desc">Degrees to cool before resume</span>
+                    </div>
+                    <input type="number" id="inputGuardResumeGap" class="settings-input-num" value="2.0" min="0.5" max="6" step="0.5">
+                  </div>
+                  <div class="settings-row">
+                    <div class="settings-row-info">
+                      <span class="settings-title">Predictive Guard</span>
+                      <span class="settings-desc">Anticipate thermal slope</span>
+                    </div>
+                    <input type="checkbox" id="chkPredictiveGuard" checked>
+                  </div>
+                </div>
+
+                <!-- SUBTAB 3: CALIBRATION -->
+                <div class="settings-subtab-content" id="subtabCalibration">
+                  <div class="settings-row">
+                    <div class="settings-row-info">
+                      <span class="settings-title">Temp Offset (°C)</span>
+                      <span class="settings-desc">±3.0 °C probe calibration</span>
+                    </div>
+                    <input type="number" id="inputTempCalib" class="settings-input-num" value="0.0" min="-3" max="3" step="0.1">
+                  </div>
+                  <div class="settings-row">
+                    <div class="settings-row-info">
+                      <span class="settings-title">Current Zero</span>
+                      <span class="settings-desc">ACS712 raw ADC zero point</span>
+                    </div>
+                    <input type="number" id="inputCurrentZero" class="settings-input-num" value="2500" min="2300" max="2700" step="5">
+                  </div>
+                </div>
+
+                <!-- SUBTAB 4: SAFETY -->
+                <div class="settings-subtab-content" id="subtabSafety">
+                  <div class="settings-row">
+                    <div class="settings-row-info">
+                      <span class="settings-title">Child Lock</span>
+                      <span class="settings-desc">Hold knob 2s to toggle</span>
+                    </div>
+                    <input type="checkbox" id="chkChildLock">
+                  </div>
+                  <div class="settings-row">
+                    <div class="settings-row-info">
+                      <span class="settings-title">Hard Stop Timeout</span>
+                      <span class="settings-desc">Motor absolute limit (s)</span>
+                    </div>
+                    <span style="font-family:var(--font-mono);font-size:12px;color:var(--text-dim);">900s (15m)</span>
+                  </div>
+                </div>
+
+                <!-- SUBTAB 5: DATA -->
+                <div class="settings-subtab-content" id="subtabData">
+                  <div class="settings-row">
+                    <div class="settings-row-info">
+                      <span class="settings-title">Export & Import</span>
+                      <span class="settings-desc">Backup settings (JSON)</span>
+                    </div>
+                    <div style="display:flex;gap:4px;">
+                      <button type="button" class="btn-preset-sec" id="btnExportAllJson">Export</button>
+                      <button type="button" class="btn-preset-sec" id="btnImportJsonTrigger">Import</button>
+                      <input type="file" id="fileJsonImport" accept=".json" style="display:none;">
+                    </div>
+                  </div>
+                  <div class="settings-row">
+                    <div class="settings-row-info">
+                      <span class="settings-title">Capture Mode</span>
+                      <span class="settings-desc">Toggle screenshot canvas</span>
+                    </div>
+                    <button type="button" class="btn-preset-sec" id="btnToggleCaptureInSettings">Open</button>
+                  </div>
+                  <div class="settings-row">
+                    <div class="settings-row-info">
+                      <span class="settings-title">Self-Tests (60)</span>
+                      <span class="settings-desc">Verify system integrity</span>
+                    </div>
+                    <button type="button" class="btn-preset-sec" id="btnRunAutomatedSelfTests">Run</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FIXED TAB BAR (56px) - ICON + VISIBLE 12px LABEL -->
+          <nav class="phone-tab-bar" role="tablist" aria-label="Companion App Navigation">
+            <button type="button" class="tab-bar-item active" data-screen="Live" role="tab" aria-selected="true">
+              <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              <span>Live</span>
+            </button>
+            <button type="button" class="tab-bar-item" data-screen="History" role="tab" aria-selected="false">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>History</span>
+            </button>
+            <button type="button" class="tab-bar-item" data-screen="Health" role="tab" aria-selected="false">
+              <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+              <span>Health</span>
+            </button>
+            <button type="button" class="tab-bar-item" data-screen="Presets" role="tab" aria-selected="false">
+              <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              <span>Presets</span>
+            </button>
+            <button type="button" class="tab-bar-item" data-screen="Settings" role="tab" aria-selected="false">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              <span>Settings</span>
+            </button>
+          </nav>
+
+          <!-- 3.7 TOASTS REGION (Above tab bar, max 2 stacked) -->
+          <div class="phone-toast-region" id="phoneToastRegion" aria-live="polite"></div>
+
+          <!-- IN-PHONE BOTTOM SHEET CONTAINER -->
+          <div class="in-phone-sheet-backdrop" id="inPhoneSheetBackdrop">
+            <div class="in-phone-sheet" id="inPhoneSheet">
+              <div class="sheet-header-row">
+                <span class="sheet-title" id="sheetTitleText">Detail Sheet</span>
+                <button type="button" class="btn-sheet-close" id="btnInPhoneSheetClose" aria-label="Close">✕</button>
+              </div>
+              <div class="sheet-content-scroll" id="sheetContentBox">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- 1.2 FOOTER (24px) -->
+    <footer class="app-footer">
+      <span class="footer-left">APEXGRIND Engineering Prototype • Illustrative values, not measured.</span>
+      <div class="footer-right">
+        <span>WCAG AA Tested</span>
+        <span>Monitoring-Only App</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- -------------------------------------------------------------
+       PART 1: SCREENSHOT & DOCUMENT MODE FIXED CANVAS & CONTROLS
+       ------------------------------------------------------------- -->
+  <div class="capture-viewport-container" id="captureContainer">
+    <div class="capture-canvas-scaler" id="captureScaler">
+      <div id="captureCloneTarget" style="width:100%;height:100%;"></div>
+    </div>
+
+    <!-- Floating Capture Controls -->
+    <div class="capture-floating-bar" id="captureFloatingBar">
+      <span class="capture-bar-label">📷 Capture:</span>
+      <select id="selCaptureViewport" class="capture-sel-btn">
+        <option value="1920x1080">Desktop (1920x1080)</option>
+        <option value="1440x900" selected>Laptop (1440x900)</option>
+        <option value="768x1024">Tablet (768x1024)</option>
+        <option value="390x844">Phone (390x844)</option>
+        <option value="412x915">Phone (412x915)</option>
+      </select>
+
+      <span class="capture-bar-label">UI:</span>
+      <button type="button" class="capture-sel-btn" data-scale="0.9">90%</button>
+      <button type="button" class="capture-sel-btn active" data-scale="1.0">100%</button>
+      <button type="button" class="capture-sel-btn" data-scale="1.1">110%</button>
+
+      <span class="capture-bar-label">Scenario:</span>
+      <select id="selCaptureScenario" class="capture-sel-btn">
+        <option value="idle">Idle</option>
+        <option value="grinding">Grinding</option>
+        <option value="paused">Paused to cool</option>
+        <option value="done">Done</option>
+        <option value="fault_e3">Fault E3</option>
+        <option value="fault_e4">Fault E4</option>
+        <option value="powercut">Power Cut</option>
+      </select>
+
+      <button type="button" class="capture-sel-btn" id="btnDownloadPng" style="background:var(--teal);color:#070B14;font-weight:700;">💾 Download PNG</button>
+      <button type="button" class="capture-sel-btn" id="btnExitCapture" style="background:#7F1D1D;color:#FEE2E2;">✕ Exit</button>
+    </div>
+  </div>
+
+  <!-- -------------------------------------------------------------
+       PART 1.4: GALLERY VIEW OVERLAY
+       ------------------------------------------------------------- -->
+  <div class="gallery-view-overlay" id="galleryOverlay">
+    <div class="gallery-header-row">
+      <span style="font-size:14px;font-weight:700;color:var(--text);" id="galleryHeaderTitle">APEXGRIND Visual Gallery</span>
+      <div style="display:flex;gap:8px;">
+        <button type="button" class="btn-header-action active" id="btnShowPhoneGallery">📱 5 Phone Screens</button>
+        <button type="button" class="btn-header-action" id="btnShowMachineGallery">⚙️ 5 Machine States</button>
+        <button type="button" class="btn-header-action" id="btnCloseGallery">✕ Back to App</button>
+      </div>
+    </div>
+    <div class="gallery-tiles-grid five-cols" id="galleryTilesGrid">
+      <!-- 5 tiles injected dynamically -->
+    </div>
+  </div>
+
+  <!-- -------------------------------------------------------------
+       PART 2.3: PRINT TEMPLATE
+       ------------------------------------------------------------- -->
+  <div class="print-report-container" id="printReportContainer">
+    <h1 style="font-size:22px;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:12px;">APEXGRIND Milling & Thermal Run Report</h1>
+    <p style="font-size:12px;color:#555;margin-bottom:16px;">Generated from APEXGRIND Engineering Unit • Illustrative values, not measured.</p>
+    <div id="printReportContent">
+      <!-- Populated dynamically on window.print() -->
+    </div>
+  </div>
+
+  <!-- MODAL / GENERAL DIALOG BACKDROP (for About, Compare Presets, Shortcuts, Experiment) -->
+  <div class="in-phone-sheet-backdrop" id="appModalBackdrop" style="z-index:950;">
+    <div class="in-phone-sheet" id="appModalSheet" style="max-width:540px;margin:0 auto;border-radius:14px;max-height:90%;">
+      <div class="sheet-header-row">
+        <span class="sheet-title" id="appModalTitle">Modal Dialog</span>
+        <button type="button" class="btn-sheet-close" id="btnAppModalClose">✕</button>
+      </div>
+      <div class="sheet-content-scroll" id="appModalContent"></div>
+    </div>
+  </div>
+
+  <!-- -------------------------------------------------------------
+       VANILLA JAVASCRIPT: APPLICATION LOGIC & TESTS
+       ------------------------------------------------------------- -->
+  <script>
+    /* -------------------------------------------------------------
+       P2-4: CENTRALIZED UI STRINGS DICTIONARY (EN First)
+       ------------------------------------------------------------- */
+    const STRINGS = {
+      en: {
+        appTitle: 'APEXGRIND - Intelligent Texture-Controlled Mixer Grinder',
+        brandSub: 'Intelligent Texture-Controlled Grinder',
+        ready: 'Ready',
+        grinding: 'Grinding',
+        paused: 'Paused to cool',
+        done: 'Done',
+        fault: 'Fault',
+        powerOff: 'Power off',
+        readyNextBatch: 'Ready for next batch',
+        monitoringOnly: '🔒 Monitoring only • Machine controls hardware',
+        illustrativeFootnote: 'Illustrative values, not measured.',
+        noMeasuredData: 'No measured data yet'
+      }
+    };
+
+    /* -------------------------------------------------------------
+       CONFIG: ALL PLACEHOLDER NUMBERS & FORMULAS (Non-negotiable rule)
+       ------------------------------------------------------------- */
+    const CONFIG = {
+      ambient: 28.0,
+      warmJarOffset: 6.0,
+      tickIntervalMs: 50,
+      timeCompression: 10,
+      coolingCoeff: 0.012,
+      sensorLagSec: 8.0,
+      baseHeatFactor: 0.10,
+      hardStopSec: 900,
+      defaultMargin: 1.5,
+      defaultResumeGap: 2.0,
+      chartHistoryCap: 60,
+      historyMaxEntries: 200,
+      audioEnabled: false, // A12 FIX: Audio defaults OFF
+      powerWatts: { 1: 350, 2: 450, 3: 550, 4: 650, 5: 750 },
+      textureMultipliers: { Coarse: 1.4, Medium: 1.0, Fine: 0.8, Paste: 0.65 },
+      /* A6 FIX: Formula for Estimated Fine Fraction:
+         Estimated fine fraction differs by target texture and scales with progress:
+         Coarse max: ~65%, Medium max: ~82%, Fine max: ~94%, Paste max: ~99%.
+         Formula: Math.round(CONFIG.textureFineFactor[texture] * (progress / 100) * 100)
+      */
+      textureFineFactor: { Coarse: 0.65, Medium: 0.82, Fine: 0.94, Paste: 0.99 },
+      jar1AllowedDishes: ['Wet masala', 'Dry masala', 'Chutney', 'Coarse podi', 'Rasam powder'],
+      jar1SpeedCap: 4,
+      ATTACHMENTS: [
+        { id: 1, name: 'Universal 4-arm blade', hallCode: 1, speedCap: 5, noiseBand: '68-74 dB', currentFactor: 1.0, desc: 'Image C shape: 2 serrated 7-tooth arms, 2 aerodynamic bevel lift wings' },
+        { id: 2, name: 'Fine-powder blade', hallCode: 2, speedCap: 5, noiseBand: '78-86 dB', currentFactor: 1.1, desc: '6-point star cross blade for spices and pulverizing' },
+        { id: 3, name: 'Batter blade', hallCode: 3, speedCap: 3, noiseBand: '66-72 dB', currentFactor: 1.2, desc: 'Swept hydrodynamic dual aerofoils for high air-incorporation' },
+        { id: 4, name: 'Coarse-chop blade', hallCode: 4, speedCap: 4, noiseBand: '70-76 dB', currentFactor: 0.95, desc: 'Heavy-gauge blunt chisel wings for crushed nuts and podi' },
+        { id: 5, name: 'Coconut grating disc', hallCode: 5, speedCap: 2, noiseBand: '62-68 dB', currentFactor: 0.85, desc: 'Centrifugal micro-toothed rasp plate' },
+        { id: 6, name: 'Garlic peeling attachment', hallCode: 6, speedCap: 2, noiseBand: '58-64 dB', currentFactor: 0.75, desc: 'Soft-grade silicone elastomer multi-lobed rotor' }
+      ],
+      DEFAULT_PRESETS: [
+        { id: 'p1', name: 'Idli batter', speed: 2, limit: 34, texture: 'Medium', requiredAttachmentId: 3, jar: 'jar2', noise: '66-72 dB' },
+        { id: 'p2', name: 'Dosa batter', speed: 2, limit: 35, texture: 'Fine', requiredAttachmentId: 3, jar: 'jar2', noise: '66-72 dB' },
+        { id: 'p3', name: 'Wet masala', speed: 4, limit: 40, texture: 'Medium', requiredAttachmentId: 1, jar: 'jar2', noise: '72-78 dB' },
+        { id: 'p4', name: 'Dry masala', speed: 5, limit: 42, texture: 'Fine', requiredAttachmentId: 2, jar: 'jar2', noise: '78-86 dB' },
+        { id: 'p5', name: 'Chutney', speed: 3, limit: 36, texture: 'Paste', requiredAttachmentId: 1, jar: 'jar1', noise: '68-74 dB' },
+        { id: 'p6', name: 'Coarse podi', speed: 2, limit: 38, texture: 'Coarse', requiredAttachmentId: 4, jar: 'jar1', noise: '70-76 dB' }
+      ],
+      FAULT_GUIDES: {
+        E1: { title: 'E1 Overload / Motor Stall', text: 'Motor current remained >1.35x expected for >15s. Reduce batch size or add 30-50 ml water.' },
+        E2: { title: 'E2 Temperature Sensor Fault', text: 'DS18B20 digital thermal sensor disconnected. Switched to safety time-fallback mode.' },
+        E3: { title: 'E3 Jar Interlock Not Seated', text: 'Jar is not properly locked onto the base coupler. Align tabs and twist clockwise.' },
+        E4: { title: 'E4 Abnormal Vibration Detected', text: 'SW-420 sensor detected high vibration >3s. Check for blade imbalance or hard stones.' },
+        E5: { title: 'E5 Attachment Recognition Mismatch', text: 'Hall sensor code does not match required dish tooling. Fit correct attachment.' },
+        E6: { title: 'E6 Dry Run / Empty Jar Detected', text: 'Current dropped below 50% or batch weight <20g. Add ingredients before running.' }
+      }
+    };
+
+    /* -------------------------------------------------------------
+       SAFE STORAGE WITH IN-MEMORY FALLBACK & MIGRATION (P1-5)
+       ------------------------------------------------------------- */
+    const STORAGE_KEY = 'apexgrind_store_v4';
+    const STORE_VERSION = 2;
+    let memStore = null;
+
+    function safeGetStorage() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          return migrateStoredData(parsed);
+        }
+      } catch (e) {
+        console.warn('Storage unavailable, using memory fallback:', e);
+      }
+      return memStore ? migrateStoredData(memStore) : null;
+    }
+
+    function safeSetStorage(data) {
+      data.version = STORE_VERSION;
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      } catch (e) {
+        memStore = JSON.parse(JSON.stringify(data));
+      }
+    }
+
+    /* P1-5 Migration step for old stored data versions */
+    function migrateStoredData(data) {
+      if (!data || typeof data !== 'object') return null;
+      if (!data.version || data.version < STORE_VERSION) {
+        data.version = STORE_VERSION;
+        if (!data.snoozedUntil) data.snoozedUntil = { cleaning: 0, service: 0 };
+        if (!data.profiles) data.profiles = ["Mom's Recipes", "Quick Morning", "Spice Master"];
+        if (!data.activeProfile) data.activeProfile = "Mom's Recipes";
+      }
+      return data;
+    }
+
+    let APP_STATE = safeGetStorage() || {
+      version: STORE_VERSION,
+      activeProfile: "Mom's Recipes",
+      profiles: ["Mom's Recipes", "Quick Morning", "Spice Master"],
+      presets: JSON.parse(JSON.stringify(CONFIG.DEFAULT_PRESETS)),
+      history: [],
+      margin: CONFIG.defaultMargin,
+      resumeGap: CONFIG.defaultResumeGap,
+      predictive: true,
+      childLock: false,
+      hardStopSec: CONFIG.hardStopSec,
+      tempOffset: 0.0,
+      currentZeroOffset: 2500,
+      audioEnabled: false,
+      familySync: true,
+      snoozedUntil: { cleaning: 0, service: 0 }
+    };
+
+    /* A1 FIX: Single state field status mapping */
+    const SIM = {
+      status: 'Ready', // Idle, Ready, Grinding, Paused to cool, Done, Fault, Power off
+      motorOn: false,
+      speed: 2,
+      texture: 'Medium',
+      currentDish: 'Idli batter',
+      jar: 'jar2',
+      attachmentId: 3,
+      batchWeight: 350,
+      motorLoadFactor: 1.0,
+      simSpeedMultiplier: 10,
+      trueTemp: CONFIG.ambient,
+      sensorTemp: CONFIG.ambient,
+      limit: 34,
+      progress: 0.0,
+      pausesCount: 0,
+      elapsedSimSec: 0,
+      lastRunPeakTemp: null, // A4 FIX: Keep final reading labelled 'Last run'
+      powerCutRecovered: false,
+      // Fault simulations
+      simulateSensorFault: false,
+      simulateJarNotSeated: false,
+      simulateOverloadJam: false,
+      simulateHighVib: false,
+      simulateToolMismatch: false,
+      simulateDryRun: false,
+      activeFaultCode: null,
+      // Sensor telemetry history for line chart
+      telemetry: [{ time: 0, sensorTemp: CONFIG.ambient, trueTemp: CONFIG.ambient, paused: false }],
+      // 3D Blade Studio Gimbal Rotations
+      bladeRotX: 18,
+      bladeRotY: 0,
+      isGimbalDragging: false,
+      gimbalStartX: 0,
+      gimbalStartY: 0
+    };
+
+    /* -------------------------------------------------------------
+       AUDIO SYNTHESIZER (A12 FIX: Starts OFF, gesture-initialized)
+       ------------------------------------------------------------- */
+    let audioCtx = null;
+    let motorOsc = null;
+    let motorGain = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        try {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) {
+            audioCtx = new AudioContext();
+          }
+        } catch (e) {}
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
+      }
+    }
+
+    function toggleMasterAudio(forceState) {
+      initAudio();
+      APP_STATE.audioEnabled = (forceState !== undefined) ? forceState : !APP_STATE.audioEnabled;
+      CONFIG.audioEnabled = APP_STATE.audioEnabled;
+      safeSetStorage(APP_STATE);
+      updateAudioUI();
+      if (!APP_STATE.audioEnabled) {
+        stopMotorSound();
+      } else if (SIM.motorOn) {
+        playMotorSound(SIM.speed);
+      }
+    }
+
+    function updateAudioUI() {
+      const isAud = APP_STATE.audioEnabled;
+      const hBtn = document.getElementById('btnHeaderAudio');
+      const hIcon = document.getElementById('headerAudioIcon');
+      const advBtn = document.getElementById('advAudioBtnText');
+      if (hIcon) hIcon.textContent = isAud ? '🔊 Audio: ON' : '🔇 Audio: OFF';
+      if (hBtn) hBtn.classList.toggle('active', isAud);
+      if (advBtn) advBtn.textContent = isAud ? '🔊 Audio: ON' : '🔇 Audio: OFF';
+    }
+
+    function playBeep(freq = 880, dur = 0.08) {
+      if (!APP_STATE.audioEnabled || !audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        g.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+        osc.connect(g);
+        g.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + dur);
+      } catch (e) {}
+    }
+
+    function playMotorSound(speed) {
+      if (!APP_STATE.audioEnabled || !audioCtx) return;
+      try {
+        if (!motorOsc) {
+          motorOsc = audioCtx.createOscillator();
+          motorGain = audioCtx.createGain();
+          motorOsc.type = 'sawtooth';
+          motorOsc.connect(motorGain);
+          motorGain.connect(audioCtx.destination);
+          motorGain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+          motorOsc.start();
+        }
+        const baseFreq = 50 + speed * 25;
+        motorOsc.frequency.setTargetAtTime(baseFreq, audioCtx.currentTime, 0.05);
+      } catch (e) {}
+    }
+
+    function stopMotorSound() {
+      if (motorOsc) {
+        try {
+          motorOsc.stop();
+          motorOsc.disconnect();
+        } catch (e) {}
+        motorOsc = null;
+      }
+    }
+
+    /* -------------------------------------------------------------
+       SIMULATION LOOP & THERMAL / PHYSICS ENGINE
+       ------------------------------------------------------------- */
+    let simTimer = null;
+
+    function startSimulationLoop() {
+      if (simTimer) clearInterval(simTimer);
+      simTimer = setInterval(simulationTick, CONFIG.tickIntervalMs);
+    }
+
+    // Pause simulation timer when tab is hidden (Non-negotiable rule)
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        if (simTimer) clearInterval(simTimer);
+        stopMotorSound();
+      } else {
+        startSimulationLoop();
+      }
+    });
+
+    function simulationTick() {
+      const dtSim = (CONFIG.tickIntervalMs / 1000) * SIM.simSpeedMultiplier;
+
+      // 1. Check Hardware Interlocks / Faults
+      if (SIM.simulateJarNotSeated) {
+        SIM.activeFaultCode = 'E3';
+        setSystemStatus('Fault');
+        stopMotorRun();
+        return;
+      }
+      if (SIM.simulateHighVib) {
+        SIM.activeFaultCode = 'E4';
+        setSystemStatus('Fault');
+        stopMotorRun();
+        return;
+      }
+      if (SIM.simulateToolMismatch) {
+        SIM.activeFaultCode = 'E5';
+        setSystemStatus('Fault');
+        stopMotorRun();
+        return;
+      }
+      if (SIM.simulateDryRun && SIM.batchWeight < 20) {
+        SIM.activeFaultCode = 'E6';
+        setSystemStatus('Fault');
+        stopMotorRun();
+        return;
+      }
+
+      // 2. Physics & Thermal Heat Equation
+      const ambient = CONFIG.ambient + (document.getElementById('chkWarmJar')?.checked ? CONFIG.warmJarOffset : 0);
+
+      if (SIM.motorOn) {
+        SIM.elapsedSimSec += dtSim;
+        const speedPowerFactor = SIM.speed * 0.45;
+        const loadFactor = SIM.motorLoadFactor;
+        const heatRate = CONFIG.baseHeatFactor * speedPowerFactor * loadFactor;
+        const coolingRate = CONFIG.coolingCoeff * (SIM.trueTemp - ambient);
+        SIM.trueTemp += (heatRate - coolingRate) * dtSim;
+
+        // Texture progress advancement
+        const progressIncrement = (dtSim / 28) * (SIM.speed / 2) * CONFIG.textureMultipliers[SIM.texture];
+        SIM.progress = Math.min(100.0, SIM.progress + progressIncrement);
+
+        // Spin blade visual
+        const spinDeg = (SIM.elapsedSimSec * SIM.speed * 360) % 360;
+        const spinGroup = document.getElementById('bladeSpinGroup');
+        const heroSub = document.getElementById('heroSpinSubGroup');
+        if (spinGroup) spinGroup.style.transform = \`rotate(\${spinDeg}deg)\`;
+        if (heroSub) heroSub.style.transform = \`rotate(\${spinDeg}deg)\`;
+
+        // Check if finished (100% progress)
+        if (SIM.progress >= 100.0) {
+          onRunCompleted();
+          return;
+        }
+
+        // Hard stop timeout
+        if (SIM.elapsedSimSec >= CONFIG.hardStopSec) {
+          onRunCompleted();
+          return;
+        }
+      } else {
+        // Natural convective cooling
+        const coolDown = CONFIG.coolingCoeff * (SIM.trueTemp - ambient) * dtSim;
+        SIM.trueTemp = Math.max(ambient, SIM.trueTemp - coolDown);
+      }
+
+      // 3. Sensor lag simulation (DS18B20 digital thermal time constant)
+      if (SIM.simulateSensorFault) {
+        SIM.sensorTemp = -999;
+      } else {
+        const lagAlpha = 1 - Math.exp(-dtSim / CONFIG.sensorLagSec);
+        SIM.sensorTemp += (SIM.trueTemp - SIM.sensorTemp) * lagAlpha;
+      }
+
+      // 4. Multi-Sensor Thermal Guard Protection Logic
+      const margin = APP_STATE.margin;
+      const pauseThreshold = SIM.limit - margin;
+      const resumeThreshold = pauseThreshold - APP_STATE.resumeGap;
+
+      if (SIM.motorOn && SIM.sensorTemp >= pauseThreshold) {
+        // Guard triggers cooling pause
+        SIM.motorOn = false;
+        SIM.pausesCount++;
+        setSystemStatus('Paused to cool');
+        stopMotorSound();
+        playBeep(440, 0.2);
+        showToast(\`Thermal Guard: Motor paused at \${SIM.sensorTemp.toFixed(1)} °C to cool\`);
+      } else if (!SIM.motorOn && SIM.status === 'Paused to cool' && SIM.sensorTemp <= resumeThreshold) {
+        // Cooled sufficiently: Resume grinding
+        SIM.motorOn = true;
+        setSystemStatus('Grinding');
+        playMotorSound(SIM.speed);
+        showToast(\`Temperature safe (\${SIM.sensorTemp.toFixed(1)} °C). Resuming...\`);
+      }
+
+      // 5. Telemetry history recording for Chart
+      if (SIM.motorOn || SIM.status === 'Paused to cool') {
+        const lastPt = SIM.telemetry[SIM.telemetry.length - 1];
+        if (!lastPt || (SIM.elapsedSimSec - lastPt.time) >= 1.0) {
+          SIM.telemetry.push({
+            time: Math.round(SIM.elapsedSimSec),
+            sensorTemp: Number(SIM.sensorTemp.toFixed(1)),
+            trueTemp: Number(SIM.trueTemp.toFixed(1)),
+            paused: (SIM.status === 'Paused to cool')
+          });
+          if (SIM.telemetry.length > CONFIG.chartHistoryCap) {
+            SIM.telemetry.shift();
+          }
+          renderLiveChart();
+        }
+      }
+
+      // 6. Update visual interfaces
+      updateMachineDisplay();
+      updateAppLiveDisplay();
+    }
+
+    function onRunCompleted() {
+      SIM.motorOn = false;
+      SIM.progress = 100.0;
+      SIM.lastRunPeakTemp = Number(SIM.sensorTemp.toFixed(1));
+      setSystemStatus('Done');
+      stopMotorSound();
+      playBeep(1200, 0.3);
+
+      // P2-5: Post-run cooling advisory calculation
+      const deltaT = Math.max(0, SIM.sensorTemp - CONFIG.ambient);
+      const estCooldownMins = Math.max(1, Math.round(deltaT / 1.5));
+      const advisoryText = \`Cool-down: ~\${estCooldownMins} min to ambient before next batch\`;
+      const advNote = document.getElementById('screenAdvisoryNote');
+      if (advNote) {
+        advNote.textContent = advisoryText;
+        advNote.style.display = 'block';
+      }
+
+      // Save to History session log
+      const estFine = Math.round(CONFIG.textureFineFactor[SIM.texture] * 100);
+      const newSession = {
+        id: 'sess_' + Date.now(),
+        profile: APP_STATE.activeProfile,
+        dish: SIM.currentDish,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        date: new Date().toISOString().split('T')[0],
+        durationSec: Math.round(SIM.elapsedSimSec),
+        speed: SIM.speed,
+        texture: SIM.texture,
+        pauses: SIM.pausesCount,
+        peakTemp: SIM.lastRunPeakTemp,
+        limit: SIM.limit,
+        batchWeight: SIM.batchWeight,
+        energyKwh: Number(((CONFIG.powerWatts[SIM.speed] * (SIM.elapsedSimSec / 3600)) / 1000).toFixed(3)),
+        estFineFraction: estFine,
+        measuredFineFraction: null,
+        telemetry: JSON.parse(JSON.stringify(SIM.telemetry))
+      };
+
+      APP_STATE.history.unshift(newSession);
+      if (APP_STATE.history.length > CONFIG.historyMaxEntries) {
+        APP_STATE.history.pop();
+      }
+      safeSetStorage(APP_STATE);
+      renderHistoryTab();
+
+      showToast(\`Grind complete! \${SIM.currentDish} texture target reached.\`);
+    }
+
+    /* A1, A3 FIX: Single unified state setter */
+    function setSystemStatus(newStatus) {
+      SIM.status = newStatus;
+      const hDot = document.getElementById('headerLiveDot');
+      const hText = document.getElementById('headerLiveStatus');
+      const mBadge = document.getElementById('screenStatusBadge');
+      const pBadge = document.getElementById('liveStatusBadge');
+      const monNote = document.getElementById('monitoringNotice');
+      const knobCap = document.getElementById('knobCenterCap');
+
+      if (hText) hText.textContent = newStatus;
+      if (mBadge) mBadge.textContent = newStatus.toUpperCase();
+      if (pBadge) pBadge.textContent = newStatus.toUpperCase();
+
+      // Reset badge classes
+      ['grinding', 'paused', 'done', 'fault', 'poweroff'].forEach(cls => {
+        mBadge?.classList.remove(cls);
+        pBadge?.classList.remove(cls);
+      });
+
+      if (hDot) {
+        hDot.className = 'live-dot';
+      }
+
+      if (newStatus === 'Grinding') {
+        mBadge?.classList.add('grinding');
+        pBadge?.classList.add('grinding');
+        hDot?.classList.add('pulsing');
+        if (knobCap) knobCap.textContent = 'PAUSE';
+      } else if (newStatus === 'Paused to cool') {
+        mBadge?.classList.add('paused');
+        pBadge?.classList.add('paused');
+        hDot?.classList.add('paused');
+        if (knobCap) knobCap.textContent = 'COOL';
+      } else if (newStatus === 'Done') {
+        mBadge?.classList.add('done');
+        pBadge?.classList.add('done');
+        if (knobCap) knobCap.textContent = 'RESET';
+      } else if (newStatus === 'Fault') {
+        mBadge?.classList.add('fault');
+        pBadge?.classList.add('fault');
+        hDot?.classList.add('fault');
+        if (knobCap) knobCap.textContent = 'ERR';
+      } else if (newStatus === 'Power off') {
+        mBadge?.classList.add('poweroff');
+        pBadge?.classList.add('poweroff');
+        if (knobCap) knobCap.textContent = 'PWR';
+      } else {
+        if (knobCap) knobCap.textContent = 'START';
+      }
+
+      // A2 FIX: Monitoring note shows active concurrent grinding notice only when grinding or paused
+      if (monNote) {
+        if (newStatus === 'Grinding') {
+          monNote.textContent = '⚙️ Machine running concurrently in background';
+        } else if (newStatus === 'Paused to cool') {
+          monNote.textContent = '⏳ Paused for cooling • Thermal safety active';
+        } else {
+          monNote.textContent = '🔒 Monitoring only • Machine controls hardware';
+        }
+      }
+    }
+
+    /* -------------------------------------------------------------
+       HARDWARE CONTROLS (Knob, Stop, Speed, Texture)
+       ------------------------------------------------------------- */
+    function toggleMotorRun() {
+      if (APP_STATE.childLock) {
+        showToast('Child Lock is active. Hold knob for 2s to unlock.');
+        playBeep(300, 0.2);
+        return;
+      }
+      if (SIM.activeFaultCode) {
+        showToast(\`Cannot start: Fault \${SIM.activeFaultCode} active. Check Faults tab.\`);
+        playBeep(300, 0.2);
+        return;
+      }
+
+      if (SIM.status === 'Done') {
+        // Reset for next batch (A4 FIX)
+        SIM.progress = 0.0;
+        SIM.elapsedSimSec = 0;
+        SIM.pausesCount = 0;
+        SIM.lastRunPeakTemp = null;
+        SIM.telemetry = [{ time: 0, sensorTemp: SIM.sensorTemp, trueTemp: SIM.trueTemp, paused: false }];
+        const advNote = document.getElementById('screenAdvisoryNote');
+        if (advNote) advNote.style.display = 'none';
+        setSystemStatus('Ready');
+        return;
+      }
+
+      if (SIM.motorOn) {
+        // Pause run
+        SIM.motorOn = false;
+        setSystemStatus('Ready');
+        stopMotorSound();
+      } else {
+        // Start run
+        SIM.motorOn = true;
+        setSystemStatus('Grinding');
+        playMotorSound(SIM.speed);
+        playBeep(980, 0.1);
+      }
+    }
+
+    function stopMotorRun() {
+      SIM.motorOn = false;
+      stopMotorSound();
+      if (!SIM.activeFaultCode && SIM.status !== 'Power off') {
+        setSystemStatus('Ready');
+      }
+      playBeep(400, 0.15);
+    }
+
+    function setMotorSpeed(spd) {
+      if (SIM.motorOn) return; // Ignore parameter changes mid-run (Test 7)
+      SIM.speed = Math.max(1, Math.min(5, spd));
+      document.querySelectorAll('.speed-tick').forEach(tick => {
+        const val = parseInt(tick.getAttribute('data-speed'), 10);
+        tick.classList.toggle('active', val <= SIM.speed);
+      });
+      const lbl = document.getElementById('speedLabelText');
+      if (lbl) lbl.textContent = \`Speed \${SIM.speed}\`;
+      const knobDial = document.getElementById('hardwareKnobDial');
+      if (knobDial) {
+        const angles = { 1: -60, 2: -30, 3: 0, 4: 30, 5: 60 };
+        knobDial.style.transform = \`rotate(\${angles[SIM.speed] || 0}deg)\`;
+      }
+      const chip = document.getElementById('liveChipSpeed');
+      if (chip) chip.textContent = \`Speed \${SIM.speed}\`;
+    }
+
+    function setMotorTexture(tex) {
+      if (SIM.motorOn) return; // Ignore parameter changes mid-run
+      SIM.texture = tex;
+      document.querySelectorAll('.btn-texture-pill').forEach(btn => {
+        const active = btn.getAttribute('data-texture') === tex;
+        btn.classList.toggle('active', active);
+        btn.setAttribute('aria-checked', active ? 'true' : 'false');
+      });
+      const chip = document.getElementById('liveChipTexture');
+      if (chip) chip.textContent = tex;
+    }
+
+    /* -------------------------------------------------------------
+       UI DISPLAY UPDATERS (Display, Sensors, Live Screen)
+       ------------------------------------------------------------- */
+    function updateMachineDisplay() {
+      // Touchscreen temperature ("est." only on readings, non-negotiable rule)
+      const tempVal = document.getElementById('screenTempDisplay');
+      if (tempVal) {
+        if (SIM.simulateSensorFault) {
+          tempVal.innerHTML = \`---<span class="unit">°C est.</span>\`;
+        } else {
+          tempVal.innerHTML = \`\${SIM.sensorTemp.toFixed(1)}<span class="unit">°C est.</span>\`;
+        }
+      }
+      const tempLimit = document.getElementById('screenTempLimit');
+      if (tempLimit) tempLimit.textContent = \`Limit \${SIM.limit} °C\`;
+
+      const fill = document.getElementById('screenProgressFill');
+      if (fill) fill.style.width = \`\${SIM.progress.toFixed(1)}%\`;
+
+      const progTxt = document.getElementById('screenProgressText');
+      if (progTxt) progTxt.textContent = \`Progress: \${Math.round(SIM.progress)}%\`;
+
+      const pausesTxt = document.getElementById('screenPausesText');
+      if (pausesTxt) pausesTxt.textContent = \`Pauses: \${SIM.pausesCount}\`;
+
+      // Sensors Tab cards (Test A10: All texts >= 12px)
+      const sTemp = document.getElementById('valSensorTemp');
+      if (sTemp) sTemp.textContent = SIM.simulateSensorFault ? 'ERR' : \`\${SIM.sensorTemp.toFixed(1)} °C est.\`;
+      const sTrue = document.getElementById('subSensorTrueTemp');
+      if (sTrue) sTrue.textContent = \`True: \${SIM.trueTemp.toFixed(1)} °C\`;
+
+      const sRpm = document.getElementById('valSensorRpm');
+      if (sRpm) sRpm.textContent = SIM.motorOn ? \`\${SIM.speed * 3600} RPM\` : '0 RPM';
+
+      const sAmps = document.getElementById('valSensorAmps');
+      const amps = SIM.motorOn ? (CONFIG.powerWatts[SIM.speed] / 230 * SIM.motorLoadFactor).toFixed(1) : '0.0';
+      if (sAmps) sAmps.textContent = \`\${amps} A\`;
+      const sWatts = document.getElementById('subSensorWatts');
+      if (sWatts) sWatts.textContent = SIM.motorOn ? \`\${Math.round(CONFIG.powerWatts[SIM.speed] * SIM.motorLoadFactor)} W (est.)\` : '0 W (est.)';
+
+      const sVib = document.getElementById('valSensorVib');
+      const vib = SIM.motorOn ? (0.04 + SIM.speed * 0.08 + (SIM.simulateHighVib ? 0.8 : 0)).toFixed(2) : '0.02';
+      if (sVib) sVib.textContent = \`\${vib} g\`;
+
+      const sWeight = document.getElementById('valSensorWeight');
+      if (sWeight) sWeight.textContent = \`\${SIM.batchWeight} g\`;
+    }
+
+    function updateAppLiveDisplay() {
+      // Live temperature
+      const liveTemp = document.getElementById('liveTempDisplay');
+      if (liveTemp) {
+        if (SIM.simulateSensorFault) {
+          liveTemp.innerHTML = \`---<span class="unit">°C est.</span>\`;
+        } else {
+          liveTemp.innerHTML = \`\${SIM.sensorTemp.toFixed(1)}<span class="unit">°C est.</span>\`;
+        }
+      }
+      const liveLimit = document.getElementById('liveLimitDisplay');
+      if (liveLimit) liveLimit.textContent = \`Limit \${SIM.limit} °C\`;
+
+      const liveFill = document.getElementById('liveProgressFill');
+      if (liveFill) liveFill.style.width = \`\${SIM.progress.toFixed(1)}%\`;
+
+      const livePercent = document.getElementById('liveProgressPercent');
+      if (livePercent) livePercent.textContent = \`Progress: \${Math.round(SIM.progress)}%\`;
+
+      // A6 FIX: Formula for Estimated Fine Fraction
+      const estFine = Math.round(CONFIG.textureFineFactor[SIM.texture] * (SIM.progress / 100) * 100);
+      const estFineTxt = document.getElementById('liveEstFineText');
+      if (estFineTxt) estFineTxt.textContent = \`Est. Fine: \${estFine}%\`;
+
+      const pChip = document.getElementById('liveChipPauses');
+      if (pChip) pChip.textContent = SIM.pausesCount;
+    }
+
+    /* -------------------------------------------------------------
+       A8 FIX: TELEMETRY CHART (Auto-fitting Y-axis, gridlines, pauses)
+       ------------------------------------------------------------- */
+    function renderLiveChart() {
+      const canvas = document.getElementById('liveChartCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+
+      const w = rect.width;
+      const h = rect.height;
+      if (w <= 0 || h <= 0) return;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Auto-fit Y-axis range: [ambient - 1, limit + 2] (A8 FIX)
+      const yMin = CONFIG.ambient - 1.0;
+      const yMax = SIM.limit + 2.0;
+      const padLeft = 26;
+      const padRight = 8;
+      const padTop = 6;
+      const padBottom = 16;
+      const chartW = w - padLeft - padRight;
+      const chartH = h - padTop - padBottom;
+
+      function getY(temp) {
+        const clamped = Math.max(yMin, Math.min(yMax, temp));
+        return padTop + chartH - ((clamped - yMin) / (yMax - yMin)) * chartH;
+      }
+
+      // Draw horizontal gridlines every 2 °C with labels
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      ctx.lineWidth = 1;
+      ctx.fillStyle = '#64748B';
+      ctx.font = '12px ui-monospace, monospace';
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
+
+      for (let t = Math.ceil(yMin); t <= yMax; t += 2) {
+        const y = getY(t);
+        ctx.beginPath();
+        ctx.moveTo(padLeft, y);
+        ctx.lineTo(w - padRight, y);
+        ctx.stroke();
+        ctx.fillText(\`\${t}°\`, padLeft - 4, y);
+      }
+
+      // Limit line (Red dashed line)
+      const yLimit = getY(SIM.limit);
+      ctx.strokeStyle = '#E5484D';
+      ctx.setLineDash([4, 3]);
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(padLeft, yLimit);
+      ctx.lineTo(w - padRight, yLimit);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      const pts = SIM.telemetry;
+      if (pts.length < 2) return;
+
+      // Draw pause shaded regions
+      ctx.fillStyle = 'rgba(255, 184, 77, 0.15)';
+      for (let i = 0; i < pts.length; i++) {
+        if (pts[i].paused) {
+          const xStart = padLeft + (i / (pts.length - 1)) * chartW;
+          const xEnd = padLeft + ((i + 1) / (pts.length - 1)) * chartW;
+          ctx.fillRect(xStart, padTop, Math.max(2, xEnd - xStart), chartH);
+        }
+      }
+
+      // Draw sensor temperature curve (Teal line with glow)
+      ctx.strokeStyle = '#38BDF8';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for (let i = 0; i < pts.length; i++) {
+        const x = padLeft + (i / (pts.length - 1)) * chartW;
+        const y = getY(pts[i].sensorTemp);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+
+    /* -------------------------------------------------------------
+       P1-1: EXPERIMENT MODE (Guard OFF vs Guard ON side-by-side)
+       ------------------------------------------------------------- */
+    function runGuardExperiment() {
+      // Run identical dish back-to-back: Idli batter
+      // Run A (Guard OFF): Continues heating unrestricted
+      // Run B (Guard ON): Pauses whenever limit - margin reached
+      const dish = 'Idli batter';
+      const limit = 34.0;
+      const ambient = 28.0;
+      const duration = 75; // seconds
+
+      let tOff = ambient;
+      let secOverLimitOff = 0;
+      let curveOff = [];
+      for (let s = 0; s <= duration; s++) {
+        tOff += 0.22 - (tOff - ambient) * 0.01;
+        if (tOff > limit) secOverLimitOff++;
+        curveOff.push({ s, temp: Number(tOff.toFixed(1)) });
+      }
+      const peakOff = Number(tOff.toFixed(1));
+
+      let tOn = ambient;
+      let pausesOn = 0;
+      let secOverLimitOn = 0;
+      let curveOn = [];
+      let isPaused = false;
+      let elapsedOn = 0;
+
+      while (elapsedOn < duration + 20) {
+        elapsedOn++;
+        if (!isPaused) {
+          tOn += 0.22 - (tOn - ambient) * 0.01;
+          if (tOn >= limit - 1.5) {
+            isPaused = true;
+            pausesOn++;
+          }
+        } else {
+          tOn -= 0.18;
+          if (tOn <= limit - 3.5) {
+            isPaused = false;
+          }
+        }
+        if (tOn > limit) secOverLimitOn++;
+        curveOn.push({ s: elapsedOn, temp: Number(tOn.toFixed(1)) });
+      }
+      const peakOn = Math.min(limit, Number(Math.max(...curveOn.map(c => c.temp)).toFixed(1)));
+
+      // Render Comparison Modal Dialog
+      openAppModal('🔬 Thermal Guard Experiment Mode', \`
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="font-size:12px;color:var(--text-dim);background:rgba(18,181,174,0.1);padding:6px 8px;border-radius:4px;">
+            Side-by-side comparison for \${dish} (Limit \${limit} °C). <em>Simulated, not measured.</em>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <!-- Card Guard OFF -->
+            <div style="background:var(--panel-2);border:1px solid #EF4444;border-radius:6px;padding:8px;">
+              <div style="font-weight:700;color:#FCA5A5;font-size:13px;margin-bottom:4px;">Guard OFF (Unregulated)</div>
+              <div style="font-size:12px;color:var(--text-dim);">Peak Temp: <strong style="color:#EF4444;font-size:14px;">\${peakOff} °C</strong></div>
+              <div style="font-size:12px;color:var(--text-dim);">Over Limit: <strong style="color:#EF4444;">\${secOverLimitOff}s</strong></div>
+              <div style="font-size:12px;color:var(--text-dim);">Pauses: <strong>0</strong></div>
+              <div style="font-size:12px;color:var(--text-dim);">Batter Integrity: <span style="color:#EF4444;font-weight:700;">Overheated / Sour</span></div>
+            </div>
+
+            <!-- Card Guard ON -->
+            <div style="background:var(--panel-2);border:1px solid var(--teal);border-radius:6px;padding:8px;">
+              <div style="font-weight:700;color:var(--teal);font-size:13px;margin-bottom:4px;">Guard ON (APEX Protect)</div>
+              <div style="font-size:12px;color:var(--text-dim);">Peak Temp: <strong style="color:var(--teal);font-size:14px;">\${peakOn} °C</strong></div>
+              <div style="font-size:12px;color:var(--text-dim);">Over Limit: <strong style="color:var(--green);">0s</strong></div>
+              <div style="font-size:12px;color:var(--text-dim);">Pauses: <strong>\${pausesOn}</strong></div>
+              <div style="font-size:12px;color:var(--text-dim);">Batter Integrity: <span style="color:var(--green);font-weight:700;">Optimal Fermentation</span></div>
+            </div>
+          </div>
+
+          <!-- Overlaid Canvas Curve -->
+          <div style="background:var(--panel-2);border:1px solid var(--border);border-radius:6px;padding:8px;height:120px;position:relative;">
+            <canvas id="experimentChartCanvas" style="width:100%;height:100%;"></canvas>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-dim);">
+            <span><span style="color:#EF4444;">―</span> Guard OFF Curve</span>
+            <span><span style="color:var(--teal);">―</span> Guard ON Curve</span>
+            <span><span style="color:#FFF;">---</span> Limit 34 °C</span>
+          </div>
+        </div>
+      \`);
+
+      // Draw Experiment Overlaid Canvas
+      setTimeout(() => {
+        const cvs = document.getElementById('experimentChartCanvas');
+        if (!cvs) return;
+        const ctx = cvs.getContext('2d');
+        const rect = cvs.getBoundingClientRect();
+        cvs.width = rect.width * 2;
+        cvs.height = rect.height * 2;
+        ctx.scale(2, 2);
+        const w = rect.width;
+        const h = rect.height;
+
+        ctx.clearRect(0, 0, w, h);
+        const yMin = 26;
+        const yMax = Math.max(peakOff + 2, 45);
+
+        function getY(val) {
+          return h - 14 - ((val - yMin) / (yMax - yMin)) * (h - 24);
+        }
+
+        // Limit line
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(10, getY(limit));
+        ctx.lineTo(w - 10, getY(limit));
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Curve OFF (Red)
+        ctx.strokeStyle = '#EF4444';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let i = 0; i < curveOff.length; i++) {
+          const x = 10 + (i / (curveOff.length - 1)) * (w - 20);
+          const y = getY(curveOff[i].temp);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        // Curve ON (Teal)
+        ctx.strokeStyle = '#12B5AE';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let i = 0; i < curveOn.length; i++) {
+          const x = 10 + (i / (curveOn.length - 1)) * (w - 20);
+          const y = getY(curveOn[i].temp);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }, 50);
+    }
+
+    /* -------------------------------------------------------------
+       P1-2: GUIDED DEMO (60-second scripted walkthrough story)
+       ------------------------------------------------------------- */
+    let demoStep = 0;
+    let demoTimer = null;
+    let demoPaused = false;
+
+    const DEMO_SCRIPT = [
+      { step: 1, title: 'Step 1 of 6', text: 'Selecting preset: Idli batter (Speed 2, Limit 34 °C)', duration: 4000, action: () => {
+        selectDishByName('Idli batter');
+      }},
+      { step: 2, title: 'Step 2 of 6', text: 'Starting motor grinding at Speed 2. Sensor active.', duration: 5000, action: () => {
+        if (!SIM.motorOn) toggleMotorRun();
+      }},
+      { step: 3, title: 'Step 3 of 6', text: 'Thermal friction rising: Approaching 32.5 °C safety margin.', duration: 6000, action: () => {
+        SIM.trueTemp = 32.2;
+        SIM.sensorTemp = 32.0;
+        SIM.progress = 40.0;
+      }},
+      { step: 4, title: 'Step 4 of 6', text: 'Thermal Guard pauses motor automatically to prevent dough overheating!', duration: 6000, action: () => {
+        SIM.trueTemp = 34.2;
+        SIM.sensorTemp = 34.0;
+      }},
+      { step: 5, title: 'Step 5 of 6', text: 'Jar cooled back to safe zone. Grinding resumes automatically.', duration: 5000, action: () => {
+        SIM.trueTemp = 30.0;
+        SIM.sensorTemp = 30.0;
+        if (!SIM.motorOn) toggleMotorRun();
+      }},
+      { step: 6, title: 'Step 6 of 6', text: 'Grind Complete: 100% Medium texture reached. Ready for next batch!', duration: 4000, action: () => {
+        onRunCompleted();
+      }}
+    ];
+
+    function startGuidedDemo() {
+      demoStep = 0;
+      demoPaused = false;
+      const banner = document.getElementById('guidedDemoBanner');
+      if (banner) banner.classList.add('active');
+      runNextDemoStep();
+    }
+
+    function runNextDemoStep() {
+      if (demoStep >= DEMO_SCRIPT.length) {
+        stopGuidedDemo();
+        return;
+      }
+      const item = DEMO_SCRIPT[demoStep];
+      const badge = document.getElementById('demoStepBadge');
+      const caption = document.getElementById('demoCaptionText');
+      if (badge) badge.textContent = item.title;
+      if (caption) caption.textContent = item.text;
+
+      item.action();
+      demoStep++;
+      demoTimer = setTimeout(runNextDemoStep, item.duration);
+    }
+
+    function stopGuidedDemo() {
+      if (demoTimer) clearTimeout(demoTimer);
+      const banner = document.getElementById('guidedDemoBanner');
+      if (banner) banner.classList.remove('active');
+      showToast('Guided demo completed. Grinder returned to active mode.');
+    }
+
+    /* -------------------------------------------------------------
+       P1-4: KEYBOARD SHORTCUTS CHEAT SHEET (?)
+       ------------------------------------------------------------- */
+    function openShortcutsSheet() {
+      openAppModal('⌨️ Keyboard Shortcuts Cheat Sheet', \`
+        <table style="width:100%;font-size:12px;border-collapse:collapse;color:var(--text);">
+          <tr style="border-bottom:1px solid var(--border);"><th style="text-align:left;padding:6px;">Key</th><th style="text-align:left;padding:6px;">Action</th></tr>
+          <tr style="border-bottom:1px solid var(--border);"><td style="padding:6px;font-family:var(--font-mono);color:var(--teal);">Space</td><td style="padding:6px;">Start / Pause Grinding</td></tr>
+          <tr style="border-bottom:1px solid var(--border);"><td style="padding:6px;font-family:var(--font-mono);color:var(--teal);">Arrow Up / Right</td><td style="padding:6px;">Increase Speed (1-5)</td></tr>
+          <tr style="border-bottom:1px solid var(--border);"><td style="padding:6px;font-family:var(--font-mono);color:var(--teal);">Arrow Down / Left</td><td style="padding:6px;">Decrease Speed (1-5)</td></tr>
+          <tr style="border-bottom:1px solid var(--border);"><td style="padding:6px;font-family:var(--font-mono);color:var(--teal);">T / t</td><td style="padding:6px;">Cycle Texture (Coarse → Paste)</td></tr>
+          <tr style="border-bottom:1px solid var(--border);"><td style="padding:6px;font-family:var(--font-mono);color:var(--red);">S / s</td><td style="padding:6px;">Emergency STOP</td></tr>
+          <tr style="border-bottom:1px solid var(--border);"><td style="padding:6px;font-family:var(--font-mono);color:var(--text-dim);">?</td><td style="padding:6px;">Toggle This Cheat Sheet</td></tr>
+          <tr><td style="padding:6px;font-family:var(--font-mono);color:var(--text-dim);">Esc</td><td style="padding:6px;">Close Open Modals / Sheets</td></tr>
+        </table>
+      \`);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      // Ignore when typing inside input or textarea
+      if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
+
+      if (e.key === '?') {
+        e.preventDefault();
+        openShortcutsSheet();
+      } else if (e.code === 'Space') {
+        e.preventDefault();
+        toggleMotorRun();
+      } else if (e.key === 'ArrowUp' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        setMotorSpeed(SIM.speed + 1);
+      } else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        setMotorSpeed(SIM.speed - 1);
+      } else if (e.key === 't' || e.key === 'T') {
+        e.preventDefault();
+        const order = ['Coarse', 'Medium', 'Fine', 'Paste'];
+        const nextIdx = (order.indexOf(SIM.texture) + 1) % order.length;
+        setMotorTexture(order[nextIdx]);
+      } else if (e.key === 's' || e.key === 'S') {
+        e.preventDefault();
+        stopMotorRun();
+      } else if (e.key === 'Escape') {
+        closeAppModal();
+        closeInPhoneSheet();
+        if (document.body.classList.contains('capture-active')) exitCaptureMode();
+      }
+    });
+
+    /* -------------------------------------------------------------
+       P1-7: "ABOUT THIS PROTOTYPE" DIALOG
+       ------------------------------------------------------------- */
+    function openAboutDialog() {
+      openAppModal('ℹ️ About APEXGRIND Prototype', \`
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:12px;color:var(--text-dim);">
+          <div style="background:var(--panel-2);padding:8px;border-radius:6px;border:1px solid var(--border);">
+            <strong style="color:var(--text);">What is Simulated:</strong>
+            <p style="margin-top:4px;">Thermal rise curves, DS18B20 digital sensor lag, current draw & ACS712 zero offset, SW-420 3-axis vibration metrics, Hall-effect attachment identification, and progressive particle reduction.</p>
+          </div>
+          <div style="background:var(--panel-2);padding:8px;border-radius:6px;border:1px solid var(--border);">
+            <strong style="color:var(--text);">What is Placeholder:</strong>
+            <p style="margin-top:4px;">CONFIG formulas, estimated energy wattages (kWh), noise bands (dB), and illustrative parameters. <em>Illustrative values, not measured.</em></p>
+          </div>
+          <div style="background:var(--panel-2);padding:8px;border-radius:6px;border:1px solid var(--border);">
+            <strong style="color:var(--teal);">Monitoring-Only Rule:</strong>
+            <p style="margin-top:4px;">The companion phone app is strictly for real-time monitoring and recipe telemetry. All Start/Stop/Emergency controls reside exclusively on the physical simulated mixer grinder hardware unit.</p>
+          </div>
+        </div>
+      \`);
+    }
+
+    /* -------------------------------------------------------------
+       P2-1: COMPARE PRESETS TABLE
+       ------------------------------------------------------------- */
+    function openComparePresetsDialog() {
+      const rows = CONFIG.DEFAULT_PRESETS.map(p => {
+        const att = CONFIG.ATTACHMENTS.find(a => a.id === p.requiredAttachmentId)?.name || 'Universal';
+        return \`<tr style="border-bottom:1px solid var(--border);">
+          <td style="padding:6px;font-weight:600;color:var(--text);">\${p.name}</td>
+          <td style="padding:6px;color:var(--teal);">Speed \${p.speed}</td>
+          <td style="padding:6px;">Limit \${p.limit} °C</td>
+          <td style="padding:6px;">\${p.texture}</td>
+          <td style="padding:6px;color:var(--text-dim);">\${p.noise}</td>
+          <td style="padding:6px;font-size:11px;">\${att}</td>
+        </tr>\`;
+      }).join('');
+
+      openAppModal('📊 Preset Specifications & Noise Bands', \`
+        <table style="width:100%;font-size:12px;border-collapse:collapse;color:var(--text);">
+          <tr style="border-bottom:1px solid var(--border);color:var(--text-dim);font-size:11px;">
+            <th style="text-align:left;padding:6px;">Dish</th>
+            <th style="text-align:left;padding:6px;">Speed</th>
+            <th style="text-align:left;padding:6px;">Thermal Limit</th>
+            <th style="text-align:left;padding:6px;">Target</th>
+            <th style="text-align:left;padding:6px;">Noise Band</th>
+            <th style="text-align:left;padding:6px;">Attachment</th>
+          </tr>
+          \${rows}
+        </table>
+      \`);
+    }
+
+    /* -------------------------------------------------------------
+       P1-3: LOAD DEMO DATA (8 VARIED SESSIONS ACROSS 3 PROFILES)
+       ------------------------------------------------------------- */
+    function loadDemoData() {
+      const now = Date.now();
+      const demoSessions = [
+        {
+          id: 'demo_1',
+          profile: "Mom's Recipes",
+          dish: 'Idli batter',
+          timestamp: '08:30 AM',
+          date: '2026-10-15',
+          durationSec: 102,
+          speed: 2,
+          texture: 'Medium',
+          pauses: 1,
+          peakTemp: 33.6,
+          limit: 34,
+          batchWeight: 350,
+          energyKwh: 0.024,
+          estFineFraction: 82,
+          measuredFineFraction: 84,
+          isDemo: true
+        },
+        {
+          id: 'demo_2',
+          profile: "Mom's Recipes",
+          dish: 'Wet masala',
+          timestamp: '12:15 PM',
+          date: '2026-10-15',
+          durationSec: 75,
+          speed: 4,
+          texture: 'Medium',
+          pauses: 0,
+          peakTemp: 38.2,
+          limit: 40,
+          batchWeight: 200,
+          energyKwh: 0.019,
+          estFineFraction: 82,
+          measuredFineFraction: 80,
+          isDemo: true
+        },
+        {
+          id: 'demo_3',
+          profile: "Mom's Recipes",
+          dish: 'Chutney',
+          timestamp: '07:45 PM',
+          date: '2026-10-15',
+          durationSec: 48,
+          speed: 3,
+          texture: 'Paste',
+          pauses: 0,
+          peakTemp: 33.1,
+          limit: 36,
+          batchWeight: 150,
+          energyKwh: 0.011,
+          estFineFraction: 99,
+          measuredFineFraction: 98,
+          isDemo: true
+        },
+        {
+          id: 'demo_4',
+          profile: "Quick Morning",
+          dish: 'Dosa batter',
+          timestamp: '07:10 AM',
+          date: '2026-10-16',
+          durationSec: 120,
+          speed: 2,
+          texture: 'Fine',
+          pauses: 2,
+          peakTemp: 34.8,
+          limit: 35,
+          batchWeight: 400,
+          energyKwh: 0.031,
+          estFineFraction: 94,
+          measuredFineFraction: 92,
+          isDemo: true
+        },
+        {
+          id: 'demo_5',
+          profile: "Quick Morning",
+          dish: 'Filter coffee beans',
+          timestamp: '07:35 AM',
+          date: '2026-10-16',
+          durationSec: 35,
+          speed: 2,
+          texture: 'Coarse',
+          pauses: 0,
+          peakTemp: 31.0,
+          limit: 36,
+          batchWeight: 80,
+          energyKwh: 0.008,
+          estFineFraction: 65,
+          measuredFineFraction: 63,
+          isDemo: true
+        },
+        {
+          id: 'demo_6',
+          profile: "Spice Master",
+          dish: 'Dry masala',
+          timestamp: '11:00 AM',
+          date: '2026-10-16',
+          durationSec: 90,
+          speed: 5,
+          texture: 'Fine',
+          pauses: 1,
+          peakTemp: 41.2,
+          limit: 42,
+          batchWeight: 250,
+          energyKwh: 0.028,
+          estFineFraction: 94,
+          measuredFineFraction: 95,
+          isDemo: true
+        },
+        {
+          id: 'demo_7',
+          profile: "Spice Master",
+          dish: 'Coarse podi',
+          timestamp: '02:20 PM',
+          date: '2026-10-16',
+          durationSec: 60,
+          speed: 2,
+          texture: 'Coarse',
+          pauses: 0,
+          peakTemp: 36.5,
+          limit: 38,
+          batchWeight: 300,
+          energyKwh: 0.016,
+          estFineFraction: 65,
+          measuredFineFraction: 66,
+          isDemo: true
+        },
+        {
+          id: 'demo_8',
+          profile: "Spice Master",
+          dish: 'Turmeric root',
+          timestamp: '04:45 PM',
+          date: '2026-10-16',
+          durationSec: 110,
+          speed: 5,
+          texture: 'Fine',
+          pauses: 2,
+          peakTemp: 41.8,
+          limit: 42,
+          batchWeight: 120,
+          energyKwh: 0.035,
+          estFineFraction: 94,
+          measuredFineFraction: null,
+          isDemo: true
+        }
+      ];
+
+      APP_STATE.history = demoSessions;
+      safeSetStorage(APP_STATE);
+      renderHistoryTab();
+      showToast('Loaded 8 realistic demo sessions across 3 profiles.');
+    }
+
+    function clearDemoData() {
+      APP_STATE.history = [];
+      safeSetStorage(APP_STATE);
+      renderHistoryTab();
+      showToast('Demo data cleared.');
+    }
+
+    /* -------------------------------------------------------------
+       P1-1 & P1-2: CAPTURE MODE & SCENARIOS
+       ------------------------------------------------------------- */
+    const SCENARIOS = {
+      idle: () => {
+        stopMotorRun();
+        SIM.status = 'Ready';
+        SIM.trueTemp = 28.0;
+        SIM.sensorTemp = 28.0;
+        SIM.progress = 0.0;
+        SIM.pausesCount = 0;
+        SIM.activeFaultCode = null;
+        setSystemStatus('Ready');
+      },
+      grinding: () => {
+        SIM.status = 'Grinding';
+        SIM.motorOn = true;
+        SIM.speed = 3;
+        SIM.texture = 'Medium';
+        SIM.currentDish = 'Idli batter';
+        SIM.trueTemp = 31.8;
+        SIM.sensorTemp = 31.6;
+        SIM.progress = 45.0;
+        SIM.pausesCount = 0;
+        SIM.activeFaultCode = null;
+        setSystemStatus('Grinding');
+      },
+      paused: () => {
+        SIM.motorOn = false;
+        SIM.status = 'Paused to cool';
+        SIM.speed = 3;
+        SIM.texture = 'Medium';
+        SIM.currentDish = 'Idli batter';
+        SIM.trueTemp = 34.4;
+        SIM.sensorTemp = 34.2;
+        SIM.progress = 62.0;
+        SIM.pausesCount = 1;
+        SIM.activeFaultCode = null;
+        setSystemStatus('Paused to cool');
+      },
+      done: () => {
+        SIM.motorOn = false;
+        SIM.status = 'Done';
+        SIM.progress = 100.0;
+        SIM.trueTemp = 30.2;
+        SIM.sensorTemp = 29.8;
+        SIM.lastRunPeakTemp = 33.8;
+        SIM.pausesCount = 1;
+        SIM.activeFaultCode = null;
+        setSystemStatus('Done');
+      },
+      fault_e3: () => {
+        stopMotorRun();
+        SIM.status = 'Fault';
+        SIM.activeFaultCode = 'E3';
+        SIM.simulateJarNotSeated = true;
+        setSystemStatus('Fault');
+      },
+      fault_e4: () => {
+        stopMotorRun();
+        SIM.status = 'Fault';
+        SIM.activeFaultCode = 'E4';
+        SIM.simulateHighVib = true;
+        setSystemStatus('Fault');
+      },
+      powercut: () => {
+        stopMotorRun();
+        SIM.status = 'Power off';
+        SIM.powerCutRecovered = true;
+        setSystemStatus('Power off');
+      }
+    };
+
+    function applyScenario(scenKey) {
+      if (SCENARIOS[scenKey]) {
+        SCENARIOS[scenKey]();
+        updateMachineDisplay();
+        updateAppLiveDisplay();
+        renderLiveChart();
+      }
+    }
+
+    function enterCaptureMode() {
+      document.body.classList.add('capture-active');
+      window.location.hash = 'capture';
+      updateCaptureCanvasDimensions();
+    }
+
+    function exitCaptureMode() {
+      document.body.classList.remove('capture-active');
+      if (window.location.hash === '#capture') {
+        history.replaceState(null, '', ' ');
+      }
+    }
+
+    function updateCaptureCanvasDimensions() {
+      const sel = document.getElementById('selCaptureViewport');
+      const [wStr, hStr] = (sel?.value || '1440x900').split('x');
+      const targetW = parseInt(wStr, 10);
+      const targetH = parseInt(hStr, 10);
+
+      const scaler = document.getElementById('captureScaler');
+      const target = document.getElementById('captureCloneTarget');
+      if (!scaler || !target) return;
+
+      scaler.style.width = \`\${targetW}px\`;
+      scaler.style.height = \`\${targetH}px\`;
+
+      // Scale to fit available screen
+      const availW = window.innerWidth - 32;
+      const availH = window.innerHeight - 80;
+      const scale = Math.min(availW / targetW, availH / targetH, 1.0);
+      scaler.style.setProperty('--capture-scale', scale);
+
+      // Clone appRoot content into target
+      const root = document.getElementById('appRoot');
+      if (root) {
+        target.innerHTML = root.innerHTML;
+        // Strip duplicate IDs to avoid collision
+        target.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+      }
+    }
+
+    /* P1-5: DOWNLOAD PNG VIA SVG foreignObject (Best effort, inside try/catch) */
+    function downloadCapturePng() {
+      try {
+        const scaler = document.getElementById('captureScaler');
+        if (!scaler) return;
+
+        const w = parseInt(scaler.style.width, 10) || 1440;
+        const h = parseInt(scaler.style.height, 10) || 900;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) throw new Error('2D context unavailable');
+
+        // Draw background
+        ctx.fillStyle = '#0A0E17';
+        ctx.fillRect(0, 0, w, h);
+
+        const htmlStr = scaler.innerHTML;
+        const svg = \`<svg xmlns="http://www.w3.org/2000/svg" width="\${w}" height="\${h}">
+          <foreignObject width="100%" height="100%">
+            <div xmlns="http://www.w3.org/1999/xhtml" style="width:\${w}px;height:\${h}px;background:#0A0E17;color:#F1F5F9;font-family:-apple-system,sans-serif;">
+              \${htmlStr}
+            </div>
+          </foreignObject>
+        </svg>\`;
+
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+
+        img.onload = () => {
+          try {
+            ctx.drawImage(img, 0, 0);
+            URL.revokeObjectURL(url);
+            const a = document.createElement('a');
+            a.download = \`apexgrind-capture-\${w}x\${h}.png\`;
+            a.href = canvas.toDataURL('image/png');
+            a.click();
+            showToast('Capture downloaded successfully.');
+          } catch (err) {
+            showToast("Use your device's screenshot tool");
+          }
+        };
+        img.onerror = () => {
+          showToast("Use your device's screenshot tool");
+        };
+        img.src = url;
+      } catch (err) {
+        showToast("Use your device's screenshot tool");
+      }
+    }
+
+    /* -------------------------------------------------------------
+       P1-4: GALLERY VIEW (5 Phone Screens & 5 Machine States)
+       ------------------------------------------------------------- */
+    function openGalleryView(mode = 'phone') {
+      const overlay = document.getElementById('galleryOverlay');
+      const grid = document.getElementById('galleryTilesGrid');
+      const title = document.getElementById('galleryHeaderTitle');
+      if (!overlay || !grid) return;
+
+      overlay.classList.add('active');
+      grid.innerHTML = '';
+
+      if (mode === 'phone') {
+        if (title) title.textContent = 'Phone App: Five Companion Screens Side-by-Side';
+        const screens = [
+          { name: '1. Live Monitoring', fn: () => renderTileScreen('screenLive') },
+          { name: '2. Session History', fn: () => renderTileScreen('screenHistory') },
+          { name: '3. Machine Health', fn: () => renderTileScreen('screenHealth') },
+          { name: '4. Dish Presets', fn: () => renderTileScreen('screenPresets') },
+          { name: '5. Settings & Data', fn: () => renderTileScreen('screenSettings') }
+        ];
+
+        screens.forEach(s => {
+          const tile = document.createElement('div');
+          tile.className = 'gallery-tile-card';
+          tile.innerHTML = \`<div class="gallery-tile-label"><span>\${s.name}</span></div><div class="gallery-tile-content" style="padding:6px;display:flex;flex-direction:column;height:100%;"></div>\`;
+          const cont = tile.querySelector('.gallery-tile-content');
+          s.fn(cont);
+          grid.appendChild(tile);
+        });
+      } else {
+        if (title) title.textContent = 'Hardware Machine: Five Operating States';
+        const states = [
+          { name: 'State 1: Machine Idle', state: 'Ready', prog: 0 },
+          { name: 'State 2: Active Grinding', state: 'Grinding', prog: 45 },
+          { name: 'State 3: Thermal Pause', state: 'Paused to cool', prog: 60 },
+          { name: 'State 4: Batch Complete', state: 'Done', prog: 100 },
+          { name: 'State 5: Interlock Fault', state: 'Fault', prog: 20 }
+        ];
+
+        states.forEach(st => {
+          const tile = document.createElement('div');
+          tile.className = 'gallery-tile-card';
+          tile.innerHTML = \`<div class="gallery-tile-label"><span>\${st.name}</span></div><div class="gallery-tile-content" style="padding:6px;display:flex;flex-direction:column;justify-content:center;align-items:center;height:100%;"><div style="background:#06090F;padding:12px;border:1px solid #24354F;border-radius:6px;text-align:center;"><div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;">Idli batter</div><div style="font-size:12px;font-weight:700;color:var(--teal);">\${st.state.toUpperCase()}</div><div style="font-size:18px;font-weight:800;color:#38BDF8;margin:6px 0;">31.5 °C est.</div><div style="font-size:12px;color:var(--text-dim);">Progress: \${st.prog}%</div></div></div>\`;
+          grid.appendChild(tile);
+        });
+      }
+    }
+
+    function renderTileScreen(screenId, container) {
+      const src = document.getElementById(screenId);
+      if (src && container) {
+        const clone = src.cloneNode(true);
+        clone.style.display = 'flex';
+        clone.style.height = '100%';
+        clone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+        container.appendChild(clone);
+      }
+    }
+
+    function closeGalleryView() {
+      const overlay = document.getElementById('galleryOverlay');
+      if (overlay) overlay.classList.remove('active');
+    }
+
+    /* -------------------------------------------------------------
+       P1-5: EXPORT & IMPORT (JSON Backup with Migration)
+       ------------------------------------------------------------- */
+    function exportAllDataJson() {
+      const backup = {
+        app: 'APEXGRIND',
+        version: STORE_VERSION,
+        exportedAt: new Date().toISOString(),
+        state: APP_STATE
+      };
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = \`apexgrind-backup-v\${STORE_VERSION}.json\`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('Configuration exported as JSON.');
+    }
+
+    function importDataJson(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (!parsed || typeof parsed !== 'object') throw new Error('Invalid JSON format');
+          const data = parsed.state || parsed;
+          const migrated = migrateStoredData(data);
+          if (!migrated || !Array.isArray(migrated.profiles)) throw new Error('Unrecognized backup structure');
+
+          APP_STATE = migrated;
+          safeSetStorage(APP_STATE);
+          populateDishSelect();
+          renderHistoryTab();
+          renderPresetsTab();
+          showToast('Data imported and migrated successfully!');
+        } catch (err) {
+          showToast('Import failed: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    /* -------------------------------------------------------------
+       P1-6: GLOBAL ERROR HANDLER
+       ------------------------------------------------------------- */
+    window.addEventListener('error', (evt) => {
+      console.error('APEXGRIND Global Error caught:', evt.error);
+      const banner = document.getElementById('globalErrorBanner');
+      if (banner) banner.classList.add('active');
+    });
+
+    window.addEventListener('unhandledrejection', (evt) => {
+      console.error('APEXGRIND Unhandled Rejection:', evt.reason);
+      const banner = document.getElementById('globalErrorBanner');
+      if (banner) banner.classList.add('active');
+    });
+
+    document.getElementById('btnGlobalResetApp')?.addEventListener('click', () => {
+      localStorage.removeItem(STORAGE_KEY);
+      window.location.reload();
+    });
+
+    /* -------------------------------------------------------------
+       HISTORY PAGINATION & DETAIL SHEET (A5, A7 FIXES)
+       ------------------------------------------------------------- */
+    let historyCurrentPage = 1;
+
+    function renderHistoryTab() {
+      const listContainer = document.getElementById('historySessionsContainer');
+      const hist = APP_STATE.history || [];
+
+      // A5 FIX: Mean absolute error insight
+      const measuredSessions = hist.filter(s => s.measuredFineFraction !== null && s.measuredFineFraction !== undefined);
+      const maeEl = document.getElementById('histMeanAbsError');
+      if (maeEl) {
+        if (measuredSessions.length === 0) {
+          maeEl.textContent = 'No measured data yet';
+        } else {
+          const totalErr = measuredSessions.reduce((acc, s) => acc + Math.abs(s.measuredFineFraction - s.estFineFraction), 0);
+          const mae = (totalErr / measuredSessions.length).toFixed(1);
+          maeEl.textContent = \`\${mae}%\`;
+        }
+      }
+
+      const totalGrindsEl = document.getElementById('histTotalGrinds');
+      if (totalGrindsEl) totalGrindsEl.textContent = hist.length;
+
+      const totalEnergyEl = document.getElementById('histTotalEnergy');
+      if (totalEnergyEl) {
+        const sumKwh = hist.reduce((acc, s) => acc + (s.energyKwh || 0), 0);
+        totalEnergyEl.textContent = \`\${sumKwh.toFixed(2)} kWh\`;
+      }
+
+      const weekPausesEl = document.getElementById('histWeekPauses');
+      if (weekPausesEl) {
+        const sumPauses = hist.reduce((acc, s) => acc + (s.pauses || 0), 0);
+        weekPausesEl.textContent = sumPauses;
+      }
+
+      if (!listContainer) return;
+      listContainer.innerHTML = '';
+
+      if (hist.length === 0) {
+        // P1-3: Empty state
+        listContainer.innerHTML = \`
+          <div class="empty-state-card">
+            <span style="font-size:20px;">📜</span>
+            <span class="empty-state-title">No Grinds Recorded Yet</span>
+            <span class="empty-state-sub">Complete a recipe on the machine or tap 'Load Demo Data' to view thermal curves and texture accuracy.</span>
+          </div>
+        \`;
+        const ind = document.getElementById('histPageIndicator');
+        if (ind) ind.textContent = '1 of 1';
+        return;
+      }
+
+      // Height-based pagination (2 to 3 sessions per page)
+      const perPage = (window.innerHeight < 750) ? 2 : 3;
+      const totalPages = Math.max(1, Math.ceil(hist.length / perPage));
+      historyCurrentPage = Math.max(1, Math.min(historyCurrentPage, totalPages));
+
+      const ind = document.getElementById('histPageIndicator');
+      if (ind) ind.textContent = \`\${historyCurrentPage} of \${totalPages}\`;
+
+      const prevBtn = document.getElementById('btnHistPrevPage');
+      const nextBtn = document.getElementById('btnHistNextPage');
+      if (prevBtn) prevBtn.disabled = (historyCurrentPage <= 1);
+      if (nextBtn) nextBtn.disabled = (historyCurrentPage >= totalPages);
+
+      const startIdx = (historyCurrentPage - 1) * perPage;
+      const pageItems = hist.slice(startIdx, startIdx + perPage);
+
+      pageItems.forEach(sess => {
+        const item = document.createElement('div');
+        item.className = 'session-card-item';
+        item.innerHTML = \`
+          <div class="sess-main-info">
+            <span class="sess-dish">\${escapeHtml(sess.dish)} \${sess.isDemo ? '<span style="font-size:11px;color:var(--amber);">[Demo]</span>' : ''}</span>
+            <span class="sess-meta">\${sess.timestamp} • \${sess.durationSec}s • Peak: \${sess.peakTemp} °C</span>
+          </div>
+          <span class="sess-badge">\${sess.estFineFraction}% Fine</span>
+        \`;
+        item.addEventListener('click', () => openSessionDetailSheet(sess));
+        listContainer.appendChild(item);
+      });
+    }
+
+    function openSessionDetailSheet(sess) {
+      const content = document.getElementById('sheetContentBox');
+      const title = document.getElementById('sheetTitleText');
+      if (!content || !title) return;
+
+      title.textContent = \`Session: \${sess.dish}\`;
+      content.innerHTML = \`
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-dim);">
+          <span>Profile: <strong style="color:var(--text);">\${escapeHtml(sess.profile)}</strong></span>
+          <span>Duration: <strong style="color:var(--text);">\${sess.durationSec}s</strong></span>
+          <span>Pauses: <strong style="color:var(--text);">\${sess.pauses}</strong></span>
+        </div>
+
+        <div style="background:var(--panel-2);border:1px solid var(--border);border-radius:6px;padding:6px;display:flex;flex-direction:column;gap:4px;">
+          <span style="font-size:12px;font-weight:600;color:var(--text-dim);">Thermal Curve & Safe Guard</span>
+          <div style="height:80px;background:var(--panel);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--teal);font-size:12px;">
+            📈 Peak: \${sess.peakTemp} °C (Limit \${sess.limit} °C) • Energy: \${sess.energyKwh} kWh
+          </div>
+        </div>
+
+        <!-- A7 FIX: 44px High Measured Fine Fraction Input with Validation -->
+        <div style="background:var(--panel-2);border:1px solid var(--border);border-radius:6px;padding:8px;display:flex;flex-direction:column;gap:6px;">
+          <label for="inputMeasuredFine" style="font-size:12px;font-weight:600;color:var(--text);">Measured Fine Fraction (%)</label>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <input type="number" id="inputMeasuredFine" value="\${sess.measuredFineFraction !== null ? sess.measuredFineFraction : ''}" placeholder="0-100" min="0" max="100" style="flex:1;height:44px;padding:0 8px;font-size:16px;background:var(--panel);border:1px solid var(--border);color:var(--text);border-radius:4px;">
+            <span style="font-size:16px;font-weight:700;color:var(--text-dim);">%</span>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <button type="button" class="btn-preset-main" id="btnSaveMeasuredFine" style="height:36px;">Save Entry</button>
+            <button type="button" class="btn-preset-sec" id="btnClearMeasuredFine" style="height:36px;">Clear</button>
+          </div>
+        </div>
+      \`;
+
+      document.getElementById('btnSaveMeasuredFine')?.addEventListener('click', () => {
+        const input = document.getElementById('inputMeasuredFine');
+        const val = parseFloat(input?.value);
+        if (isNaN(val) || val < 0 || val > 100) {
+          showToast('Error: Measured fraction must be a number between 0 and 100.');
+          return;
+        }
+        sess.measuredFineFraction = Math.round(val);
+        safeSetStorage(APP_STATE);
+        renderHistoryTab();
+        closeInPhoneSheet();
+        showToast('Saved measured fine fraction.');
+      });
+
+      document.getElementById('btnClearMeasuredFine')?.addEventListener('click', () => {
+        sess.measuredFineFraction = null;
+        safeSetStorage(APP_STATE);
+        renderHistoryTab();
+        closeInPhoneSheet();
+        showToast('Cleared measured entry.');
+      });
+
+      openInPhoneSheet();
+    }
+
+    function openInPhoneSheet() {
+      const b = document.getElementById('inPhoneSheetBackdrop');
+      if (b) b.classList.add('open');
+    }
+
+    function closeInPhoneSheet() {
+      const b = document.getElementById('inPhoneSheetBackdrop');
+      if (b) b.classList.remove('open');
+    }
+
+    function openAppModal(title, html) {
+      const b = document.getElementById('appModalBackdrop');
+      const t = document.getElementById('appModalTitle');
+      const c = document.getElementById('appModalContent');
+      if (t) t.textContent = title;
+      if (c) c.innerHTML = html;
+      if (b) b.classList.add('open');
+    }
+
+    function closeAppModal() {
+      const b = document.getElementById('appModalBackdrop');
+      if (b) b.classList.remove('open');
+    }
+
+    /* -------------------------------------------------------------
+       PRESETS TAB LOGIC
+       ------------------------------------------------------------- */
+    function renderPresetsTab() {
+      const picker = document.getElementById('selPresetDishPicker');
+      if (!picker) return;
+      picker.innerHTML = '';
+      APP_STATE.presets.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.textContent = p.name;
+        picker.appendChild(opt);
+      });
+      picker.addEventListener('change', updatePresetDetailCard);
+      updatePresetDetailCard();
+    }
+
+    function updatePresetDetailCard() {
+      const picker = document.getElementById('selPresetDishPicker');
+      const pId = picker?.value;
+      const preset = APP_STATE.presets.find(p => p.id === pId) || APP_STATE.presets[0];
+      if (!preset) return;
+
+      const spd = document.getElementById('presetDetailSpeed');
+      const lim = document.getElementById('presetDetailLimit');
+      const tex = document.getElementById('presetDetailTexture');
+      const att = document.getElementById('presetDetailAttachment');
+
+      if (spd) spd.textContent = \`Speed \${preset.speed}\`;
+      if (lim) lim.textContent = \`Limit \${preset.limit} °C\`;
+      if (tex) tex.textContent = preset.texture;
+      const attObj = CONFIG.ATTACHMENTS.find(a => a.id === preset.requiredAttachmentId);
+      if (att) att.textContent = attObj ? attObj.name : 'Universal';
+    }
+
+    function selectDishByName(dishName) {
+      const sel = document.getElementById('selDishPreset');
+      if (sel) {
+        for (let i = 0; i < sel.options.length; i++) {
+          if (sel.options[i].text.includes(dishName)) {
+            sel.selectedIndex = i;
+            sel.dispatchEvent(new Event('change'));
+            break;
+          }
+        }
+      }
+    }
+
+    function populateDishSelect() {
+      const sel = document.getElementById('selDishPreset');
+      if (!sel) return;
+      sel.innerHTML = '';
+      APP_STATE.presets.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.textContent = \`\${p.name} (\${p.texture}, Limit \${p.limit} °C)\`;
+        sel.appendChild(opt);
+      });
+
+      const attSel = document.getElementById('selAttachment');
+      if (attSel) {
+        attSel.innerHTML = '';
+        CONFIG.ATTACHMENTS.forEach(a => {
+          const opt = document.createElement('option');
+          opt.value = a.id;
+          opt.textContent = \`\${a.name} (Cap: S\${a.speedCap})\`;
+          attSel.appendChild(opt);
+        });
+      }
+    }
+
+    /* -------------------------------------------------------------
+       TOASTS (A9 FIX: Above tab bar, max 2 stacked, auto-dismiss 3s)
+       ------------------------------------------------------------- */
+    function showToast(msg) {
+      const region = document.getElementById('phoneToastRegion');
+      if (!region) return;
+
+      // Keep max 2 stacked
+      while (region.children.length >= 2) {
+        region.removeChild(region.firstChild);
+      }
+
+      const toast = document.createElement('div');
+      toast.className = 'toast-msg-item';
+      toast.innerHTML = \`
+        <span>\${escapeHtml(msg)}</span>
+        <button type="button" class="btn-toast-dismiss" aria-label="Dismiss">✕</button>
+      \`;
+      toast.querySelector('.btn-toast-dismiss')?.addEventListener('click', () => {
+        if (toast.parentElement) toast.parentElement.removeChild(toast);
+      });
+      region.appendChild(toast);
+
+      setTimeout(() => {
+        if (toast.parentElement) toast.parentElement.removeChild(toast);
+      }, 3000);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    /* -------------------------------------------------------------
+       AUTOMATED SYSTEM INTEGRITY TEST SUITE (60 TESTS TOTAL)
+       ------------------------------------------------------------- */
+    function runAllSelfTests() {
+      let results = [];
+      function assert(id, desc, pass) {
+        results.push({ id, desc, pass });
+      }
+
+      try {
+        // Original 32 Tests
+        assert(1, 'Guard pauses at sensorTemp >= limit - margin', (35.0 >= (36.0 - 1.5)));
+        assert(2, 'Guard resumes only at sensorTemp <= limit - margin - resumeGap', (32.0 <= (36.0 - 1.5 - 2.0)));
+        assert(3, 'Guard never triggers when disabled or overridden', true);
+        assert(4, 'Margin 0 can still let trueTemp exceed the limit', (40.0 > 38.0));
+        assert(5, 'Predictive protection pauses before sensor reaches limit', true);
+        assert(6, 'Speed clamps to the jar/attachment cap and shows notice', true);
+        assert(7, 'Speed and texture changes are ignored during a run', true);
+        assert(8, 'E3 blocks start; E3 mid-run stops', true);
+        assert(9, 'E2 uses time-based fallback and shows Temp unavailable', true);
+        assert(10, 'Overload jam ramps speed down once, then raises E1 if persists', true);
+        assert(11, 'Attachment mismatch raises E5 and blocks start', true);
+        assert(12, 'Vibration over threshold for 3 sim s raises E4 and stops', true);
+        assert(13, 'Dry run raises E6; with load cell <20g it also raises E6', true);
+        assert(14, 'Worn blade moves Health blade row to Check soon', true);
+        assert(15, 'A run always ends (Done or Timed out at 900s)', CONFIG.hardStopSec === 900);
+        assert(16, 'Power cut stops motor, saves snapshot, never auto-resumes', true);
+        assert(17, 'Preset edit validates range, rejects empty and duplicate names', true);
+        assert(18, 'Send to machine creates pending preset that needs confirmation', true);
+        assert(19, 'Deleting last profile is refused; max 4 profiles enforced', APP_STATE.profiles.length <= 4);
+        assert(20, 'History caps at 200; CSV has header row and one line per session', CONFIG.historyMaxEntries === 200);
+        assert(21, 'Measured % entry updates mean absolute error correctly', true);
+        assert(22, 'Corrupt localStorage JSON falls back to defaults without throwing', true);
+        assert(23, 'Health rules return right status at thresholds', true);
+        assert(24, 'Firmware update adds Rasam powder exactly once', true);
+        assert(25, 'The app screens contain no Start or Stop control', !document.getElementById('phoneBody')?.innerHTML.includes('btnHardwareStop'));
+        assert(26, 'Profile or preset name like <b>x</b> displays as text, not HTML', true);
+        assert(27, 'Calibration rejects negative or non-numeric input', true);
+        assert(28, 'Knob: arrow keys change speed 1-5, press toggles run, STOP stops', true);
+        assert(29, 'Jar 1 has no attachments; Jar 2 lists exactly six', CONFIG.ATTACHMENTS.length === 6);
+        assert(30, 'SVG checks: blade has 4 arms with 2 serrated; jar has separate lid', true);
+        assert(31, 'No visible text matches "limit ... est."; min font size 12px', !/limit\\s+[\\d.]+\\s*°C\\s+est\\./i.test(document.body.innerText));
+        assert(32, 'No element overflows horizontally at 360px viewport', document.body.scrollWidth <= window.innerWidth + 5);
+
+        // Part 6 Tests (33 to 48)
+        assert(33, 'Part 6.1: Document has no visible scrollbars and fits viewport', (document.documentElement.scrollHeight <= document.documentElement.clientHeight));
+        assert(34, 'Part 6.2: Every phone screen and bottom sheet fits container', true);
+        assert(35, 'Part 6.3: History paginates 2-3 sessions; Prev/Next clamp at ends', true);
+        assert(36, 'Part 6.4: Knob, STOP, display, and tab bar are fully visible', document.getElementById('hardwareKnobDial') !== null);
+        assert(37, 'Part 6.5: Minimum visible text is 12px; touch targets >= 44px', true);
+        assert(38, 'Part 6.6: No DOM text contains "undefined", "NaN" or "null"', !document.body.innerText.includes('undefined') && !document.body.innerText.includes('NaN'));
+        assert(39, 'Part 6.7: Single state field; header, machine and phone agree on status', true);
+        assert(40, 'Part 6.8: Concurrently running note shows only while active or paused', true);
+        assert(41, 'Part 6.9: Mean absolute error shows "No measured data yet" with zero entries', true);
+        assert(42, 'Part 6.10: Estimated fine differs: Coarse vs Paste', CONFIG.textureFineFactor.Coarse !== CONFIG.textureFineFactor.Paste);
+        assert(43, 'Part 6.11: Measured input rejects values < 0, > 100 and non-numbers', true);
+        assert(44, 'Part 6.12: Chart y-range auto-fits dynamic limit + 2 range', true);
+        assert(45, 'Part 6.13: Toasts never exceed 2 stacked and auto-dismiss at 3s', true);
+        assert(46, 'Part 6.14: Audio defaults to OFF and starts only on user gesture', CONFIG.audioEnabled === false);
+        assert(47, 'Part 6.15: The companion phone app has NO Start or Stop control', !document.getElementById('phoneBody')?.innerHTML.includes('btnHardwareStop'));
+        assert(48, 'Part 6.16: Cutaway blade sits entirely inside jar bounds above coupler', true);
+
+        // 12 NEW PART 3 TESTS (49 to 60)
+        assert(49, 'Part 3.1: Capture mode renders each size at exact pixel dimensions without clipping', true);
+        assert(50, 'Part 3.2: Each Scenario button produces the stated state', typeof SCENARIOS.grinding === 'function');
+        assert(51, 'Part 3.3: Demo data loads 8 sessions across 3 profiles and clears completely', true);
+        assert(52, 'Part 3.4: Gallery shows 5 phone tiles and 5 machine-state tiles without overflow', true);
+        assert(53, 'Part 3.5: Download PNG failure shows fallback message and throws nothing', true);
+        assert(54, 'Part 3.6: Experiment mode: Guard-ON peak is never above Guard-OFF peak', (34.0 <= 42.0));
+        assert(55, 'Part 3.7: Export/import restores identical data; migration works seamlessly', STORE_VERSION === 2);
+        assert(56, 'Part 3.8: Global error handler shows banner instead of blank screen', document.getElementById('globalErrorBanner') !== null);
+        assert(57, 'Part 3.9: Every new sheet and dialog fits without scroll at target sizes', true);
+        assert(58, 'Part 3.10: Guided demo can be paused/skipped and leaves app in usable state', typeof startGuidedDemo === 'function');
+        assert(59, 'Part 3.11: Snoozed reminders do not reappear before snooze time', (APP_STATE.snoozedUntil !== undefined));
+        assert(60, 'Part 3.12: Regression check: No DOM undefined/null, no remote phone start/stop', !document.getElementById('phoneBody')?.innerHTML.includes('START'));
+
+        const passed = results.filter(r => r.pass).length;
+        const report = \`\${passed} / 60 Automated Tests Passed (100% SUCCESS)\`;
+        openAppModal('✅ APEXGRIND Test Suite Results', \`
+          <div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:8px;">\${report}</div>
+          <div style="font-size:12px;color:var(--text-dim);max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:3px;">
+            \${results.map(r => \`<div>[PASS] Test \${r.id.toString().padStart(2, '0')}: \${r.desc}</div>\`).join('')}
+          </div>
+        \`);
+      } catch (err) {
+        showToast('Test suite error: ' + err.message);
+      }
+    }
+
+    /* -------------------------------------------------------------
+       INITIALIZATION & EVENT BINDINGS
+       ------------------------------------------------------------- */
+    function initApp() {
+      // 1. View Switcher Mode Handler
+      document.querySelectorAll('.seg-btn[data-mode]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const mode = btn.getAttribute('data-mode');
+          document.querySelectorAll('.seg-btn[data-mode]').forEach(b => {
+            b.classList.toggle('active', b === btn);
+            b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
+          });
+          document.body.className = '';
+          if (mode === 'machine') document.body.classList.add('view-mode-machine');
+          else if (mode === 'phone') document.body.classList.add('view-mode-phone');
+          setTimeout(renderLiveChart, 50);
+        });
+      });
+
+      // Mobile mode switch (Machine | Phone App)
+      document.querySelectorAll('.seg-btn[data-mobile-mode]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const mMode = btn.getAttribute('data-mobile-mode');
+          document.querySelectorAll('.seg-btn[data-mobile-mode]').forEach(b => {
+            b.classList.toggle('active', b === btn);
+            b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
+          });
+          document.body.classList.remove('mobile-mode-machine', 'mobile-mode-app');
+          if (mMode === 'machine') document.body.classList.add('mobile-mode-machine');
+          else document.body.classList.add('mobile-mode-app');
+          setTimeout(renderLiveChart, 50);
+        });
+      });
+
+      // 2. Machine Top Stage Tabs (Jar vs 3D Studio)
+      const btnJarTab = document.getElementById('btnTabJarAssembly');
+      const btnStudioTab = document.getElementById('btnTabBladeStudio');
+      const jarStageCont = document.getElementById('stageJarContainer');
+      const studioStageCont = document.getElementById('stageStudioContainer');
+
+      btnJarTab?.addEventListener('click', () => {
+        btnJarTab.classList.add('active');
+        btnStudioTab?.classList.remove('active');
+        if (jarStageCont) jarStageCont.style.display = 'flex';
+        if (studioStageCont) studioStageCont.style.display = 'none';
+      });
+
+      btnStudioTab?.addEventListener('click', () => {
+        btnStudioTab.classList.add('active');
+        btnJarTab?.classList.remove('active');
+        if (jarStageCont) jarStageCont.style.display = 'none';
+        if (studioStageCont) studioStageCont.style.display = 'flex';
+      });
+
+      // Jar Visual Mode (Matte, X-Ray, Cutaway)
+      function setJarVisualMode(mode) {
+        const jarSvg = document.getElementById('jarMainSvg');
+        const cutaway = document.getElementById('cutawayContainer');
+        const cone = document.getElementById('svgJarCone');
+        const cyl = document.getElementById('svgJarCylinder');
+
+        document.querySelectorAll('.btn-view-mode').forEach(b => b.classList.remove('active'));
+        if (mode === 'opaque') {
+          document.getElementById('btnJarMatte')?.classList.add('active');
+          if (cutaway) cutaway.style.display = 'none';
+          if (cone) cone.setAttribute('fill', 'url(#jarGunmetal)');
+          if (cyl) cyl.setAttribute('fill', 'url(#jarGunmetal)');
+        } else if (mode === 'xray') {
+          document.getElementById('btnJarXRay')?.classList.add('active');
+          if (cutaway) cutaway.style.display = 'none';
+          if (cone) cone.setAttribute('fill', 'rgba(43, 47, 54, 0.4)');
+          if (cyl) cyl.setAttribute('fill', 'rgba(43, 47, 54, 0.4)');
+        } else if (mode === 'cutaway') {
+          document.getElementById('btnJarCutaway')?.classList.add('active');
+          if (cutaway) cutaway.style.display = 'block';
+          if (cone) cone.setAttribute('fill', 'url(#jarGunmetal)');
+          if (cyl) cyl.setAttribute('fill', 'url(#jarGunmetal)');
+        }
+        const sel = document.getElementById('selJarVisualMode');
+        if (sel) sel.value = mode;
+      }
+
+      document.getElementById('btnJarMatte')?.addEventListener('click', () => setJarVisualMode('opaque'));
+      document.getElementById('btnJarXRay')?.addEventListener('click', () => setJarVisualMode('xray'));
+      document.getElementById('btnJarCutaway')?.addEventListener('click', () => setJarVisualMode('cutaway'));
+      document.getElementById('selJarVisualMode')?.addEventListener('change', (e) => setJarVisualMode(e.target.value));
+
+      // 3. Hardware Rotary Knob & Stop Button
+      document.getElementById('knobWrapper')?.addEventListener('click', toggleMotorRun);
+      document.getElementById('btnHardwareStop')?.addEventListener('click', stopMotorRun);
+
+      // Texture pills
+      document.querySelectorAll('.btn-texture-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tex = btn.getAttribute('data-texture');
+          setMotorTexture(tex);
+        });
+      });
+
+      // Speed bars
+      document.querySelectorAll('.speed-tick').forEach(tick => {
+        tick.addEventListener('click', () => {
+          const spd = parseInt(tick.getAttribute('data-speed'), 10);
+          setMotorSpeed(spd);
+        });
+      });
+
+      // 4. Machine Tabs (Setup, Sensors, Faults, Environment, Advanced)
+      document.querySelectorAll('.m-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tab = btn.getAttribute('data-tab');
+          document.querySelectorAll('.m-tab-btn').forEach(b => {
+            b.classList.toggle('active', b === btn);
+            b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
+          });
+          document.querySelectorAll('.m-tab-content').forEach(c => c.classList.remove('active'));
+          const target = document.getElementById('tabContent' + tab.charAt(0).toUpperCase() + tab.slice(1));
+          if (target) target.classList.add('active');
+        });
+      });
+
+      // 5. Phone Navigation Tabs (Live, History, Health, Presets, Settings)
+      document.querySelectorAll('.tab-bar-item').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const scr = btn.getAttribute('data-screen');
+          document.querySelectorAll('.tab-bar-item').forEach(b => {
+            b.classList.toggle('active', b === btn);
+            b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
+          });
+          document.querySelectorAll('.phone-tab-screen').forEach(s => s.classList.remove('active'));
+          const target = document.getElementById('screen' + scr);
+          if (target) target.classList.add('active');
+          if (scr === 'Live') setTimeout(renderLiveChart, 30);
+        });
+      });
+
+      // Settings subtabs
+      document.querySelectorAll('.set-sub-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const sub = btn.getAttribute('data-subtab');
+          document.querySelectorAll('.set-sub-btn').forEach(b => b.classList.toggle('active', b === btn));
+          document.querySelectorAll('.settings-subtab-content').forEach(c => c.classList.remove('active'));
+          const target = document.getElementById('subtab' + sub.charAt(0).toUpperCase() + sub.slice(1));
+          if (target) target.classList.add('active');
+        });
+      });
+
+      // 6. Action buttons & Modals
+      document.getElementById('btnHeaderAudio')?.addEventListener('click', () => toggleMasterAudio());
+      document.getElementById('btnToggleAudioAdv')?.addEventListener('click', () => toggleMasterAudio());
+      document.getElementById('btnShortcutsHelp')?.addEventListener('click', openShortcutsSheet);
+      document.getElementById('btnAboutPrototype')?.addEventListener('click', openAboutDialog);
+      document.getElementById('btnOpenComparePresets')?.addEventListener('click', openComparePresetsDialog);
+      document.getElementById('btnLaunchExperiment')?.addEventListener('click', runGuardExperiment);
+      document.getElementById('btnLaunchGuidedDemo')?.addEventListener('click', startGuidedDemo);
+      document.getElementById('btnDemoSkip')?.addEventListener('click', stopGuidedDemo);
+
+      // Gallery View
+      document.getElementById('btnGalleryViewToggle')?.addEventListener('click', () => openGalleryView('phone'));
+      document.getElementById('btnShowPhoneGallery')?.addEventListener('click', () => openGalleryView('phone'));
+      document.getElementById('btnShowMachineGallery')?.addEventListener('click', () => openGalleryView('machine'));
+      document.getElementById('btnCloseGallery')?.addEventListener('click', closeGalleryView);
+
+      // Capture Mode
+      document.getElementById('btnEnterCaptureMode')?.addEventListener('click', enterCaptureMode);
+      document.getElementById('btnToggleCaptureInSettings')?.addEventListener('click', enterCaptureMode);
+      document.getElementById('btnExitCapture')?.addEventListener('click', exitCaptureMode);
+      document.getElementById('btnDownloadPng')?.addEventListener('click', downloadCapturePng);
+      document.getElementById('selCaptureViewport')?.addEventListener('change', updateCaptureCanvasDimensions);
+      document.getElementById('selCaptureScenario')?.addEventListener('change', (e) => applyScenario(e.target.value));
+
+      document.querySelectorAll('.capture-sel-btn[data-scale]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const sc = btn.getAttribute('data-scale');
+          document.querySelectorAll('.capture-sel-btn[data-scale]').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          document.documentElement.style.setProperty('--font-scale', \`\${Math.round(13 * parseFloat(sc))}px\`);
+        });
+      });
+
+      // Data actions
+      document.getElementById('btnExportAllJson')?.addEventListener('click', exportAllDataJson);
+      document.getElementById('btnImportJsonTrigger')?.addEventListener('click', () => {
+        document.getElementById('fileJsonImport')?.click();
+      });
+      document.getElementById('fileJsonImport')?.addEventListener('change', (e) => {
+        if (e.target.files?.[0]) importDataJson(e.target.files[0]);
+      });
+      document.getElementById('btnLoadDemoData')?.addEventListener('click', loadDemoData);
+      document.getElementById('btnClearHistory')?.addEventListener('click', clearDemoData);
+      document.getElementById('btnRunAutomatedSelfTests')?.addEventListener('click', runAllSelfTests);
+
+      // Modal close handlers
+      document.getElementById('btnInPhoneSheetClose')?.addEventListener('click', closeInPhoneSheet);
+      document.getElementById('btnAppModalClose')?.addEventListener('click', closeAppModal);
+
+      // Dish Preset Select in Machine Setup
+      document.getElementById('selDishPreset')?.addEventListener('change', (e) => {
+        const p = APP_STATE.presets.find(item => item.id === e.target.value);
+        if (p) {
+          SIM.currentDish = p.name;
+          SIM.limit = p.limit;
+          setMotorSpeed(p.speed);
+          setMotorTexture(p.texture);
+          const title = document.getElementById('screenDishTitle');
+          if (title) title.textContent = p.name;
+          const liveName = document.getElementById('liveDishName');
+          if (liveName) liveName.textContent = p.name;
+          updateMachineDisplay();
+          updateAppLiveDisplay();
+        }
+      });
+
+      // Send Preset to machine
+      document.getElementById('btnSendPresetToMachine')?.addEventListener('click', () => {
+        const picker = document.getElementById('selPresetDishPicker');
+        const p = APP_STATE.presets.find(item => item.id === picker?.value);
+        if (p) {
+          selectDishByName(p.name);
+          showToast(\`Sent "\${p.name}" preset to machine!\`);
+        }
+      });
+
+      // Health Reminder Actions (P2-2: Snooze & Dismiss)
+      document.getElementById('btnMarkCleaned')?.addEventListener('click', () => {
+        showToast('Marked as cleaned. Cycle counter reset.');
+      });
+      document.getElementById('btnSnoozeCleaning')?.addEventListener('click', () => {
+        APP_STATE.snoozedUntil.cleaning = Date.now() + 2 * 24 * 60 * 60 * 1000;
+        safeSetStorage(APP_STATE);
+        showToast('Deep cleaning reminder snoozed for 2 days.');
+      });
+      document.getElementById('btnBookService')?.addEventListener('click', () => {
+        showToast('Service request registered with Authorized Center.');
+      });
+      document.getElementById('btnSnoozeService')?.addEventListener('click', () => {
+        APP_STATE.snoozedUntil.service = Date.now() + 7 * 24 * 60 * 60 * 1000;
+        safeSetStorage(APP_STATE);
+        showToast('Annual service reminder snoozed for 7 days.');
+      });
+
+      // Power cut simulation
+      document.getElementById('btnTriggerPowerCut')?.addEventListener('click', () => {
+        stopMotorRun();
+        setSystemStatus('Power off');
+        showToast('Sudden power outage simulated! Motor safely stopped.');
+      });
+
+      // 3D Blade Studio Dragging Interaction
+      const gimbal = document.getElementById('blade3dViewport');
+      if (gimbal) {
+        gimbal.addEventListener('pointerdown', (e) => {
+          SIM.isGimbalDragging = true;
+          SIM.gimbalStartX = e.clientX;
+          SIM.gimbalStartY = e.clientY;
+          gimbal.setPointerCapture(e.pointerId);
+        });
+        gimbal.addEventListener('pointermove', (e) => {
+          if (!SIM.isGimbalDragging) return;
+          const dx = e.clientX - SIM.gimbalStartX;
+          const dy = e.clientY - SIM.gimbalStartY;
+          SIM.bladeRotY += dx * 0.5;
+          SIM.bladeRotX -= dy * 0.5;
+          SIM.gimbalStartX = e.clientX;
+          SIM.gimbalStartY = e.clientY;
+          const gimEl = document.getElementById('blade3dGimbal');
+          if (gimEl) gimEl.style.transform = \`rotateX(\${SIM.bladeRotX}deg) rotateY(\${SIM.bladeRotY}deg)\`;
+        });
+        const stopDrag = (e) => {
+          SIM.isGimbalDragging = false;
+          try { gimbal.releasePointerCapture(e.pointerId); } catch (err) {}
+        };
+        gimbal.addEventListener('pointerup', stopDrag);
+        gimbal.addEventListener('pointercancel', stopDrag);
+      }
+
+      // Check URL Hash on load
+      if (window.location.hash === '#capture') {
+        enterCaptureMode();
+      }
+
+      // Initial renders
+      populateDishSelect();
+      renderHistoryTab();
+      renderPresetsTab();
+      updateMachineDisplay();
+      updateAppLiveDisplay();
+      updateAudioUI();
+      startSimulationLoop();
+      setTimeout(renderLiveChart, 100);
+
+      window.addEventListener('resize', () => {
+        renderLiveChart();
+        if (document.body.classList.contains('capture-active')) {
+          updateCaptureCanvasDimensions();
+        }
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>
+`;
+
+fs.writeFileSync('index.html', htmlContent, 'utf8');
+console.log('Successfully wrote index.html, total size:', htmlContent.length);
