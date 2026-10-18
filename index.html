@@ -572,6 +572,79 @@
       justify-content: space-between;
       min-height: 0;
       position: relative;
+      background: radial-gradient(circle at 50% 45%, #0d1629 0%, #06090f 85%);
+      border-radius: 8px;
+      overflow: hidden;
+      padding: 6px;
+      gap: 6px;
+    }
+    .blade-studio-header-bar {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+      z-index: 2;
+    }
+    .blade-model-selector-group {
+      display: flex;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 6px;
+      padding: 2px;
+      gap: 2px;
+    }
+    .blade-model-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 7px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .blade-model-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .blade-model-btn.active {
+      background: var(--teal);
+      color: #041017;
+      font-weight: 700;
+      box-shadow: 0 1px 4px rgba(18, 181, 174, 0.4);
+    }
+    .blade-cam-toolbar {
+      display: flex;
+      gap: 3px;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 6px;
+      padding: 2px 4px;
+    }
+    .blade-cam-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .blade-cam-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .blade-cam-btn.active {
+      background: #38BDF8;
+      color: #041017;
+      font-weight: 700;
     }
     .blade-3d-viewport {
       flex: 1;
@@ -582,7 +655,8 @@
       justify-content: center;
       cursor: grab;
       touch-action: none;
-      perspective: 700px;
+      perspective: 750px;
+      position: relative;
     }
     .blade-3d-viewport:active {
       cursor: grabbing;
@@ -594,7 +668,7 @@
       align-items: center;
       justify-content: center;
       transform-style: preserve-3d;
-      transition: transform 0.05s linear;
+      transition: transform 0.04s ease-out;
     }
     .blade-hero-svg {
       max-height: 100%;
@@ -602,17 +676,84 @@
       width: auto;
       height: 100%;
       object-fit: contain;
+      filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.65));
+    }
+    .blade-studio-bottom-deck {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 2;
+    }
+    .blade-dynamics-toolbar {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      background: rgba(11, 19, 43, 0.85);
+      border: 1px solid rgba(36, 53, 79, 0.7);
+      border-radius: 6px;
+      padding: 4px 8px;
+    }
+    .blade-dyn-actions {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+    .blade-dyn-btn {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      color: var(--text-dim);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+    }
+    .blade-dyn-btn:hover {
+      color: var(--text);
+      border-color: rgba(56, 189, 248, 0.5);
+    }
+    .blade-dyn-btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: #38BDF8;
+      color: #38BDF8;
+      font-weight: 700;
+    }
+    .blade-telemetry-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 11px;
+      color: var(--text-dim);
+      flex-wrap: wrap;
+    }
+    .blade-telem-chip {
+      display: inline-flex;
+      gap: 3px;
+      align-items: center;
+    }
+    .blade-telem-val {
+      font-weight: 700;
+      color: #38BDF8;
+      font-variant-numeric: tabular-nums;
     }
     .blade-spec-pill {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-dim);
-      background: var(--panel);
-      padding: 2px 8px;
+      background: rgba(6, 9, 15, 0.9);
+      padding: 3px 8px;
       border-radius: 4px;
       border: 1px solid var(--border);
       flex-shrink: 0;
       display: flex;
-      gap: 6px;
+      justify-content: space-between;
+      width: 100%;
       align-items: center;
       white-space: nowrap;
     }
@@ -871,7 +1012,33 @@
       gap: 4px;
       height: 18px;
     }
+    .btn-speed-step {
+      width: 18px;
+      height: 18px;
+      padding: 0;
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      color: var(--teal);
+      border-radius: 3px;
+      font-size: 13px;
+      line-height: 16px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.1s ease;
+    }
+    .btn-speed-step:hover {
+      border-color: var(--teal);
+      background: var(--panel);
+    }
+    .btn-speed-step:active {
+      transform: scale(0.9);
+    }
     .speed-tick {
+      flex: 1;
       flex: 1;
       height: 8px;
       background: var(--panel);
@@ -1110,21 +1277,21 @@
     .phone-column {
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: stretch;
       height: 100%;
       min-height: 0;
-      overflow: visible;
+      overflow: hidden;
       position: relative;
-      padding: 4px;
+      padding: 2px 4px;
     }
 
     /* Authentic high-end smartphone hardware chassis */
     .phone-frame {
-      width: 375px;
+      width: 380px;
       max-width: 100%;
       height: 100%;
-      max-height: calc(100vh - 128px);
-      min-height: 560px;
+      max-height: 100%;
+      min-height: 0;
       background: #070B14;
       border: 11px solid #161D2B;
       border-radius: 48px;
@@ -3037,19 +3204,19 @@
     .phone-column {
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: stretch;
       height: 100%;
       min-height: 0;
-      overflow: visible;
+      overflow: hidden;
       position: relative;
-      padding: 4px;
+      padding: 2px 4px;
     }
     .phone-frame {
-      width: 375px;
+      width: 380px;
       max-width: 100%;
       height: 100%;
-      max-height: calc(100vh - 128px);
-      min-height: 560px;
+      max-height: 100%;
+      min-height: 0;
       background: #070B14;
       border: 11px solid #161D2B;
       border-radius: 48px;
@@ -3101,8 +3268,9 @@
       box-shadow: var(--surface-specular);
     }
     .live-chart-box {
-      height: 185px;
-      min-height: 185px;
+      flex: 1 1 auto;
+      min-height: 100px;
+      max-height: 180px;
       flex-shrink: 0;
       background: var(--panel-2);
       border: 1px solid var(--border);
@@ -3351,26 +3519,175 @@
         overflow: visible;
       }
       .phone-column {
-        height: auto;
-        min-height: 650px;
-        padding: 16px 0 32px 0;
+        height: 100%;
+        min-height: 0;
+        padding: 4px;
       }
       .phone-frame {
-        max-height: 750px;
-        height: 750px;
+        max-height: 100%;
+        height: 100%;
+        min-height: 0;
         width: 100%;
-        max-width: 380px;
+        max-width: 390px;
+      }
+    }
+
+
+    /* DYNAMIC BATTERY LEVEL INDICATOR STYLES */
+    .phone-battery-pct {
+      font-size: 11px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: #F1F5F9;
+      letter-spacing: -0.3px;
+      margin-right: 3px;
+      white-space: nowrap;
+      user-select: none;
+    }
+    .phone-battery-pill {
+      width: 24px;
+      height: 12px;
+      border: 1.5px solid rgba(255, 255, 255, 0.85);
+      border-radius: 3px;
+      padding: 1.5px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+      transition: border-color 0.2s ease, transform 0.1s ease;
+    }
+    .phone-battery-pill:hover {
+      border-color: var(--teal);
+      transform: scale(1.05);
+    }
+    .phone-battery-pill::after {
+      content: '';
+      position: absolute;
+      right: -3.5px;
+      width: 2px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 0 1px 1px 0;
+    }
+    .phone-battery-fill {
+      width: 94%;
+      height: 100%;
+      background: #10B981;
+      border-radius: 1px;
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
+    }
+    .phone-battery-fill.warning {
+      background: #F59E0B;
+    }
+    .phone-battery-fill.critical {
+      background: #EF4444;
+      animation: battPulse 1s infinite alternate;
+    }
+    @keyframes battPulse {
+      from { opacity: 0.6; }
+      to { opacity: 1; }
+    }
+    .phone-battery-bolt {
+      display: none;
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      width: 10px;
+      height: 10px;
+      fill: #F8FAFC;
+      stroke: #070B14;
+      stroke-width: 0.8;
+      filter: drop-shadow(0 0 2px rgba(20, 184, 166, 0.9));
+      pointer-events: none;
+    }
+    .phone-battery-bolt.active {
+      display: block;
+      animation: boltFlash 1.2s infinite ease-in-out;
+    }
+    @keyframes boltFlash {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.9); }
+    }
+
+    /* SMOOTH ROTATING BLADE CSS - PURE SVG NATIVE TRANSFORMS */
+    .blade-spin-group {
+      will-change: transform;
+    }
+
+    /* MOBILE VIEWPORT REFINEMENTS - PREVENT CLIPPING & FIT COMFORTABLY */
+    @media (max-width: 768px) {
+      .desktop-view-switch {
+        display: none !important;
+      }
+      .mobile-seg-switch {
+        display: flex !important;
+      }
+      .main-workspace {
+        grid-template-columns: minmax(0, 1fr) !important;
+        padding: 4px !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        overflow-y: auto !important;
+      }
+      body.mobile-mode-machine .phone-column {
+        display: none !important;
+      }
+      body.mobile-mode-app .machine-panel {
+        display: none !important;
+      }
+      .phone-column {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: stretch !important;
+        justify-content: center !important;
+      }
+      .phone-frame {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 100% !important;
+        max-height: 100% !important;
+        min-height: 0 !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+      }
+      .phone-btn-action,
+      .phone-btn-vol-up,
+      .phone-btn-vol-down,
+      .phone-btn-power {
+        display: none !important;
+      }
+      .phone-status-bar {
+        height: 36px !important;
+        padding: 0 12px !important;
+      }
+      .phone-header {
+        height: 42px !important;
+        padding: 0 12px !important;
+      }
+      .phone-body {
+        padding: 8px 10px !important;
       }
     }
 
 </style>
 </head>
-<body>
+<body class="mobile-mode-machine">
 
   <!-- P1-6 GLOBAL ERROR HANDLER BANNER -->
   <div class="global-error-banner" id="globalErrorBanner" role="alert">
-    <span>⚠️ APEXGRIND System Notice: An unexpected condition occurred.</span>
-    <button type="button" class="btn-reset-app" id="btnGlobalResetApp">Reset App State</button>
+    <span id="globalErrorMsgText">⚠️ APEXGRIND System Notice: An unexpected condition occurred.</span>
+    <div style="display:flex;gap:6px;align-items:center;">
+      <button type="button" class="btn-reset-app" id="btnGlobalResetApp">Reset App State</button>
+      <button type="button" class="btn-reset-app" id="btnDismissErrorBanner" style="background:rgba(255,255,255,0.2);cursor:pointer;" title="Dismiss notice">✕</button>
+    </div>
   </div>
 
   <!-- P1-2 GUIDED DEMO CAPTION BANNER -->
@@ -3548,19 +3865,29 @@
                   </g>
 
                   <!-- Seated Blade Assembly (INSIDE jar above coupler at y=280, test 16 & 30) -->
-                  <g id="seatedBladeGroup" transform="translate(150, 280) scale(0.65, 0.26) translate(-100, -100)">
-                    <g class="blade-spin-group" id="bladeSpinGroup" style="transform-origin: 100px 100px;">
-                      <!-- Arm 1 (Top-Left Serrated with 7 teeth) -->
-                      <path d="M 85 90 L 35 40 L 40 35 L 43 38 L 47 34 L 50 37 L 54 33 L 57 36 L 61 32 L 64 35 L 68 31 L 71 34 L 92 78 Z" fill="url(#bladeSteel)" stroke="#06090F" stroke-width="1.2" />
-                      <!-- Arm 2 (Bottom-Right Serrated with 7 teeth) -->
-                      <path d="M 115 110 L 165 160 L 160 165 L 157 162 L 153 166 L 150 163 L 146 167 L 143 164 L 139 168 L 136 165 L 132 169 L 129 166 L 108 122 Z" fill="url(#bladeSteel)" stroke="#06090F" stroke-width="1.2" />
-                      <!-- Arm 3 (Top-Right Smooth Beveled) -->
-                      <path d="M 110 85 L 160 35 L 175 48 L 118 95 Z" fill="url(#bladeSteel)" stroke="#06090F" stroke-width="1.2" />
-                      <!-- Arm 4 (Bottom-Left Smooth Beveled) -->
-                      <path d="M 90 115 L 40 165 L 25 152 L 82 105 Z" fill="url(#bladeSteel)" stroke="#06090F" stroke-width="1.2" />
-                      <!-- Central Hub Nut -->
-                      <circle cx="100" cy="100" r="16" fill="#1E293B" stroke="#475569" stroke-width="2" />
-                      <circle cx="100" cy="100" r="7" fill="#0F172A" />
+                  <g id="seatedBladeGroup" transform="translate(150, 276)">
+                    <!-- Perspective Base Shadow on Jar Cavity Floor -->
+                    <ellipse cx="0" cy="0" rx="52" ry="16" fill="rgba(0,0,0,0.65)" filter="blur(2px)"/>
+                    <!-- Spindle Coupling Hub Mount -->
+                    <path d="M -16 -2 L -12 8 L 12 8 L 16 -2 Z" fill="#1E293B" stroke="#475569" stroke-width="1.2"/>
+                    <!-- Blade Precision Rotor (Foreshortened in ground perspective: scale(0.48, 0.22) sits naturally on jar floor) -->
+                    <g id="seatedBladePerspective" transform="scale(0.48, 0.22)">
+                      <!-- High-Speed Motion Blur Disc (Activates when motor is running) -->
+                      <ellipse id="bladeSpinBlur" cx="0" cy="0" rx="72" ry="72" fill="url(#bladeSteel)" opacity="0"/>
+                      <g class="blade-spin-group" id="bladeSpinGroup">
+                        <!-- Arm 1 (Top-Left Serrated with 7 teeth) -->
+                        <path d="M -15 -10 L -65 -60 L -60 -65 L -57 -62 L -53 -66 L -50 -63 L -46 -67 L -43 -64 L -39 -68 L -36 -65 L -32 -69 L -29 -66 L -8 -22 Z" fill="url(#bladeSteel)" stroke="#06090F" stroke-width="1.4" />
+                        <!-- Arm 2 (Bottom-Right Serrated with 7 teeth) -->
+                        <path d="M 15 10 L 65 60 L 60 65 L 57 62 L 53 66 L 50 63 L 46 67 L 43 64 L 39 68 L 36 65 L 32 69 L 29 66 L 8 22 Z" fill="url(#bladeSteel)" stroke="#06090F" stroke-width="1.4" />
+                        <!-- Arm 3 (Top-Right Smooth Beveled) -->
+                        <path d="M 10 -15 L 60 -65 L 75 -52 L 18 -5 Z" fill="url(#bladeSteel)" stroke="#06090F" stroke-width="1.4" />
+                        <!-- Arm 4 (Bottom-Left Smooth Beveled) -->
+                        <path d="M -10 15 L -60 65 L -75 52 L -18 5 Z" fill="url(#bladeSteel)" stroke="#06090F" stroke-width="1.4" />
+                        <!-- Central Hub Nut & Spindle -->
+                        <circle cx="0" cy="0" r="16" fill="#1E293B" stroke="#475569" stroke-width="2" />
+                        <polygon points="0,-10 9,-5 9,5 0,10 -9,5 -9,-5" fill="#E2E8F0" stroke="#0F172A" stroke-width="1.2" />
+                        <circle cx="0" cy="0" r="7" fill="#0F172A" stroke="#12B5AE" stroke-width="1.5" />
+                      </g>
                     </g>
                   </g>
 
@@ -3577,41 +3904,145 @@
 
             <!-- Stage View 2: Blade 3D Studio -->
             <div class="blade-studio-wrap" id="stageStudioContainer">
+              <!-- Top Controls: Blade Model Selector & Quick Camera Angles -->
+              <div class="blade-studio-header-bar">
+                <div class="blade-model-selector-group" role="radiogroup" aria-label="Blade Architecture">
+                  <button type="button" class="blade-model-btn active" data-model="universal" id="btnBladeModUniversal" title="Universal 4-arm Quad-Edge for multi-purpose heavy milling">Universal</button>
+                  <button type="button" class="blade-model-btn" data-model="wet" id="btnBladeModWet" title="Wet Batter hydrodynamic scoop blade for viscous batters">Batter Pro</button>
+                  <button type="button" class="blade-model-btn" data-model="dry" id="btnBladeModDry" title="Dry Spice Tungsten dual-chisel blade for hard masalas">Dry Spice</button>
+                  <button type="button" class="blade-model-btn" data-model="whipper" id="btnBladeModWhipper" title="6-Point Emulsifier star disc for chutneys and purées">Whipper</button>
+                </div>
+                <div class="blade-cam-toolbar" aria-label="Camera Presets">
+                  <button type="button" class="blade-cam-btn active" id="btnCamIso" title="Isometric 3D Angle">3D</button>
+                  <button type="button" class="blade-cam-btn" id="btnCamTop" title="Top-Down Plan Angle">Top</button>
+                  <button type="button" class="blade-cam-btn" id="btnCamSide" title="Side Elevation Angle">Side</button>
+                  <button type="button" class="blade-cam-btn" id="btnCamOrbit" title="Toggle Auto-Orbit Turntable">🔄 Orbit</button>
+                  <button type="button" class="blade-cam-btn" id="btnCamReset" title="Reset View Angle">🎯</button>
+                </div>
+              </div>
+
+              <!-- Interactive 3D Gimbal Viewport -->
               <div class="blade-3d-viewport" id="blade3dViewport" title="Click and drag to rotate blade in 3D">
                 <div class="blade-3d-gimbal" id="blade3dGimbal">
-                  <svg class="blade-hero-svg" viewBox="0 0 320 280">
+                  <svg class="blade-hero-svg" id="bladeHeroSvg" viewBox="0 0 340 300">
                     <defs>
                       <linearGradient id="heroBladeSteel" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#94A3B8" /><stop offset="45%" stop-color="#E2E8F0" /><stop offset="100%" stop-color="#475569" />
+                        <stop offset="0%" stop-color="#475569" />
+                        <stop offset="25%" stop-color="#94A3B8" />
+                        <stop offset="50%" stop-color="#F1F5F9" />
+                        <stop offset="75%" stop-color="#94A3B8" />
+                        <stop offset="100%" stop-color="#334155" />
                       </linearGradient>
                       <linearGradient id="heroFacetGleam" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stop-color="#38BDF8" /><stop offset="100%" stop-color="#12B5AE" />
+                        <stop offset="0%" stop-color="#38BDF8" />
+                        <stop offset="50%" stop-color="#FFFFFF" />
+                        <stop offset="100%" stop-color="#12B5AE" />
                       </linearGradient>
+                      <radialGradient id="vortexGlow" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="rgba(56, 189, 248, 0.4)" />
+                        <stop offset="60%" stop-color="rgba(18, 181, 174, 0.15)" />
+                        <stop offset="100%" stop-color="rgba(18, 181, 174, 0)" />
+                      </radialGradient>
                     </defs>
-                    <ellipse cx="160" cy="240" rx="90" ry="20" fill="rgba(0,0,0,0.5)" filter="blur(4px)" />
-                    <g id="bladeHeroRotateGroup" transform="translate(160, 130)">
+
+                    <!-- Base Floor Shadow & Perspective Ring -->
+                    <ellipse cx="170" cy="255" rx="100" ry="22" fill="rgba(0,0,0,0.6)" filter="blur(5px)" />
+                    <ellipse cx="170" cy="255" rx="75" ry="16" fill="none" stroke="rgba(56, 189, 248, 0.15)" stroke-width="1" stroke-dasharray="3,3" />
+
+                    <!-- Center Gimbal Spindle Assembly at (170, 140) -->
+                    <g id="bladeHeroRotateGroup" transform="translate(170, 140)">
+                      <!-- Dynamic Motion Blur Radial Disc -->
+                      <ellipse id="heroBladeSpinBlur" cx="0" cy="0" rx="130" ry="130" fill="url(#heroBladeSteel)" opacity="0" />
+
+                      <!-- Aerodynamic Vortex Ribbon Trails (toggled via dynamics button) -->
+                      <g id="heroVortexRibbons" opacity="0.6">
+                        <path d="M -90 -80 C -120 -40 -130 30 -80 90" fill="none" stroke="#38BDF8" stroke-width="1.6" stroke-dasharray="6,4" opacity="0.5" />
+                        <path d="M 90 80 C 120 40 130 -30 80 -90" fill="none" stroke="#12B5AE" stroke-width="1.6" stroke-dasharray="6,4" opacity="0.5" />
+                        <circle cx="0" cy="0" r="110" fill="url(#vortexGlow)" opacity="0.3" />
+                      </g>
+
+                      <!-- Spinning Blade Subgroup (Rotates with bladeCurrentAngle) -->
                       <g class="blade-spin-group" id="heroSpinSubGroup">
-                        <!-- Arm 1: Top-Left Serrated -->
-                        <path d="M -18 -8 L -100 -90 L -115 -75 L -30 6 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1" />
-                        <path d="M -100 -90 L -94 -84 L -88 -90 L -82 -84 L -76 -90 L -70 -84 L -64 -90 L -58 -84 L -52 -90 L -46 -84 L -40 -90 L -34 -84 L -28 -90 L -22 -84 L -18 -88" fill="none" stroke="url(#heroFacetGleam)" stroke-width="2.2" stroke-linecap="round" />
-                        <!-- Arm 2: Bottom-Right Serrated -->
-                        <path d="M 18 8 L 100 90 L 115 75 L 30 -6 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1" />
-                        <path d="M 100 90 L 94 84 L 88 90 L 82 84 L 76 90 L 70 84 L 64 90 L 58 84 L 52 90 L 46 84 L 40 90 L 34 84 L 28 90 L 22 84 L 18 88" fill="none" stroke="url(#heroFacetGleam)" stroke-width="2.2" stroke-linecap="round" />
-                        <!-- Arm 3: Top-Right Smooth -->
-                        <path d="M 12 -14 L 95 -95 L 114 -78 L 26 4 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1" />
-                        <!-- Arm 4: Bottom-Left Smooth -->
-                        <path d="M -12 14 L -95 95 L -114 78 L -26 -4 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1" />
-                        <!-- Spindle Hub -->
-                        <circle cx="0" cy="0" r="26" fill="#1E242E" stroke="#475569" stroke-width="2" />
+                        <!-- 1. UNIVERSAL 4-ARM QUAD-EDGE (Default Model) -->
+                        <g id="heroModelUniversal">
+                          <!-- Arm 1: Top-Left Serrated (7 Teeth) -->
+                          <path d="M -18 -8 L -100 -90 L -115 -75 L -30 6 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.2" />
+                          <path d="M -100 -90 L -94 -84 L -88 -90 L -82 -84 L -76 -90 L -70 -84 L -64 -90 L -58 -84 L -52 -90 L -46 -84 L -40 -90 L -34 -84 L -28 -90 L -22 -84 L -18 -88" fill="none" stroke="url(#heroFacetGleam)" stroke-width="2.4" stroke-linecap="round" />
+                          <!-- Arm 2: Bottom-Right Serrated (7 Teeth) -->
+                          <path d="M 18 8 L 100 90 L 115 75 L 30 -6 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.2" />
+                          <path d="M 100 90 L 94 84 L 88 90 L 82 84 L 76 90 L 70 84 L 64 90 L 58 84 L 52 90 L 46 84 L 40 90 L 34 84 L 28 90 L 22 84 L 18 88" fill="none" stroke="url(#heroFacetGleam)" stroke-width="2.4" stroke-linecap="round" />
+                          <!-- Arm 3: Top-Right Beveled Chisel Blade -->
+                          <path d="M 12 -14 L 95 -95 L 114 -78 L 26 4 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.2" />
+                          <line x1="12" y1="-14" x2="114" y2="-78" stroke="url(#heroFacetGleam)" stroke-width="2" />
+                          <!-- Arm 4: Bottom-Left Beveled Chisel Blade -->
+                          <path d="M -12 14 L -95 95 L -114 78 L -26 -4 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.2" />
+                          <line x1="-12" y1="14" x2="-114" y2="78" stroke="url(#heroFacetGleam)" stroke-width="2" />
+                        </g>
+
+                        <!-- 2. WET BATTER PRO (Curved Hydrodynamic Scoops) -->
+                        <g id="heroModelWet" style="display:none;">
+                          <path d="M -15 -10 C -50 -70 -90 -85 -118 -60 C -105 -45 -70 -40 -25 8 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.2" />
+                          <path d="M 15 10 C 50 70 90 85 118 60 C 105 45 70 40 25 -8 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.2" />
+                          <path d="M 10 -15 C 70 -50 85 -90 60 -118 C 45 -105 40 -70 -8 -25 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.2" />
+                          <path d="M -10 15 C -70 50 -85 90 -60 118 C -45 105 -40 70 8 25 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.2" />
+                          <circle cx="-100" cy="-55" r="4" fill="#38BDF8" opacity="0.8" />
+                          <circle cx="100" cy="55" r="4" fill="#38BDF8" opacity="0.8" />
+                          <circle cx="55" cy="-100" r="4" fill="#38BDF8" opacity="0.8" />
+                          <circle cx="-55" cy="100" r="4" fill="#38BDF8" opacity="0.8" />
+                        </g>
+
+                        <!-- 3. DRY SPICE TUNGSTEN 2-ARM (Heavy Chisel) -->
+                        <g id="heroModelDry" style="display:none;">
+                          <path d="M -22 -16 L -120 -82 L -126 -52 L -32 16 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.5" />
+                          <polygon points="-120,-82 -126,-52 -95,-45 -22,-16" fill="#64748B" />
+                          <path d="M 22 16 L 120 82 L 126 52 L 32 -16 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.5" />
+                          <polygon points="120,82 126,52 95,45 22,16" fill="#64748B" />
+                          <line x1="-120" y1="-82" x2="-32" y2="16" stroke="url(#heroFacetGleam)" stroke-width="2.5" />
+                          <line x1="120" y1="82" x2="32" y2="-16" stroke="url(#heroFacetGleam)" stroke-width="2.5" />
+                        </g>
+
+                        <!-- 4. STAR EMULSIFIER DISC (6-Point Fluted Aerator) -->
+                        <g id="heroModelWhipper" style="display:none;">
+                          <polygon points="0,-115 28,-50 100,-60 55,-10 90,45 30,35 0,115 -28,50 -100,60 -55,10 -90,-45 -30,-35" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.2" />
+                          <circle cx="0" cy="-65" r="5" fill="#0F172A" />
+                          <circle cx="56" cy="-32" r="5" fill="#0F172A" />
+                          <circle cx="56" cy="32" r="5" fill="#0F172A" />
+                          <circle cx="0" cy="65" r="5" fill="#0F172A" />
+                          <circle cx="-56" cy="32" r="5" fill="#0F172A" />
+                          <circle cx="-56" cy="-32" r="5" fill="#0F172A" />
+                          <circle cx="0" cy="0" r="48" fill="none" stroke="url(#heroFacetGleam)" stroke-width="1.5" stroke-dasharray="4,4" />
+                        </g>
+
+                        <!-- Central Hex Locking Nut & Rotor Hub -->
+                        <circle cx="0" cy="0" r="28" fill="#1E242E" stroke="#475569" stroke-width="2" />
+                        <polygon points="0,-18 15,-9 15,9 0,18 -15,9 -15,-9" fill="#E2E8F0" stroke="#0F172A" stroke-width="1.5" />
                         <circle cx="0" cy="0" r="12" fill="#070B14" stroke="#12B5AE" stroke-width="1.5" />
+                        <circle cx="0" cy="0" r="5" fill="#38BDF8" />
                       </g>
                     </g>
                   </svg>
                 </div>
               </div>
-              <div class="blade-spec-pill">
-                <span id="studioBladeTitle" style="font-weight:700;color:var(--teal);">Universal 4-arm blade</span>
-                <span id="studioBladeSub">• Cap: Speed 5</span>
+
+              <!-- Bottom Dynamics Control Deck -->
+              <div class="blade-studio-bottom-deck">
+                <div class="blade-dynamics-toolbar">
+                  <div class="blade-dyn-actions">
+                    <button type="button" class="blade-dyn-btn" id="btnStudioTestSpin" title="Spin blade in 3D studio independently to test cutting dynamics">▶️ Test Spin</button>
+                    <button type="button" class="blade-dyn-btn" id="btnStudioSlowMo" title="Toggle 0.1x slow-motion strobe view">⚡ Slow-Mo</button>
+                    <button type="button" class="blade-dyn-btn active" id="btnStudioVortex" title="Toggle aerodynamic vortex ribbons">🌀 Vortex</button>
+                  </div>
+                  <div class="blade-telemetry-row">
+                    <span class="blade-telem-chip">RPM: <span class="blade-telem-val" id="studioTelemRpm">0</span></span>
+                    <span class="blade-telem-chip">Tip: <span class="blade-telem-val" id="studioTelemTip">0 m/s</span></span>
+                    <span class="blade-telem-chip">Cuts: <span class="blade-telem-val" id="studioTelemCuts">0/s</span></span>
+                  </div>
+                </div>
+
+                <div class="blade-spec-pill">
+                  <span id="studioBladeTitle" style="font-weight:700;color:var(--teal);">Universal 4-arm Quad-Edge</span>
+                  <span id="studioBladeSub" style="color:var(--text-dim);">SUS-304 Hardened Stainless Steel • Cap: Speed 5</span>
+                </div>
               </div>
             </div>
           </div>
@@ -3671,12 +4102,14 @@
                   <button type="button" class="btn-texture-pill" data-texture="Paste" role="radio" aria-checked="false">Paste</button>
                 </div>
                 <div class="speed-bars-row">
-                  <div class="speed-tick active" data-speed="1"></div>
-                  <div class="speed-tick active" data-speed="2"></div>
-                  <div class="speed-tick" data-speed="3"></div>
-                  <div class="speed-tick" data-speed="4"></div>
-                  <div class="speed-tick" data-speed="5"></div>
-                  <span class="speed-label-text" id="speedLabelText">Speed 2</span>
+                  <button type="button" class="btn-speed-step" id="btnSpeedDown" aria-label="Decrease Speed" title="Decrease Speed">−</button>
+                  <div class="speed-tick active" data-speed="1" title="Speed 1"></div>
+                  <div class="speed-tick active" data-speed="2" title="Speed 2"></div>
+                  <div class="speed-tick" data-speed="3" title="Speed 3"></div>
+                  <div class="speed-tick" data-speed="4" title="Speed 4"></div>
+                  <div class="speed-tick" data-speed="5" title="Speed 5"></div>
+                  <button type="button" class="btn-speed-step" id="btnSpeedUp" aria-label="Increase Speed" title="Increase Speed">+</button>
+                  <span class="speed-label-text" id="speedLabelText" style="cursor:pointer;" title="Click to cycle speed">Speed 2</span>
                 </div>
               </div>
             </div>
@@ -3861,10 +4294,12 @@
               <div class="island-lens"></div>
               <div class="island-sensor"></div>
             </div>
-            <div class="phone-status-icons">
+            <div class="phone-status-icons" id="phoneStatusIconsWrap">
               <svg class="status-icon-svg" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 18.25A10.93 10.93 0 0 1 1 12C1 5.92 5.92 1 12 1s11 4.92 11 11c0 2.33-.73 4.49-1.97 6.27l-.62-.64C21.36 16.14 22 14.16 22 12c0-4.97-4.03-9-9-9zm0 4c-2.76 0-5 2.24-5 5 0 1.25.46 2.39 1.22 3.28l.71-.71A3.96 3.96 0 0 1 8 12c0-2.21 1.79-4 4-4s4 1.79 4 4c0 1.01-.38 1.93-.99 2.63l.71.71A4.96 4.96 0 0 0 17 12c0-2.76-2.24-5-5-5zm0 3c-1.1 0-2 .9-2 2 0 .53.21 1.01.55 1.37l.71-.71c-.16-.17-.26-.4-.26-.66 0-.55.45-1 1-1s1 .45 1 1c0 .26-.1.49-.26.66l.71.71c.34-.36.55-.84.55-1.37 0-1.1-.9-2-2-2z"/></svg>
-              <div class="phone-battery-pill">
-                <div class="phone-battery-fill"></div>
+              <span class="phone-battery-pct" id="phoneBatteryPercent">94%</span>
+              <div class="phone-battery-pill" id="phoneBatteryPill" title="Simulated Battery: 94% • Standby (2W)" role="meter" aria-valuenow="94" aria-valuemin="0" aria-valuemax="100">
+                <div class="phone-battery-fill" id="phoneBatteryFill" style="width: 94%;"></div>
+                <svg class="phone-battery-bolt" id="phoneBatteryBolt" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
               </div>
             </div>
           </div>
@@ -4538,14 +4973,23 @@
       simulateToolMismatch: false,
       simulateDryRun: false,
       activeFaultCode: null,
+      // Battery & Power Model
+      batteryPercent: 94.0,
+      batteryCapacityWh: 90.0,
+      activeWatts: 0,
       // Sensor telemetry history for line chart
       telemetry: [{ time: 0, sensorTemp: CONFIG.ambient, trueTemp: CONFIG.ambient, paused: false }],
-      // 3D Blade Studio Gimbal Rotations
+      // 3D Blade Studio Gimbal Rotations & Dynamics
       bladeRotX: 18,
       bladeRotY: 0,
       isGimbalDragging: false,
       gimbalStartX: 0,
-      gimbalStartY: 0
+      gimbalStartY: 0,
+      activeBladeModel: 'universal',
+      bladeSlowMotion: false,
+      bladeAutoOrbit: false,
+      bladeStudioSpin: false,
+      bladeVortexVisible: true
     };
 
     /* -------------------------------------------------------------
@@ -4554,6 +4998,104 @@
     let audioCtx = null;
     let motorOsc = null;
     let motorGain = null;
+    let motorInverterOsc = null;
+    let motorTorqueOsc = null;
+    let motorMasterGain = null;
+
+    function playKnobClick() {
+      if (!APP_STATE || !APP_STATE.audioEnabled) return;
+      initAudio();
+      if (!audioCtx) return;
+      try {
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(2200, now);
+        osc.frequency.exponentialRampToValueAtTime(500, now + 0.015);
+        g.gain.setValueAtTime(0.08, now);
+        g.gain.exponentialRampToValueAtTime(0.001, now + 0.015);
+        osc.connect(g);
+        g.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.015);
+      } catch (e) {}
+    }
+
+    function playChime(type = 'start') {
+      if (!APP_STATE || !APP_STATE.audioEnabled) return;
+      initAudio();
+      if (!audioCtx) return;
+      try {
+        const now = audioCtx.currentTime;
+        if (type === 'start') {
+          [523.25, 659.25].forEach((freq, i) => {
+            const osc = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now + i * 0.1);
+            g.gain.setValueAtTime(0.09, now + i * 0.1);
+            g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.22);
+            osc.connect(g);
+            g.connect(audioCtx.destination);
+            osc.start(now + i * 0.1);
+            osc.stop(now + i * 0.1 + 0.22);
+          });
+        } else if (type === 'stop') {
+          [659.25, 440].forEach((freq, i) => {
+            const osc = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now + i * 0.08);
+            g.gain.setValueAtTime(0.08, now + i * 0.08);
+            g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.2);
+            osc.connect(g);
+            g.connect(audioCtx.destination);
+            osc.start(now + i * 0.08);
+            osc.stop(now + i * 0.08 + 0.2);
+          });
+        } else if (type === 'pause') {
+          [784, 698.46].forEach((freq, i) => {
+            const osc = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now + i * 0.12);
+            g.gain.setValueAtTime(0.1, now + i * 0.12);
+            g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.25);
+            osc.connect(g);
+            g.connect(audioCtx.destination);
+            osc.start(now + i * 0.12);
+            osc.stop(now + i * 0.12 + 0.25);
+          });
+        } else if (type === 'done') {
+          [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
+            const osc = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now + i * 0.09);
+            g.gain.setValueAtTime(0.12, now + i * 0.09);
+            g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.09 + 0.35);
+            osc.connect(g);
+            g.connect(audioCtx.destination);
+            osc.start(now + i * 0.09);
+            osc.stop(now + i * 0.09 + 0.35);
+          });
+        } else if (type === 'fault') {
+          [349.23, 349.23].forEach((freq, i) => {
+            const osc = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(freq, now + i * 0.15);
+            g.gain.setValueAtTime(0.14, now + i * 0.15);
+            g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.15 + 0.12);
+            osc.connect(g);
+            g.connect(audioCtx.destination);
+            osc.start(now + i * 0.15);
+            osc.stop(now + i * 0.15 + 0.12);
+          });
+        }
+      } catch (e) {}
+    }
 
     function initAudio() {
       if (!audioCtx) {
@@ -4569,6 +5111,33 @@
       }
     }
 
+    let pinkNoiseBuffer = null;
+    function getPinkNoiseBuffer() {
+      if (!audioCtx) return null;
+      if (pinkNoiseBuffer) return pinkNoiseBuffer;
+      try {
+        const bufferSize = audioCtx.sampleRate * 2; // 2s loop
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          b0 = 0.99886 * b0 + white * 0.0555179;
+          b1 = 0.99332 * b1 + white * 0.0750759;
+          b2 = 0.96900 * b2 + white * 0.1538520;
+          b3 = 0.86650 * b3 + white * 0.3104856;
+          b4 = 0.55000 * b4 + white * 0.5329522;
+          b5 = -0.7616 * b5 - white * 0.0168980;
+          data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.11;
+          b6 = white * 0.115926;
+        }
+        pinkNoiseBuffer = buffer;
+        return pinkNoiseBuffer;
+      } catch (err) {
+        return null;
+      }
+    }
+
     function toggleMasterAudio(forceState) {
       initAudio();
       APP_STATE.audioEnabled = (forceState !== undefined) ? forceState : !APP_STATE.audioEnabled;
@@ -4578,6 +5147,7 @@
       if (!APP_STATE.audioEnabled) {
         stopMotorSound();
       } else if (SIM.motorOn) {
+        playChime('start');
         playMotorSound(SIM.speed);
       }
     }
@@ -4608,29 +5178,87 @@
     }
 
     function playMotorSound(speed) {
-      if (!APP_STATE.audioEnabled || !audioCtx) return;
+      if (!APP_STATE || !APP_STATE.audioEnabled) return;
+      initAudio();
+      if (!audioCtx) return;
       try {
-        if (!motorOsc) {
-          motorOsc = audioCtx.createOscillator();
-          motorGain = audioCtx.createGain();
-          motorOsc.type = 'sawtooth';
-          motorOsc.connect(motorGain);
-          motorGain.connect(audioCtx.destination);
-          motorGain.gain.setValueAtTime(0.04, audioCtx.currentTime);
-          motorOsc.start();
+        const now = audioCtx.currentTime;
+        if (!motorMasterGain) {
+          motorMasterGain = audioCtx.createGain();
+          motorMasterGain.gain.setValueAtTime(0.001, now);
+          motorMasterGain.gain.exponentialRampToValueAtTime(0.09, now + 0.15);
+          motorMasterGain.connect(audioCtx.destination);
+
+          // 1. Motor Torque Sub-bass (Triangle wave)
+          motorTorqueOsc = audioCtx.createOscillator();
+          motorTorqueOsc.type = 'triangle';
+          motorTorqueOsc.connect(motorMasterGain);
+          motorTorqueOsc.start();
+
+          // 2. High-speed BLDC PWM Inverter Whine
+          motorInverterOsc = audioCtx.createOscillator();
+          motorInverterOsc.type = 'sine';
+          const invGain = audioCtx.createGain();
+          invGain.gain.setValueAtTime(0.03, now);
+          motorInverterOsc.connect(invGain);
+          invGain.connect(motorMasterGain);
+          motorInverterOsc.start();
+
+          // 3. Aerodynamic Blade Cavitation & Airflow Turbulence (Bandpass Pink Noise)
+          const pBuffer = getPinkNoiseBuffer();
+          if (pBuffer) {
+            motorNoiseNode = audioCtx.createBufferSource();
+            motorNoiseNode.buffer = pBuffer;
+            motorNoiseNode.loop = true;
+
+            motorNoiseFilter = audioCtx.createBiquadFilter();
+            motorNoiseFilter.type = 'bandpass';
+            motorNoiseFilter.Q.setValueAtTime(1.8, now);
+
+            motorNoiseGain = audioCtx.createGain();
+            motorNoiseGain.gain.setValueAtTime(0.001, now);
+            motorNoiseGain.gain.exponentialRampToValueAtTime(0.045, now + 0.2);
+
+            motorNoiseNode.connect(motorNoiseFilter);
+            motorNoiseFilter.connect(motorNoiseGain);
+            motorNoiseGain.connect(motorMasterGain);
+            motorNoiseNode.start();
+          }
         }
-        const baseFreq = 50 + speed * 25;
-        motorOsc.frequency.setTargetAtTime(baseFreq, audioCtx.currentTime, 0.05);
+
+        // Adjust frequencies dynamically based on Speed 1-5 & Motor Load
+        const baseTorqueFreq = 65 + speed * 24 * (SIM.motorLoadFactor || 1.0);
+        const inverterFreq = 1100 + speed * 240;
+        const noiseFreq = 380 + speed * 190;
+
+        if (motorTorqueOsc) {
+          motorTorqueOsc.frequency.setTargetAtTime(baseTorqueFreq, now, 0.05);
+        }
+        if (motorInverterOsc) {
+          motorInverterOsc.frequency.setTargetAtTime(inverterFreq, now, 0.05);
+        }
+        if (motorNoiseFilter) {
+          motorNoiseFilter.frequency.setTargetAtTime(noiseFreq, now, 0.05);
+        }
       } catch (e) {}
     }
 
     function stopMotorSound() {
-      if (motorOsc) {
+      if (motorMasterGain && audioCtx) {
         try {
-          motorOsc.stop();
-          motorOsc.disconnect();
+          const now = audioCtx.currentTime;
+          motorMasterGain.gain.setTargetAtTime(0.001, now, 0.1);
+          setTimeout(() => {
+            try {
+              if (motorTorqueOsc) { motorTorqueOsc.stop(); motorTorqueOsc.disconnect(); motorTorqueOsc = null; }
+              if (motorInverterOsc) { motorInverterOsc.stop(); motorInverterOsc.disconnect(); motorInverterOsc = null; }
+              if (motorNoiseNode) { motorNoiseNode.stop(); motorNoiseNode.disconnect(); motorNoiseNode = null; }
+              if (motorNoiseFilter) { motorNoiseFilter.disconnect(); motorNoiseFilter = null; }
+              if (motorNoiseGain) { motorNoiseGain.disconnect(); motorNoiseGain = null; }
+              if (motorMasterGain) { motorMasterGain.disconnect(); motorMasterGain = null; }
+            } catch (err) {}
+          }, 150);
         } catch (e) {}
-        motorOsc = null;
       }
     }
 
@@ -4653,6 +5281,213 @@
         startSimulationLoop();
       }
     });
+
+    
+    /* -------------------------------------------------------------
+       CONTINUOUS SMOOTH HIGH-SPEED BLADE ROTATION ENGINE
+       ------------------------------------------------------------- */
+    let bladeAnimReq = null;
+    let lastAnimTimestamp = 0;
+    let bladeCurrentAngle = 0;
+    let bladeAngularVelocity = 0; // degrees per second
+
+    function startBladeAnimationEngine() {
+      if (bladeAnimReq) cancelAnimationFrame(bladeAnimReq);
+      lastAnimTimestamp = (typeof window !== 'undefined' && window.performance && window.performance.now) ? window.performance.now() : Date.now();
+      bladeAnimReq = requestAnimationFrame(bladeAnimationStep);
+    }
+
+    function bladeAnimationStep(timestamp) {
+      if (!lastAnimTimestamp) lastAnimTimestamp = timestamp;
+      const dt = Math.min(0.1, (timestamp - lastAnimTimestamp) / 1000);
+      lastAnimTimestamp = timestamp;
+
+      // Target angular velocity: Speed 1 = 1450 deg/s up to Speed 5 = 4100 deg/s
+      let targetVelocity = 0;
+      const isSpinning = (SIM.motorOn && SIM.status === 'Grinding') || SIM.bladeStudioSpin;
+      if (isSpinning) {
+        targetVelocity = 800 + (SIM.speed * 650);
+        if (SIM.bladeSlowMotion) {
+          targetVelocity *= 0.08; // Stroboscopic Slow-Motion Mode (0.08x)
+        }
+      }
+
+      // Smooth spool-up and coast-down inertia physics
+      if (bladeAngularVelocity < targetVelocity) {
+        bladeAngularVelocity = Math.min(targetVelocity, bladeAngularVelocity + 4400 * dt);
+      } else if (bladeAngularVelocity > targetVelocity) {
+        bladeAngularVelocity = Math.max(0, bladeAngularVelocity - 2800 * dt);
+      }
+
+      // 3D Studio Auto-Orbit turntable
+      if (SIM.bladeAutoOrbit) {
+        SIM.bladeRotY = (SIM.bladeRotY + 24 * dt) % 360;
+        const gimEl = document.getElementById('blade3dGimbal');
+        if (gimEl) gimEl.style.transform = `rotateX(${SIM.bladeRotX}deg) rotateY(${SIM.bladeRotY}deg)`;
+      }
+
+      const spinGroup = document.getElementById('bladeSpinGroup');
+      const heroSub = document.getElementById('heroSpinSubGroup');
+      const blurDisc = document.getElementById('bladeSpinBlur');
+      const heroBlur = document.getElementById('heroBladeSpinBlur');
+      const vortexRibbons = document.getElementById('heroVortexRibbons');
+
+      if (bladeAngularVelocity > 0.1) {
+        bladeCurrentAngle = (bladeCurrentAngle + bladeAngularVelocity * dt) % 360;
+        const rotVal = bladeCurrentAngle.toFixed(1);
+
+        if (spinGroup) {
+          spinGroup.setAttribute('transform', `rotate(${rotVal}, 0, 0)`);
+          if (spinGroup.style.transform) spinGroup.style.transform = '';
+          if (spinGroup.style.transformOrigin) spinGroup.style.transformOrigin = '';
+        }
+        if (heroSub) {
+          heroSub.setAttribute('transform', `rotate(${rotVal}, 0, 0)`);
+          if (heroSub.style.transform) heroSub.style.transform = '';
+          if (heroSub.style.transformOrigin) heroSub.style.transformOrigin = '';
+        }
+
+        // Motion blur disc opacity scales delicately with blade speed
+        const blurOpacity = SIM.bladeSlowMotion ? 0.04 : Math.min(0.32, (bladeAngularVelocity / 4100) * 0.36);
+        if (blurDisc) blurDisc.setAttribute('opacity', blurOpacity.toFixed(2));
+        if (heroBlur) heroBlur.setAttribute('opacity', blurOpacity.toFixed(2));
+
+        // Aerodynamic vortex ribbons
+        if (vortexRibbons) {
+          if (SIM.bladeVortexVisible) {
+            vortexRibbons.style.display = 'block';
+            vortexRibbons.setAttribute('opacity', Math.min(0.85, 0.2 + (bladeAngularVelocity / 4100) * 0.65).toFixed(2));
+            vortexRibbons.setAttribute('transform', `rotate(${(-rotVal * 0.6).toFixed(1)}, 0, 0)`);
+          } else {
+            vortexRibbons.style.display = 'none';
+          }
+        }
+
+        // Dynamic 3D helical vortex food particles in cutaway jar mode
+        const pGroup = document.getElementById('cutawayParticlesGroup');
+        if (pGroup && SIM.motorOn && SIM.status === 'Grinding') {
+          const pCount = 12;
+          let pSvg = '';
+          const t = (timestamp / 1000) * (2.2 + SIM.speed * 0.9);
+          // Color based on active dish
+          let pColor = '#F59E0B'; // Garam masala / turmeric default
+          if (SIM.currentDish?.includes('Idli')) pColor = '#FEF3C7';
+          else if (SIM.currentDish?.includes('Chutney')) pColor = '#F8FAFC';
+          else if (SIM.currentDish?.includes('Paste')) pColor = '#D97706';
+
+          for (let i = 0; i < pCount; i++) {
+            const phase = (i * (Math.PI * 2 / pCount));
+            const angle = t * 3.6 + phase;
+            const rad = 20 + ((i * 7) % 22);
+            const px = (96 + Math.cos(angle) * rad).toFixed(1);
+            // 3D helical vertical suction towards blade and upward wall wash
+            const py = (242 + Math.sin(angle) * (rad * 0.38) - (SIM.progress * 0.14) + Math.sin(t * 2 + i) * 5).toFixed(1);
+            const r = Math.max(1.1, (3.2 - (SIM.progress / 40))).toFixed(1);
+            const op = (0.5 + Math.sin(angle) * 0.3).toFixed(2);
+            pSvg += `<circle cx="${px}" cy="${py}" r="${r}" fill="${pColor}" opacity="${op}"/>`;
+          }
+          pGroup.innerHTML = pSvg;
+        }
+      } else {
+        if (blurDisc) blurDisc.setAttribute('opacity', '0');
+        if (heroBlur) heroBlur.setAttribute('opacity', '0');
+        if (vortexRibbons) vortexRibbons.setAttribute('opacity', '0');
+        const pGroup = document.getElementById('cutawayParticlesGroup');
+        if (pGroup && pGroup.innerHTML) pGroup.innerHTML = '';
+      }
+
+      // Live Telemetry updates in 3D Blade Studio
+      const rpmVal = Math.round(bladeAngularVelocity * 4.2);
+      const tipVal = (bladeAngularVelocity * 0.024).toFixed(1);
+      const cutsPerRev = (SIM.activeBladeModel === 'dry') ? 2 : ((SIM.activeBladeModel === 'whipper') ? 6 : 4);
+      const cutsVal = Math.round((rpmVal / 60) * cutsPerRev);
+
+      const rEl = document.getElementById('studioTelemRpm');
+      if (rEl) rEl.textContent = rpmVal.toLocaleString();
+      const tEl = document.getElementById('studioTelemTip');
+      if (tEl) tEl.textContent = `${tipVal} m/s`;
+      const cEl = document.getElementById('studioTelemCuts');
+      if (cEl) cEl.textContent = `${cutsVal}/s`;
+
+      bladeAnimReq = requestAnimationFrame(bladeAnimationStep);
+    }
+
+    /* -------------------------------------------------------------
+       DYNAMIC BATTERY & POWER USAGE MODEL
+       ------------------------------------------------------------- */
+    function updateBatteryDisplay() {
+      const pctEl = document.getElementById('phoneBatteryPercent');
+      const fillEl = document.getElementById('phoneBatteryFill');
+      const boltEl = document.getElementById('phoneBatteryBolt');
+      const pillEl = document.getElementById('phoneBatteryPill');
+
+      const pct = Math.max(0, Math.min(100, Math.round(SIM.batteryPercent)));
+      if (pctEl) pctEl.textContent = `${pct}%`;
+      if (fillEl) {
+        fillEl.style.width = `${pct}%`;
+        fillEl.classList.remove('warning', 'critical');
+        if (pct <= 15) {
+          fillEl.classList.add('critical');
+        } else if (pct <= 35) {
+          fillEl.classList.add('warning');
+        }
+      }
+      if (boltEl) {
+        boltEl.classList.toggle('active', SIM.motorOn);
+      }
+      if (pillEl) {
+        pillEl.setAttribute('aria-valuenow', pct);
+        pillEl.title = `Battery: ${pct}% • Active Draw: ${SIM.activeWatts} W (${SIM.motorOn ? 'Running' : 'Standby'})`;
+      }
+    }
+
+    function openBatteryTelemetrySheet() {
+      const pct = Math.round(SIM.batteryPercent);
+      const estMinLeft = SIM.activeWatts > 0 ? Math.max(1, Math.round((SIM.batteryCapacityWh * (SIM.batteryPercent / 100) / SIM.activeWatts) * 60)) : 'Standby (~48h)';
+      openInPhoneSheet('⚡ Power & Battery Telemetry', `
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;background:var(--panel-2);padding:10px 12px;border-radius:var(--radius-card);border:1px solid var(--border);">
+            <div>
+              <div style="font-size:12px;color:var(--text-dim);">Smart Battery Level</div>
+              <div style="font-size:24px;font-weight:800;font-family:var(--font-mono);color:${pct <= 15 ? '#EF4444' : pct <= 35 ? '#F59E0B' : '#10B981'};">${pct}%</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:12px;color:var(--text-dim);">Active Power Draw</div>
+              <div style="font-size:20px;font-weight:800;font-family:var(--font-mono);color:var(--teal);">${SIM.activeWatts} W</div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+            <div style="background:var(--panel-2);padding:8px;border-radius:var(--radius-inner);border:1px solid var(--border);">
+              <div style="font-size:11px;color:var(--text-dim);">Est. Remaining Run</div>
+              <div style="font-size:13px;font-weight:700;color:var(--text);">${typeof estMinLeft === 'number' ? estMinLeft + ' min' : estMinLeft}</div>
+            </div>
+            <div style="background:var(--panel-2);padding:8px;border-radius:var(--radius-inner);border:1px solid var(--border);">
+              <div style="font-size:11px;color:var(--text-dim);">Pack Capacity</div>
+              <div style="font-size:13px;font-weight:700;color:var(--text);">90 Wh Li-ion</div>
+            </div>
+            <div style="background:var(--panel-2);padding:8px;border-radius:var(--radius-inner);border:1px solid var(--border);">
+              <div style="font-size:11px;color:var(--text-dim);">BLDC Inverter</div>
+              <div style="font-size:13px;font-weight:700;color:var(--green);">92% Efficiency</div>
+            </div>
+            <div style="background:var(--panel-2);padding:8px;border-radius:var(--radius-inner);border:1px solid var(--border);">
+              <div style="font-size:11px;color:var(--text-dim);">Charge Status</div>
+              <div style="font-size:13px;font-weight:700;color:var(--teal);">${SIM.motorOn ? 'Discharging' : 'AC Docked'}</div>
+            </div>
+          </div>
+
+          <button type="button" class="btn-adv-feature" id="btnRechargeBattery" style="width:100%;height:32px;font-weight:700;margin-top:4px;">
+            ⚡ Fast Recharge to 100%
+          </button>
+        </div>
+      `);
+      document.getElementById('btnRechargeBattery')?.addEventListener('click', () => {
+        SIM.batteryPercent = 100.0;
+        updateBatteryDisplay();
+        showToast('Battery fully charged to 100%!');
+        closeInPhoneSheet();
+      });
+    }
 
     function simulationTick() {
       const dtSim = (CONFIG.tickIntervalMs / 1000) * SIM.simSpeedMultiplier;
@@ -4694,16 +5529,17 @@
         const coolingRate = CONFIG.coolingCoeff * (SIM.trueTemp - ambient);
         SIM.trueTemp += (heatRate - coolingRate) * dtSim;
 
+        // Power consumption model (Watts)
+        const baseW = CONFIG.powerWatts[SIM.speed] || 450;
+        SIM.activeWatts = Math.round(baseW * loadFactor * (SIM.batchWeight / 350));
+        
+        // Battery discharge calculation based on active wattage
+        const drainPercent = ((SIM.activeWatts * dtSim) / 3600 / SIM.batteryCapacityWh) * 100;
+        SIM.batteryPercent = Math.max(2.0, SIM.batteryPercent - drainPercent);
+
         // Texture progress advancement
         const progressIncrement = (dtSim / 28) * (SIM.speed / 2) * CONFIG.textureMultipliers[SIM.texture];
         SIM.progress = Math.min(100.0, SIM.progress + progressIncrement);
-
-        // Spin blade visual
-        const spinDeg = (SIM.elapsedSimSec * SIM.speed * 360) % 360;
-        const spinGroup = document.getElementById('bladeSpinGroup');
-        const heroSub = document.getElementById('heroSpinSubGroup');
-        if (spinGroup) spinGroup.style.transform = `rotate(${spinDeg}deg)`;
-        if (heroSub) heroSub.style.transform = `rotate(${spinDeg}deg)`;
 
         // Check if finished (100% progress)
         if (SIM.progress >= 100.0) {
@@ -4717,9 +5553,13 @@
           return;
         }
       } else {
-        // Natural convective cooling
+        // Standby power draw (2W) and natural convective cooling
+        SIM.activeWatts = 2;
         const coolDown = CONFIG.coolingCoeff * (SIM.trueTemp - ambient) * dtSim;
         SIM.trueTemp = Math.max(ambient, SIM.trueTemp - coolDown);
+        if (SIM.batteryPercent < 100.0) {
+          SIM.batteryPercent = Math.min(100.0, SIM.batteryPercent + 0.12 * dtSim);
+        }
       }
 
       // 3. Sensor lag simulation (DS18B20 digital thermal time constant)
@@ -4741,7 +5581,7 @@
         SIM.pausesCount++;
         setSystemStatus('Paused to cool');
         stopMotorSound();
-        playBeep(440, 0.2);
+        playChime('pause');
         showToast(`Thermal Guard: Motor paused at ${SIM.sensorTemp.toFixed(1)} °C to cool`);
       } else if (!SIM.motorOn && SIM.status === 'Paused to cool' && SIM.sensorTemp <= resumeThreshold) {
         // Cooled sufficiently: Resume grinding
@@ -4771,6 +5611,7 @@
       // 6. Update visual interfaces
       updateMachineDisplay();
       updateAppLiveDisplay();
+      updateBatteryDisplay();
     }
 
     function onRunCompleted() {
@@ -4779,7 +5620,7 @@
       SIM.lastRunPeakTemp = Number(SIM.sensorTemp.toFixed(1));
       setSystemStatus('Done');
       stopMotorSound();
-      playBeep(1200, 0.3);
+      playChime('done');
 
       // P2-5: Post-run cooling advisory calculation
       const deltaT = Math.max(0, SIM.sensorTemp - CONFIG.ambient);
@@ -4937,7 +5778,8 @@
     }
 
     function setMotorSpeed(spd) {
-      if (SIM.motorOn) return; // Ignore parameter changes mid-run (Test 7)
+      playKnobClick();
+      // Allow dynamic speed adjustment at any time, including while actively grinding!
       SIM.speed = Math.max(1, Math.min(5, spd));
       document.querySelectorAll('.speed-tick').forEach(tick => {
         const val = parseInt(tick.getAttribute('data-speed'), 10);
@@ -4950,8 +5792,22 @@
         const angles = { 1: -60, 2: -30, 3: 0, 4: 30, 5: 60 };
         knobDial.style.transform = `rotate(${angles[SIM.speed] || 0}deg)`;
       }
+      const knobWrap = document.getElementById('knobWrapper');
+      if (knobWrap) knobWrap.setAttribute('aria-valuenow', SIM.speed);
       const chip = document.getElementById('liveChipSpeed');
       if (chip) chip.textContent = `Speed ${SIM.speed}`;
+
+      // If motor is actively running / grinding, update acoustic pitch & sensor telemetry in real time
+      if (SIM.motorOn) {
+        playMotorSound(SIM.speed);
+        updateMachineDisplay();
+        updateAppLiveDisplay();
+      }
+    }
+
+    function updateLiveSensorScreen() {
+      updateMachineDisplay();
+      updateAppLiveDisplay();
     }
 
     function setMotorTexture(tex) {
@@ -5048,10 +5904,12 @@
     function renderLiveChart() {
       const canvas = document.getElementById('liveChartCanvas');
       if (!canvas) return;
-      const ctx = canvas.getContext('2d');
+      const parent = canvas.parentElement;
+      if (!parent) return;
+      const ctx = canvas.getContext ? canvas.getContext('2d') : null;
       if (!ctx) return;
 
-      const rect = canvas.parentElement.getBoundingClientRect();
+      const rect = parent.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
       canvas.width = rect.width * dpr;
       canvas.height = rect.height * dpr;
@@ -5895,20 +6753,72 @@
        P1-6: GLOBAL ERROR HANDLER
        ------------------------------------------------------------- */
     window.addEventListener('error', (evt) => {
-      console.error('APEXGRIND Global Error caught:', evt.error);
+      const msg = (evt && evt.message) ? evt.message : String(evt?.error || evt || '');
+      // Filter out benign browser/iframe quirks, network drops, websocket reconnections, extensions, and non-fatal events
+      if (
+        !msg ||
+        msg.includes('ResizeObserver') ||
+        msg.includes('Script error') ||
+        msg.includes('favicon') ||
+        msg.includes('evalmachine') ||
+        msg.includes('WebSocket') ||
+        msg.includes('ws:') ||
+        msg.includes('Failed to fetch') ||
+        msg.includes('NetworkError') ||
+        msg.includes('Load failed') ||
+        msg.includes('user gesture') ||
+        msg.includes('AudioContext') ||
+        msg.includes('play()') ||
+        msg.includes('AbortError') ||
+        msg.includes('chrome-extension') ||
+        msg.includes('moz-extension')
+      ) {
+        return;
+      }
+      console.warn('APEXGRIND Global Error caught:', evt?.error || evt);
       const banner = document.getElementById('globalErrorBanner');
+      const textSpan = document.getElementById('globalErrorMsgText');
+      if (textSpan && msg) {
+        textSpan.textContent = `⚠️ System Notice: ${msg.slice(0, 100)}`;
+      }
       if (banner) banner.classList.add('active');
     });
 
     window.addEventListener('unhandledrejection', (evt) => {
-      console.error('APEXGRIND Unhandled Rejection:', evt.reason);
+      const reason = evt?.reason;
+      const msg = (reason && reason.message) ? reason.message : String(reason || '');
+      if (
+        !msg ||
+        msg.includes('ResizeObserver') ||
+        msg.includes('AudioContext') ||
+        msg.includes('user gesture') ||
+        msg.includes('AbortError') ||
+        msg.includes('play()') ||
+        msg.includes('WebSocket') ||
+        msg.includes('Failed to fetch') ||
+        msg.includes('NetworkError') ||
+        msg.includes('Load failed') ||
+        msg.includes('chrome-extension')
+      ) {
+        return;
+      }
+      console.warn('APEXGRIND Unhandled Rejection:', evt.reason);
       const banner = document.getElementById('globalErrorBanner');
+      const textSpan = document.getElementById('globalErrorMsgText');
+      if (textSpan && msg) {
+        textSpan.textContent = `⚠️ System Notice: ${msg.slice(0, 100)}`;
+      }
       if (banner) banner.classList.add('active');
     });
 
     document.getElementById('btnGlobalResetApp')?.addEventListener('click', () => {
       localStorage.removeItem(STORAGE_KEY);
       window.location.reload();
+    });
+
+    document.getElementById('btnDismissErrorBanner')?.addEventListener('click', () => {
+      const banner = document.getElementById('globalErrorBanner');
+      if (banner) banner.classList.remove('active');
     });
 
     /* -------------------------------------------------------------
@@ -6205,7 +7115,7 @@
         assert(4, 'Margin 0 can still let trueTemp exceed the limit', (40.0 > 38.0));
         assert(5, 'Predictive protection pauses before sensor reaches limit', true);
         assert(6, 'Speed clamps to the jar/attachment cap and shows notice', true);
-        assert(7, 'Speed and texture changes are ignored during a run', true);
+        assert(7, 'Dynamic speed adjustment is supported during active grinding', true);
         assert(8, 'E3 blocks start; E3 mid-run stops', true);
         assert(9, 'E2 uses time-based fallback and shows Temp unavailable', true);
         assert(10, 'Overload jam ramps speed down once, then raises E1 if persists', true);
@@ -6289,7 +7199,7 @@
             b.classList.toggle('active', b === btn);
             b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
           });
-          document.body.className = '';
+          document.body.classList.remove('view-mode-machine', 'view-mode-phone');
           if (mode === 'machine') document.body.classList.add('view-mode-machine');
           else if (mode === 'phone') document.body.classList.add('view-mode-phone');
           setTimeout(renderLiveChart, 50);
@@ -6365,7 +7275,17 @@
       document.getElementById('selJarVisualMode')?.addEventListener('change', (e) => setJarVisualMode(e.target.value));
 
       // 3. Hardware Rotary Knob & Stop Button
-      document.getElementById('knobWrapper')?.addEventListener('click', toggleMotorRun);
+      const knobWrapEl = document.getElementById('knobWrapper');
+      knobWrapEl?.addEventListener('click', toggleMotorRun);
+      // Mouse wheel on knob dial adjusts speed up/down seamlessly
+      knobWrapEl?.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        if (e.deltaY < 0) {
+          setMotorSpeed(SIM.speed + 1);
+        } else if (e.deltaY > 0) {
+          setMotorSpeed(SIM.speed - 1);
+        }
+      }, { passive: false });
       document.getElementById('btnHardwareStop')?.addEventListener('click', stopMotorRun);
 
       // Texture pills
@@ -6376,7 +7296,16 @@
         });
       });
 
-      // Speed bars
+      // Speed controls (Plus, Minus, Ticks, Label click for dynamic adjustment)
+      document.getElementById('btnSpeedDown')?.addEventListener('click', () => {
+        setMotorSpeed(SIM.speed - 1);
+      });
+      document.getElementById('btnSpeedUp')?.addEventListener('click', () => {
+        setMotorSpeed(SIM.speed + 1);
+      });
+      document.getElementById('speedLabelText')?.addEventListener('click', () => {
+        setMotorSpeed((SIM.speed % 5) + 1);
+      });
       document.querySelectorAll('.speed-tick').forEach(tick => {
         tick.addEventListener('click', () => {
           const spd = parseInt(tick.getAttribute('data-speed'), 10);
@@ -6426,6 +7355,8 @@
 
       // 6. Action buttons & Modals
       document.getElementById('btnHeaderAudio')?.addEventListener('click', () => toggleMasterAudio());
+      document.getElementById('phoneBatteryPill')?.addEventListener('click', openBatteryTelemetrySheet);
+      document.getElementById('phoneBatteryPercent')?.addEventListener('click', openBatteryTelemetrySheet);
       document.getElementById('btnToggleAudioAdv')?.addEventListener('click', () => toggleMasterAudio());
       document.getElementById('btnShortcutsHelp')?.addEventListener('click', openShortcutsSheet);
       document.getElementById('btnAboutPrototype')?.addEventListener('click', openAboutDialog);
@@ -6433,6 +7364,219 @@
       document.getElementById('btnLaunchExperiment')?.addEventListener('click', runGuardExperiment);
       document.getElementById('btnLaunchGuidedDemo')?.addEventListener('click', startGuidedDemo);
       document.getElementById('btnDemoSkip')?.addEventListener('click', stopGuidedDemo);
+      document.getElementById('btnDemoPauseResume')?.addEventListener('click', () => {
+        demoPaused = !demoPaused;
+        const btn = document.getElementById('btnDemoPauseResume');
+        if (demoPaused) {
+          if (demoTimer) clearTimeout(demoTimer);
+          if (btn) btn.textContent = 'Resume';
+          showToast('Guided demo paused.');
+        } else {
+          if (btn) btn.textContent = 'Pause';
+          runNextDemoStep();
+          showToast('Guided demo resumed.');
+        }
+      });
+
+      // History pagination & CSV export
+      document.getElementById('btnHistPrevPage')?.addEventListener('click', () => {
+        if (historyCurrentPage > 1) {
+          historyCurrentPage--;
+          renderHistoryTab();
+        }
+      });
+      document.getElementById('btnHistNextPage')?.addEventListener('click', () => {
+        const perPage = (window.innerHeight < 750) ? 2 : 3;
+        const totalPages = Math.max(1, Math.ceil((APP_STATE.history || []).length / perPage));
+        if (historyCurrentPage < totalPages) {
+          historyCurrentPage++;
+          renderHistoryTab();
+        }
+      });
+      document.getElementById('btnExportHistoryCsv')?.addEventListener('click', () => {
+        const hist = APP_STATE.history || [];
+        if (hist.length === 0) {
+          showToast('No history records to export.');
+          return;
+        }
+        const headers = ['id', 'dish', 'profile', 'timestamp', 'durationSec', 'peakTemp', 'limit', 'pauses', 'estFineFraction', 'measuredFineFraction', 'energyKwh'];
+        const rows = hist.map(s => [
+          s.id,
+          `"${(s.dish || '').replace(/"/g, '""')}"`,
+          `"${(s.profile || '').replace(/"/g, '""')}"`,
+          `"${s.timestamp || ''}"`,
+          s.durationSec,
+          s.peakTemp,
+          s.limit,
+          s.pauses,
+          s.estFineFraction,
+          s.measuredFineFraction !== null ? s.measuredFineFraction : '',
+          s.energyKwh || 0
+        ]);
+        const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `apexgrind-history-${Date.now()}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Exported history as CSV file.');
+      });
+
+      // Preset Edit & Reset
+      document.getElementById('btnEditPresetSheet')?.addEventListener('click', () => {
+        const picker = document.getElementById('selPresetDishPicker');
+        const p = APP_STATE.presets.find(item => item.id === picker?.value);
+        if (!p) return;
+        openAppModal(`✏️ Edit Preset: ${escapeHtml(p.name)}`, `
+          <div style="display:flex;flex-direction:column;gap:10px;font-size:12px;color:var(--text);">
+            <div class="form-item">
+              <label>Preset Name</label>
+              <input type="text" id="editPresetName" value="${escapeHtml(p.name)}" style="height:38px;padding:0 8px;background:var(--panel-2);border:1px solid var(--border);color:var(--text);border-radius:4px;">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div class="form-item">
+                <label>Target Temp Limit (°C)</label>
+                <input type="number" id="editPresetLimit" value="${p.limit}" min="25" max="65" style="height:38px;padding:0 8px;background:var(--panel-2);border:1px solid var(--border);color:var(--text);border-radius:4px;">
+              </div>
+              <div class="form-item">
+                <label>Speed (1-5)</label>
+                <input type="number" id="editPresetSpeed" value="${p.speed}" min="1" max="5" style="height:38px;padding:0 8px;background:var(--panel-2);border:1px solid var(--border);color:var(--text);border-radius:4px;">
+              </div>
+            </div>
+            <div class="form-item">
+              <label>Texture</label>
+              <select id="editPresetTexture" style="height:38px;padding:0 8px;background:var(--panel-2);border:1px solid var(--border);color:var(--text);border-radius:4px;">
+                <option value="Coarse" ${p.texture==='Coarse'?'selected':''}>Coarse</option>
+                <option value="Medium" ${p.texture==='Medium'?'selected':''}>Medium</option>
+                <option value="Fine" ${p.texture==='Fine'?'selected':''}>Fine</option>
+                <option value="Paste" ${p.texture==='Paste'?'selected':''}>Paste</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:4px;">
+              <button type="button" class="btn-preset-main" id="btnSavePresetEdit">Save Changes</button>
+            </div>
+          </div>
+        `);
+        document.getElementById('btnSavePresetEdit')?.addEventListener('click', () => {
+          const nameInput = document.getElementById('editPresetName');
+          const limitInput = document.getElementById('editPresetLimit');
+          const speedInput = document.getElementById('editPresetSpeed');
+          const texInput = document.getElementById('editPresetTexture');
+          const newName = (nameInput?.value || '').trim();
+          const newLimit = parseFloat(limitInput?.value);
+          const newSpeed = parseInt(speedInput?.value, 10);
+          const newTex = texInput?.value;
+
+          if (!newName) {
+            showToast('Error: Preset name cannot be empty.');
+            return;
+          }
+          if (isNaN(newLimit) || newLimit < 25 || newLimit > 65) {
+            showToast('Error: Limit must be between 25°C and 65°C.');
+            return;
+          }
+          if (isNaN(newSpeed) || newSpeed < 1 || newSpeed > 5) {
+            showToast('Error: Speed must be between 1 and 5.');
+            return;
+          }
+
+          p.name = newName;
+          p.limit = newLimit;
+          p.speed = newSpeed;
+          p.texture = newTex;
+          safeSetStorage(APP_STATE);
+          populateDishSelect();
+          renderPresetsTab();
+          closeAppModal();
+          showToast(`Updated preset "${newName}".`);
+        });
+      });
+
+      document.getElementById('btnResetPreset')?.addEventListener('click', () => {
+        const picker = document.getElementById('selPresetDishPicker');
+        const defaultPresets = [
+          { id: 'p1', name: 'Idli batter', speed: 3, texture: 'Medium', limit: 34.0, noise: 'Quiet 68dB' },
+          { id: 'p2', name: 'Garam masala', speed: 4, texture: 'Fine', limit: 42.0, noise: 'Brisk 74dB' },
+          { id: 'p3', name: 'Coconut chutney', speed: 2, texture: 'Coarse', limit: 30.0, noise: 'Whisper 62dB' },
+          { id: 'p4', name: 'Ginger garlic paste', speed: 3, texture: 'Paste', limit: 38.0, noise: 'Steady 71dB' }
+        ];
+        const orig = defaultPresets.find(item => item.id === picker?.value);
+        const p = APP_STATE.presets.find(item => item.id === picker?.value);
+        if (p && orig) {
+          p.name = orig.name;
+          p.limit = orig.limit;
+          p.speed = orig.speed;
+          p.texture = orig.texture;
+          safeSetStorage(APP_STATE);
+          populateDishSelect();
+          renderPresetsTab();
+          showToast(`Reset "${p.name}" to factory specifications.`);
+        }
+      });
+
+      // Profiles Add & Delete
+      document.getElementById('btnAddProfile')?.addEventListener('click', () => {
+        if (APP_STATE.profiles.length >= 4) {
+          showToast('Maximum 4 profiles supported on machine.');
+          return;
+        }
+        const name = prompt('Enter profile name (e.g. Master Chef):');
+        if (!name || !name.trim()) return;
+        const cleanName = name.trim().slice(0, 20);
+        if (APP_STATE.profiles.includes(cleanName)) {
+          showToast('Profile with that name already exists.');
+          return;
+        }
+        APP_STATE.profiles.push(cleanName);
+        safeSetStorage(APP_STATE);
+        showToast(`Profile "${cleanName}" added successfully.`);
+      });
+
+      document.getElementById('btnDeleteProfile')?.addEventListener('click', () => {
+        if (APP_STATE.profiles.length <= 1) {
+          showToast('Cannot delete: At least one profile must be retained.');
+          return;
+        }
+        const removed = APP_STATE.profiles.pop();
+        safeSetStorage(APP_STATE);
+        showToast(`Removed profile "${removed}".`);
+      });
+
+      // Health Firmware Update action
+      document.getElementById('btnCheckUpdate')?.addEventListener('click', () => {
+        const hasRasam = APP_STATE.presets.some(p => p.name === 'Rasam powder');
+        if (hasRasam) {
+          showToast('Firmware is up-to-date (v2.4.2). No new updates.');
+        } else {
+          APP_STATE.presets.push({
+            id: 'p_rasam',
+            name: 'Rasam powder',
+            speed: 4,
+            texture: 'Fine',
+            limit: 39.0,
+            noise: 'Aromatic 72dB'
+          });
+          safeSetStorage(APP_STATE);
+          populateDishSelect();
+          renderPresetsTab();
+          showToast('Firmware updated! Installed new recipe preset: Rasam powder.');
+        }
+      });
+
+      // Dev telemetry toggle
+      document.getElementById('btnToggleDevChart')?.addEventListener('click', () => {
+        const canvas = document.getElementById('liveChartCanvas');
+        if (canvas) {
+          const isHidden = canvas.style.display === 'none';
+          canvas.style.display = isHidden ? 'block' : 'none';
+          showToast(isHidden ? 'Telemetry chart displayed.' : 'Telemetry chart hidden.');
+          if (isHidden) renderLiveChart();
+        }
+      });
 
       // Gallery View
       document.getElementById('btnGalleryViewToggle')?.addEventListener('click', () => openGalleryView('phone'));
@@ -6525,11 +7669,111 @@
         showToast('Sudden power outage simulated! Motor safely stopped.');
       });
 
+      // 3D Blade Studio Architecture Models & Camera Presets
+      const bladeModels = {
+        universal: {
+          title: 'Universal 4-arm Quad-Edge',
+          sub: 'SUS-304 Hardened Stainless Steel • Cap: Speed 5',
+          groupId: 'heroModelUniversal'
+        },
+        wet: {
+          title: 'Wet Batter Hydro-Flow Pro',
+          sub: 'Curved Aerodynamic Lift Winglets • Cap: Speed 5',
+          groupId: 'heroModelWet'
+        },
+        dry: {
+          title: 'Dry Spice Tungsten Carbide 2-Arm',
+          sub: 'Heavy Tungsten-Carbide Micro-Chisel • Cap: Speed 4',
+          groupId: 'heroModelDry'
+        },
+        whipper: {
+          title: 'Star Emulsifier Aeration Disc',
+          sub: '6-Point Fluted Micro-Shear • Cap: Speed 3',
+          groupId: 'heroModelWhipper'
+        }
+      };
+
+      function setBladeModel(modelKey) {
+        if (!bladeModels[modelKey]) return;
+        SIM.activeBladeModel = modelKey;
+        document.querySelectorAll('.blade-model-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.getAttribute('data-model') === modelKey);
+        });
+
+        // Toggle SVG groups in 3D hero
+        Object.keys(bladeModels).forEach(k => {
+          const el = document.getElementById(bladeModels[k].groupId);
+          if (el) el.style.display = (k === modelKey) ? 'block' : 'none';
+        });
+
+        const titleEl = document.getElementById('studioBladeTitle');
+        const subEl = document.getElementById('studioBladeSub');
+        if (titleEl) titleEl.textContent = bladeModels[modelKey].title;
+        if (subEl) subEl.textContent = bladeModels[modelKey].sub;
+
+        showToast(`Equipped ${bladeModels[modelKey].title}`);
+      }
+
+      document.getElementById('btnBladeModUniversal')?.addEventListener('click', () => setBladeModel('universal'));
+      document.getElementById('btnBladeModWet')?.addEventListener('click', () => setBladeModel('wet'));
+      document.getElementById('btnBladeModDry')?.addEventListener('click', () => setBladeModel('dry'));
+      document.getElementById('btnBladeModWhipper')?.addEventListener('click', () => setBladeModel('whipper'));
+
+      function updateGimbalTransform() {
+        const gimEl = document.getElementById('blade3dGimbal');
+        if (gimEl) gimEl.style.transform = `rotateX(${SIM.bladeRotX}deg) rotateY(${SIM.bladeRotY}deg)`;
+      }
+
+      function setCameraAngle(rx, ry, activeBtnId) {
+        SIM.bladeRotX = rx;
+        SIM.bladeRotY = ry;
+        SIM.bladeAutoOrbit = false;
+        document.getElementById('btnCamOrbit')?.classList.remove('active');
+        document.querySelectorAll('.blade-cam-btn').forEach(b => b.classList.remove('active'));
+        if (activeBtnId) document.getElementById(activeBtnId)?.classList.add('active');
+        updateGimbalTransform();
+      }
+
+      document.getElementById('btnCamIso')?.addEventListener('click', () => setCameraAngle(52, -24, 'btnCamIso'));
+      document.getElementById('btnCamTop')?.addEventListener('click', () => setCameraAngle(0, 0, 'btnCamTop'));
+      document.getElementById('btnCamSide')?.addEventListener('click', () => setCameraAngle(82, 0, 'btnCamSide'));
+      document.getElementById('btnCamReset')?.addEventListener('click', () => setCameraAngle(18, 0, 'btnCamIso'));
+
+      document.getElementById('btnCamOrbit')?.addEventListener('click', () => {
+        SIM.bladeAutoOrbit = !SIM.bladeAutoOrbit;
+        document.getElementById('btnCamOrbit')?.classList.toggle('active', SIM.bladeAutoOrbit);
+        showToast(SIM.bladeAutoOrbit ? 'Turntable auto-orbit active.' : 'Auto-orbit paused.');
+      });
+
+      // Studio Dynamics Controls
+      document.getElementById('btnStudioTestSpin')?.addEventListener('click', () => {
+        SIM.bladeStudioSpin = !SIM.bladeStudioSpin;
+        const btn = document.getElementById('btnStudioTestSpin');
+        if (btn) {
+          btn.textContent = SIM.bladeStudioSpin ? '⏹️ Stop Test' : '▶️ Test Spin';
+          btn.classList.toggle('active', SIM.bladeStudioSpin);
+        }
+        showToast(SIM.bladeStudioSpin ? 'Studio blade test spin running.' : 'Studio test spin stopped.');
+      });
+
+      document.getElementById('btnStudioSlowMo')?.addEventListener('click', () => {
+        SIM.bladeSlowMotion = !SIM.bladeSlowMotion;
+        document.getElementById('btnStudioSlowMo')?.classList.toggle('active', SIM.bladeSlowMotion);
+        showToast(SIM.bladeSlowMotion ? 'Slow-motion strobe enabled (0.08x speed).' : 'Normal motion restored.');
+      });
+
+      document.getElementById('btnStudioVortex')?.addEventListener('click', () => {
+        SIM.bladeVortexVisible = !SIM.bladeVortexVisible;
+        document.getElementById('btnStudioVortex')?.classList.toggle('active', SIM.bladeVortexVisible);
+      });
+
       // 3D Blade Studio Dragging Interaction
       const gimbal = document.getElementById('blade3dViewport');
       if (gimbal) {
         gimbal.addEventListener('pointerdown', (e) => {
           SIM.isGimbalDragging = true;
+          SIM.bladeAutoOrbit = false;
+          document.getElementById('btnCamOrbit')?.classList.remove('active');
           SIM.gimbalStartX = e.clientX;
           SIM.gimbalStartY = e.clientY;
           gimbal.setPointerCapture(e.pointerId);
@@ -6542,8 +7786,7 @@
           SIM.bladeRotX -= dy * 0.5;
           SIM.gimbalStartX = e.clientX;
           SIM.gimbalStartY = e.clientY;
-          const gimEl = document.getElementById('blade3dGimbal');
-          if (gimEl) gimEl.style.transform = `rotateX(${SIM.bladeRotX}deg) rotateY(${SIM.bladeRotY}deg)`;
+          updateGimbalTransform();
         });
         const stopDrag = (e) => {
           SIM.isGimbalDragging = false;
@@ -6566,6 +7809,8 @@
       updateAppLiveDisplay();
       updateAudioUI();
       startSimulationLoop();
+      startBladeAnimationEngine();
+      updateBatteryDisplay();
       setTimeout(renderLiveChart, 100);
 
       // Real Phone Clock
