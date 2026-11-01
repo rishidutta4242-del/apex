@@ -4359,41 +4359,117 @@
     /* -------------------------------------------------------------
        COMPLETE, BUG-FREE MOBILE & TABLET RESPONSIVE ENGINE (<= 768px)
        ------------------------------------------------------------- */
-    @media (max-width: 768px) {
+     @media (max-width: 768px) {
       #appRoot {
         width: 100vw !important;
         height: 100dvh !important;
         max-height: 100dvh !important;
         overflow: hidden !important;
         display: grid !important;
-        grid-template-rows: 48px 44px minmax(0, 1fr) 24px !important;
+        grid-template-rows: 48px 40px minmax(0, 1fr) 24px !important;
       }
       .desktop-view-switch {
         display: none !important;
       }
       .mobile-seg-switch {
         display: flex !important;
+        flex-shrink: 0 !important;
       }
       .brand-sub {
         display: none !important;
       }
       .app-header {
-        padding: 0 10px !important;
-      }
-      .header-actions .btn-header-action span:not(#headerAudioIcon) {
-        font-size: 11px;
-      }
-      .main-workspace {
-        display: block !important;
-        grid-template-columns: none !important;
+        padding: 0 8px !important;
         width: 100% !important;
         max-width: 100vw !important;
+        box-sizing: border-box !important;
+      }
+      .brand-logo {
+        font-size: 14px !important;
+      }
+      .header-actions {
+        gap: 4px !important;
+      }
+      .header-actions .btn-header-action {
+        height: 28px !important;
+        padding: 0 7px !important;
+        font-size: 11px !important;
+      }
+      .header-actions .btn-header-action span:not(#headerAudioIcon) {
+        font-size: 11px !important;
+      }
+      .header-live-pill {
+        padding: 3px 8px !important;
+        font-size: 11px !important;
+      }
+
+      /* View Switcher Bar Mobile Layout */
+      .view-switcher-bar {
+        height: 40px !important;
+        padding: 0 8px !important;
+        width: 100% !important;
+        max-width: 100vw !important;
+        box-sizing: border-box !important;
+        overflow-x: auto !important;
+        scrollbar-width: none !important;
+      }
+      .view-switcher-bar::-webkit-scrollbar {
+        display: none !important;
+      }
+      .mobile-seg-switch .seg-btn {
+        height: 28px !important;
+        padding: 0 8px !important;
+        font-size: 11.5px !important;
+      }
+      .switcher-aux-actions .btn-header-action {
+        height: 28px !important;
+        padding: 0 7px !important;
+        font-size: 11px !important;
+      }
+
+      /* Unified Main Workspace for Mobile */
+      .main-workspace,
+      body.view-mode-split .main-workspace,
+      body.view-mode-machine .main-workspace,
+      body.mobile-mode-machine .main-workspace,
+      body.view-mode-phone .main-workspace,
+      body.mobile-mode-app .main-workspace,
+      body.view-mode-display .main-workspace,
+      body.mobile-mode-display .main-workspace {
+        display: block !important;
+        grid-template-columns: 1fr !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
         height: 100% !important;
         min-height: 0 !important;
-        padding: 6px !important;
+        padding: 6px 8px !important;
         overflow-y: auto !important;
         overflow-x: hidden !important;
         box-sizing: border-box !important;
+      }
+
+      /* Footer Mobile Optimization */
+      .app-footer {
+        height: 24px !important;
+        padding: 0 8px !important;
+        width: 100% !important;
+        max-width: 100vw !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+      .footer-left {
+        width: 100% !important;
+        text-align: center !important;
+        font-size: 10.5px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+      }
+      .footer-right {
+        display: none !important;
       }
 
       /* In default / split on mobile, show machine panel */
@@ -4409,6 +4485,7 @@
       .machine-panel {
         width: 100% !important;
         max-width: 100% !important;
+        min-width: 0 !important;
         height: auto !important;
         min-height: 100% !important;
         padding: 8px 10px !important;
@@ -4421,22 +4498,31 @@
         display: flex !important;
         flex-direction: column !important;
         gap: 10px !important;
+        width: 100% !important;
+        min-width: 0 !important;
       }
       .jar-stage-card {
         height: 140px !important;
+        width: 100% !important;
+        min-width: 0 !important;
       }
       .controls-display-card {
         height: auto !important;
         min-height: 0 !important;
+        width: 100% !important;
+        min-width: 0 !important;
       }
       .grid-setup, .grid-sensors, .grid-env, .grid-adv {
         grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        width: 100% !important;
+        min-width: 0 !important;
       }
 
-      /* Mobile Phone App: Edge-to-edge native smartphone feel without heavy borders */
+      /* Mobile Phone App */
       .phone-column {
         width: 100% !important;
         max-width: 100% !important;
+        min-width: 0 !important;
         height: 100% !important;
         min-height: 0 !important;
         padding: 0 !important;
@@ -4447,6 +4533,7 @@
       .phone-frame {
         width: 100% !important;
         max-width: 100% !important;
+        min-width: 0 !important;
         height: 100% !important;
         max-height: 100% !important;
         min-height: 0 !important;
@@ -4477,96 +4564,201 @@
       }
 
       /* Mobile Digital Motor Display Concept View */
+      body.view-mode-display .display-concept-panel,
+      body.mobile-mode-display .display-concept-panel,
       .display-concept-panel {
+        display: flex !important;
+        flex-direction: column !important;
         width: 100% !important;
         max-width: 100% !important;
+        min-width: 0 !important;
+        margin: 0 auto !important;
+        padding: 8px 8px !important;
+        gap: 10px !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+        overflow-y: visible !important;
         height: auto !important;
         min-height: 100% !important;
-        padding: 8px 10px !important;
+      }
+      .disp-concept-shell {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
         gap: 10px !important;
-        overflow-y: visible !important;
         box-sizing: border-box !important;
       }
       .disp-main-stage {
-        grid-template-columns: 1fr !important;
-        gap: 12px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        grid-template-columns: none !important;
         width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        gap: 12px !important;
+        box-sizing: border-box !important;
       }
       .disp-unit-container {
         width: 100% !important;
         max-width: 100% !important;
+        min-width: 0 !important;
         padding: 0 !important;
+        box-sizing: border-box !important;
       }
       .motor-console-card {
         width: 100% !important;
-        max-width: 440px !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
         margin: 0 auto !important;
-        padding: 12px 14px !important;
-        border-radius: 18px !important;
+        padding: 10px 10px !important;
+        border-radius: 16px !important;
         box-sizing: border-box !important;
         gap: 10px !important;
         overflow: hidden !important;
       }
       .console-oled-screen {
-        padding: 10px 12px !important;
-        border-radius: 12px !important;
         width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        padding: 10px 10px 8px 10px !important;
+        border-radius: 12px !important;
         box-sizing: border-box !important;
+      }
+      .oled-header-row,
+      .oled-temp-row,
+      .oled-progress-wrap,
+      .oled-progress-labels {
+        width: 100% !important;
+        min-width: 0 !important;
       }
       .oled-dish-title {
         font-size: 15px !important;
+        min-width: 0 !important;
+        flex: 1 1 auto !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+      }
+      .oled-status-badge {
+        font-size: 11px !important;
+        padding: 2px 8px !important;
+        flex-shrink: 0 !important;
+      }
+      .oled-temp-box {
+        min-width: 0 !important;
+        display: flex !important;
+        align-items: baseline !important;
       }
       .oled-temp-num {
         font-size: 24px !important;
       }
       .oled-temp-unit {
-        font-size: 13px !important;
+        font-size: 12px !important;
+        margin-left: 4px !important;
       }
       .oled-limit-badge {
         font-size: 11px !important;
         padding: 2px 7px !important;
+        flex-shrink: 0 !important;
       }
       .oled-micro-telemetry {
-        font-size: 10px !important;
-        gap: 2px 5px !important;
-      }
-      .console-controls-deck {
-        gap: 10px !important;
         width: 100% !important;
+        min-width: 0 !important;
+        flex-wrap: wrap !important;
+        gap: 2px 6px !important;
+        font-size: 10.5px !important;
+      }
+      .oled-progress-labels {
+        font-size: 11px !important;
+      }
+
+      /* Console Controls Deck */
+      .console-controls-deck {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 8px !important;
         box-sizing: border-box !important;
       }
       .console-knob-stop-group {
-        gap: 8px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
         flex-shrink: 0 !important;
       }
       .console-rotary-knob {
-        width: 52px !important;
-        height: 52px !important;
-      }
-      .console-btn-stop {
         width: 48px !important;
         height: 48px !important;
+        flex-shrink: 0 !important;
+      }
+      .console-btn-stop {
+        width: 44px !important;
+        height: 44px !important;
         font-size: 11px !important;
+        flex-shrink: 0 !important;
+      }
+      .console-params-group {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 5px !important;
+        flex: 1 1 0% !important;
+        min-width: 0 !important;
+        width: 100% !important;
+        overflow: hidden !important;
+      }
+      .console-texture-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 4px !important;
+        width: 100% !important;
+        min-width: 0 !important;
       }
       .console-tex-btn {
-        height: 28px !important;
+        height: 26px !important;
         font-size: 11px !important;
         padding: 0 4px !important;
+        min-width: 0 !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
       }
       .console-speed-row {
-        height: 22px !important;
+        display: flex !important;
+        align-items: center !important;
         gap: 3px !important;
+        height: 22px !important;
+        width: 100% !important;
+        min-width: 0 !important;
       }
       .console-speed-btn {
         width: 20px !important;
         height: 20px !important;
+        min-width: 20px !important;
         font-size: 13px !important;
+        flex-shrink: 0 !important;
+      }
+      .console-speed-tick {
+        flex: 1 1 0% !important;
+        min-width: 3px !important;
+        height: 6px !important;
       }
       .console-speed-label {
-        font-size: 11px !important;
-        min-width: 44px !important;
+        font-size: 10.5px !important;
+        min-width: 38px !important;
+        flex-shrink: 0 !important;
+        text-align: right !important;
       }
       .console-quick-dish-bar {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
         gap: 4px !important;
         margin-top: 6px !important;
       }
@@ -4574,11 +4766,108 @@
         height: 22px !important;
         padding: 0 8px !important;
         font-size: 11px !important;
+        flex-shrink: 0 !important;
+      }
+
+      /* Specs Container and Live Telemetry card */
+      .disp-specs-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        gap: 10px !important;
+      }
+      .disp-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        padding: 10px 10px !important;
+        gap: 8px !important;
+      }
+      .disp-card-header {
+        width: 100% !important;
+        min-width: 0 !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 6px !important;
+      }
+      .disp-card-title {
+        font-size: 12.5px !important;
+        min-width: 0 !important;
+      }
+      .disp-card-tag {
+        font-size: 10.5px !important;
+        padding: 2px 6px !important;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+      }
+      .disp-metrics-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 6px !important;
+        width: 100% !important;
+        min-width: 0 !important;
+      }
+      .disp-metric-tile {
+        min-width: 0 !important;
+        padding: 6px 8px !important;
+        box-sizing: border-box !important;
+      }
+      .disp-metric-label {
+        font-size: 10.5px !important;
+      }
+      .disp-metric-val {
+        font-size: 15px !important;
+      }
+      .disp-metric-sub {
+        font-size: 9.5px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+      }
+      .disp-component-list {
+        width: 100% !important;
+        min-width: 0 !important;
+      }
+      .disp-comp-row {
+        width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        padding: 6px 8px !important;
+        gap: 8px !important;
+      }
+      .disp-concept-toolbar {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        padding: 10px 10px !important;
+        gap: 8px !important;
+      }
+      .disp-toolbar-title {
+        font-size: 14px !important;
+        line-height: 1.3 !important;
+      }
+      .disp-chips-scroll {
+        width: 100% !important;
+        min-width: 0 !important;
+        flex-wrap: wrap !important;
+        gap: 4px !important;
+      }
+      .disp-chip-btn {
+        height: 24px !important;
+        font-size: 11px !important;
+        padding: 0 7px !important;
       }
 
       /* Mobile Hardware Quick Controls in Machine Panel */
       .machine-quick-controls {
         gap: 8px !important;
+        width: 100% !important;
+        min-width: 0 !important;
       }
       .rotary-knob-wrapper,
       .rotary-knob-dial {
@@ -4596,18 +4885,18 @@
         padding: 0 4px !important;
       }
       .seg-btn {
-        height: 32px;
+        height: 30px;
       }
     }
 
     /* Small Mobile Phones (<= 480px) */
     @media (max-width: 480px) {
       .motor-console-card {
-        padding: 10px 10px !important;
-        border-radius: 16px !important;
+        padding: 8px 8px !important;
+        border-radius: 14px !important;
       }
       .console-oled-screen {
-        padding: 8px 10px !important;
+        padding: 8px 8px !important;
       }
       .oled-temp-num {
         font-size: 21px !important;
@@ -4620,25 +4909,31 @@
         gap: 6px !important;
       }
       .console-knob-stop-group {
-        gap: 6px !important;
+        gap: 5px !important;
       }
       .console-rotary-knob {
-        width: 48px !important;
-        height: 48px !important;
+        width: 46px !important;
+        height: 46px !important;
       }
       .console-btn-stop {
-        width: 44px !important;
-        height: 44px !important;
+        width: 42px !important;
+        height: 42px !important;
         font-size: 10px !important;
       }
       .console-tex-btn {
-        height: 26px !important;
+        height: 24px !important;
         font-size: 10px !important;
         padding: 0 2px !important;
       }
+      .console-speed-btn {
+        width: 18px !important;
+        height: 18px !important;
+        min-width: 18px !important;
+        font-size: 12px !important;
+      }
       .console-speed-label {
         font-size: 10px !important;
-        min-width: 40px !important;
+        min-width: 36px !important;
       }
       .rotary-knob-wrapper,
       .rotary-knob-dial {
@@ -4668,6 +4963,9 @@
       }
       .knob-stop-group {
         justify-content: center !important;
+      }
+      .disp-metrics-grid {
+        grid-template-columns: 1fr !important;
       }
     }
 
