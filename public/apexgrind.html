@@ -443,6 +443,27 @@
       height: 100%;
     }
 
+    /* Digital Motor Display Concept View Mode */
+    body.view-mode-display .main-workspace,
+    body.mobile-mode-display .main-workspace {
+      grid-template-columns: minmax(0, 1fr) !important;
+      justify-items: center;
+      align-items: flex-start;
+    }
+    body.view-mode-display .phone-column,
+    body.mobile-mode-display .phone-column,
+    body.view-mode-display .machine-panel,
+    body.mobile-mode-display .machine-panel {
+      display: none !important;
+    }
+    body.view-mode-display .display-concept-panel,
+    body.mobile-mode-display .display-concept-panel {
+      display: flex !important;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
     /* -------------------------------------------------------------
        PART 2: MACHINE PANEL (Simulated Hardware Unit)
        ------------------------------------------------------------- */
@@ -572,6 +593,79 @@
       justify-content: space-between;
       min-height: 0;
       position: relative;
+      background: radial-gradient(circle at 50% 45%, #0d1629 0%, #06090f 85%);
+      border-radius: 8px;
+      overflow: hidden;
+      padding: 6px;
+      gap: 6px;
+    }
+    .blade-studio-header-bar {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+      z-index: 2;
+    }
+    .blade-model-selector-group {
+      display: flex;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 6px;
+      padding: 2px;
+      gap: 2px;
+    }
+    .blade-model-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 7px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .blade-model-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .blade-model-btn.active {
+      background: var(--teal);
+      color: #041017;
+      font-weight: 700;
+      box-shadow: 0 1px 4px rgba(18, 181, 174, 0.4);
+    }
+    .blade-cam-toolbar {
+      display: flex;
+      gap: 3px;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 6px;
+      padding: 2px 4px;
+    }
+    .blade-cam-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .blade-cam-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .blade-cam-btn.active {
+      background: #38BDF8;
+      color: #041017;
+      font-weight: 700;
     }
     .blade-3d-viewport {
       flex: 1;
@@ -582,7 +676,8 @@
       justify-content: center;
       cursor: grab;
       touch-action: none;
-      perspective: 700px;
+      perspective: 750px;
+      position: relative;
     }
     .blade-3d-viewport:active {
       cursor: grabbing;
@@ -594,7 +689,7 @@
       align-items: center;
       justify-content: center;
       transform-style: preserve-3d;
-      transition: transform 0.05s linear;
+      transition: transform 0.04s ease-out;
     }
     .blade-hero-svg {
       max-height: 100%;
@@ -602,17 +697,84 @@
       width: auto;
       height: 100%;
       object-fit: contain;
+      filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.65));
+    }
+    .blade-studio-bottom-deck {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 2;
+    }
+    .blade-dynamics-toolbar {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      background: rgba(11, 19, 43, 0.85);
+      border: 1px solid rgba(36, 53, 79, 0.7);
+      border-radius: 6px;
+      padding: 4px 8px;
+    }
+    .blade-dyn-actions {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+    .blade-dyn-btn {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      color: var(--text-dim);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+    }
+    .blade-dyn-btn:hover {
+      color: var(--text);
+      border-color: rgba(56, 189, 248, 0.5);
+    }
+    .blade-dyn-btn.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: #38BDF8;
+      color: #38BDF8;
+      font-weight: 700;
+    }
+    .blade-telemetry-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 11px;
+      color: var(--text-dim);
+      flex-wrap: wrap;
+    }
+    .blade-telem-chip {
+      display: inline-flex;
+      gap: 3px;
+      align-items: center;
+    }
+    .blade-telem-val {
+      font-weight: 700;
+      color: #38BDF8;
+      font-variant-numeric: tabular-nums;
     }
     .blade-spec-pill {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-dim);
-      background: var(--panel);
-      padding: 2px 8px;
+      background: rgba(6, 9, 15, 0.9);
+      padding: 3px 8px;
       border-radius: 4px;
       border: 1px solid var(--border);
       flex-shrink: 0;
       display: flex;
-      gap: 6px;
+      justify-content: space-between;
+      width: 100%;
       align-items: center;
       white-space: nowrap;
     }
@@ -715,9 +877,15 @@
     }
     .screen-temp-limit {
       font-size: 12px;
-      font-weight: 600;
-      color: var(--text-dim);
+      font-weight: 700;
+      color: #CBD5E1;
+      background: #0E1624;
+      border: 1.5px solid #20314C;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-family: var(--font-mono);
       white-space: nowrap;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6);
     }
 
     .screen-progress-bar-wrap {
@@ -815,7 +983,7 @@
       width: 48px;
       height: 48px;
       border-radius: 50%;
-      background: radial-gradient(circle at 35% 35%, #E5484D, #991B1B);
+      background: radial-gradient(circle at 35% 30%, #EF4444 0%, #B91C1C 65%, #7F1D1D 100%);
       border: 3px solid #FCA5A5;
       color: #FFFFFF;
       font-weight: 800;
@@ -824,7 +992,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 8px rgba(229, 72, 77, 0.4);
+      box-shadow: 0 4px 12px rgba(229, 72, 77, 0.45), inset 0 2px 3px rgba(255, 255, 255, 0.3);
       transition: all 0.1s ease;
       touch-action: manipulation;
       flex-shrink: 0;
@@ -844,26 +1012,28 @@
     }
     .texture-pill-row {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 3px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 4px;
     }
     .btn-texture-pill {
-      height: 22px;
+      height: 24px;
       padding: 0;
       font-size: 12px;
       font-weight: 600;
       background: var(--panel);
       border: 1px solid var(--border);
       color: var(--text-dim);
-      border-radius: 3px;
+      border-radius: 4px;
       cursor: pointer;
       white-space: nowrap;
+      transition: all 0.15s ease;
     }
     .btn-texture-pill.active {
       background: var(--teal);
       color: #070B14;
       border-color: var(--teal);
       font-weight: 700;
+      box-shadow: 0 0 10px rgba(18, 181, 174, 0.4);
     }
     .speed-bars-row {
       display: flex;
@@ -871,17 +1041,44 @@
       gap: 4px;
       height: 18px;
     }
+    .btn-speed-step {
+      width: 18px;
+      height: 18px;
+      padding: 0;
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      color: var(--teal);
+      border-radius: 3px;
+      font-size: 13px;
+      line-height: 16px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.1s ease;
+    }
+    .btn-speed-step:hover {
+      border-color: var(--teal);
+      background: var(--panel);
+    }
+    .btn-speed-step:active {
+      transform: scale(0.9);
+    }
     .speed-tick {
       flex: 1;
-      height: 8px;
+      height: 7px;
       background: var(--panel);
       border: 1px solid var(--border);
-      border-radius: 2px;
+      border-radius: 9999px;
       cursor: pointer;
+      transition: all 0.15s ease;
     }
     .speed-tick.active {
       background: var(--teal);
       border-color: var(--teal);
+      box-shadow: 0 0 6px rgba(18, 181, 174, 0.5);
     }
     .speed-label-text {
       font-size: 12px;
@@ -2258,85 +2455,832 @@
     }
 
     /* -------------------------------------------------------------
-       PART 4: MOBILE (width up to 600px)
+       PART 4: UNIFIED VIEW MODES (Split, Machine, Phone, Display Concept)
        ------------------------------------------------------------- */
+    .display-concept-panel {
+      display: none;
+    }
+
+    /* Grinder Machine Only Mode */
+    body.view-mode-machine .phone-column,
+    body.view-mode-machine .display-concept-panel,
+    body.mobile-mode-machine .phone-column,
+    body.mobile-mode-machine .display-concept-panel {
+      display: none !important;
+    }
+    body.view-mode-machine .machine-panel,
+    body.mobile-mode-machine .machine-panel {
+      display: flex !important;
+      max-width: 1080px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Companion Phone App Only Mode */
+    body.view-mode-phone .machine-panel,
+    body.view-mode-phone .display-concept-panel,
+    body.mobile-mode-app .machine-panel,
+    body.mobile-mode-app .display-concept-panel {
+      display: none !important;
+    }
+    body.view-mode-phone .phone-column,
+    body.mobile-mode-app .phone-column {
+      display: flex !important;
+      max-width: 420px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Standalone Digital Motor Display Concept View Mode */
+    body.view-mode-display .machine-panel,
+    body.view-mode-display .phone-column,
+    body.mobile-mode-display .machine-panel,
+    body.mobile-mode-display .phone-column {
+      display: none !important;
+    }
+    body.view-mode-display .display-concept-panel,
+    body.mobile-mode-display .display-concept-panel {
+      display: flex !important;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* -------------------------------------------------------------
+       PART 5: DIGITAL MOTOR DISPLAY CONCEPT MODULE STYLES
+       ------------------------------------------------------------- */
+    .display-concept-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-chassis);
+      padding: 16px 20px;
+      flex-direction: column;
+      gap: 16px;
+      height: 100%;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      box-shadow: var(--card-shadow);
+      box-sizing: border-box;
+    }
+
+    .disp-concept-shell {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+      min-height: 0;
+    }
+
+    .disp-concept-toolbar {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .disp-toolbar-title-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .disp-module-badge {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--teal);
+      background: rgba(20, 184, 166, 0.15);
+      border: 1px solid var(--teal);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .disp-toolbar-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.2px;
+    }
+    .disp-toolbar-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.4;
+    }
+
+    .disp-state-chips-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding-top: 6px;
+      border-top: 1px solid var(--border);
+    }
+    .disp-chips-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .disp-chips-scroll {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .disp-chip-btn {
+      height: 28px;
+      padding: 0 10px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      border-radius: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+    .disp-chip-btn:hover {
+      color: var(--text);
+      border-color: rgba(20, 184, 166, 0.5);
+    }
+    .disp-chip-btn.active {
+      background: var(--teal);
+      color: #04070E;
+      border-color: var(--teal);
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(20, 184, 166, 0.35);
+    }
+
+    /* MAIN DISPLAY STAGE GRID */
+    .disp-main-stage {
+      display: grid;
+      grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+      width: 100%;
+    }
+    @media (max-width: 960px) {
+      .disp-main-stage {
+        grid-template-columns: 1fr;
+        justify-items: center;
+      }
+    }
+
+    /* -------------------------------------------------------------
+       HIGH-FIDELITY HARDWARE DISPLAY & CONTROL CONSOLE (IMAGE-MATCHED)
+       ------------------------------------------------------------- */
+    .disp-unit-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 100%;
+    }
+    .motor-console-card {
+      position: relative;
+      width: 100%;
+      max-width: 440px;
+      background: linear-gradient(175deg, #10192A 0%, #090E1A 100%);
+      border: 2px solid #20314C;
+      border-radius: 24px;
+      padding: 16px 18px;
+      box-shadow: 
+        0 20px 48px rgba(0, 0, 0, 0.85),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 0 0 1px rgba(18, 181, 174, 0.15);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-sizing: border-box;
+      user-select: none;
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+    .motor-console-card.halo-grinding {
+      box-shadow: 
+        0 20px 48px rgba(0, 0, 0, 0.85),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        0 0 24px rgba(47, 191, 113, 0.35);
+      border-color: rgba(47, 191, 113, 0.5);
+    }
+    .motor-console-card.halo-cooling {
+      box-shadow: 
+        0 20px 48px rgba(0, 0, 0, 0.85),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        0 0 24px rgba(255, 184, 77, 0.35);
+      border-color: rgba(255, 184, 77, 0.5);
+    }
+    .motor-console-card.halo-fault {
+      box-shadow: 
+        0 20px 48px rgba(0, 0, 0, 0.85),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        0 0 28px rgba(229, 72, 77, 0.5);
+      border-color: rgba(229, 72, 77, 0.6);
+      animation: consoleBlink 1.2s infinite ease-in-out;
+    }
+    @keyframes consoleBlink {
+      0%, 100% { border-color: rgba(229, 72, 77, 0.6); }
+      50% { border-color: rgba(229, 72, 77, 0.2); }
+    }
+
+    /* TOP OLED SCREEN CONTAINER */
+    .console-oled-screen {
+      position: relative;
+      background: #02050A;
+      border: 1.5px solid #16243A;
+      border-radius: 16px;
+      padding: 14px 16px 12px 16px;
+      box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.95), 0 2px 6px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      overflow: hidden;
+      box-sizing: border-box;
+      width: 100%;
+    }
+    .oled-screen-glare {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 38%;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+      pointer-events: none;
+      z-index: 2;
+    }
+    .oled-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 3;
+      gap: 8px;
+      min-width: 0;
+    }
+    .oled-dish-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: #FFFFFF;
+      letter-spacing: -0.2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+      min-width: 0;
+    }
+    .oled-status-badge {
+      font-size: 12px;
+      font-weight: 800;
+      padding: 2px 12px;
+      border-radius: 9999px;
+      background: rgba(18, 181, 174, 0.12);
+      color: #12B5AE;
+      border: 1.5px solid #12B5AE;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      white-space: nowrap;
+      box-shadow: 0 0 10px rgba(18, 181, 174, 0.25);
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+    .oled-status-badge.grinding {
+      background: rgba(47, 191, 113, 0.18);
+      color: #2FBF71;
+      border-color: #2FBF71;
+      box-shadow: 0 0 12px rgba(47, 191, 113, 0.4);
+      animation: dotPulse 1.6s infinite ease-in-out;
+    }
+    .oled-status-badge.paused {
+      background: rgba(255, 184, 77, 0.18);
+      color: #FFB84D;
+      border-color: #FFB84D;
+      box-shadow: 0 0 12px rgba(255, 184, 77, 0.4);
+    }
+    .oled-status-badge.fault {
+      background: rgba(229, 72, 77, 0.22);
+      color: #E5484D;
+      border-color: #E5484D;
+      box-shadow: 0 0 14px rgba(229, 72, 77, 0.5);
+    }
+    .oled-status-badge.done {
+      background: rgba(18, 181, 174, 0.2);
+      color: #12B5AE;
+      border-color: #12B5AE;
+    }
+
+    .oled-temp-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      position: relative;
+      z-index: 3;
+      margin-top: 4px;
+      gap: 6px;
+    }
+    .oled-temp-box {
+      display: flex;
+      align-items: baseline;
+      min-width: 0;
+    }
+    .oled-temp-num {
+      font-family: var(--font-mono);
+      font-size: 28px;
+      font-weight: 800;
+      color: #38BDF8;
+      letter-spacing: -0.5px;
+      text-shadow: 0 0 10px rgba(56, 189, 248, 0.35);
+    }
+    .oled-temp-unit {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 500;
+      color: #94A3B8;
+      margin-left: 6px;
+      white-space: nowrap;
+    }
+    .oled-limit-badge {
+      background: #0E1624;
+      border: 1.5px solid #20314C;
+      color: #CBD5E1;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      letter-spacing: 0.2px;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* High-Tech Micro Telemetry Strip */
+    .oled-micro-telemetry {
+      display: flex;
+      align-items: center;
+      gap: 3px 6px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: #64748B;
+      margin-top: 2px;
+      position: relative;
+      z-index: 3;
+      flex-wrap: wrap;
+    }
+    .oled-micro-telemetry .telem-item {
+      color: #94A3B8;
+      font-weight: 600;
+    }
+    .oled-micro-telemetry .telem-item.highlight {
+      color: #38BDF8;
+    }
+    .oled-micro-telemetry .telem-dot {
+      color: #334155;
+    }
+
+    /* Progress Bar */
+    .oled-progress-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      position: relative;
+      z-index: 3;
+      margin-top: 4px;
+    }
+    .oled-progress-track {
+      height: 5px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+    .oled-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #12B5AE, #38BDF8);
+      border-radius: 9999px;
+      box-shadow: 0 0 8px rgba(18, 181, 174, 0.7);
+      transition: width 0.15s ease;
+      width: 2%;
+    }
+    .oled-progress-labels {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-family: var(--font-mono);
+      color: #94A3B8;
+      font-weight: 600;
+    }
+
+    /* LOWER PHYSICAL CONTROLS DECK */
+    .console-controls-deck {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: 2px;
+    }
+    .console-knob-stop-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    /* 3D ROTARY DIAL WITH CURVED TEXT MATCHING IMAGE */
+    .console-rotary-knob {
+      position: relative;
+      width: 66px;
+      height: 66px;
+      border-radius: 50%;
+      cursor: pointer;
+      user-select: none;
+      touch-action: manipulation;
+      background: radial-gradient(circle at 35% 35%, #242E40, #0B101B 70%);
+      border: 3px solid #2B3D58;
+      box-shadow: 
+        0 8px 18px rgba(0, 0, 0, 0.7),
+        inset 0 2px 3px rgba(255, 255, 255, 0.15),
+        inset 0 -2px 6px rgba(0, 0, 0, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.08s ease, box-shadow 0.15s ease;
+      flex-shrink: 0;
+    }
+    .console-rotary-knob:active {
+      transform: scale(0.96);
+    }
+    .console-knob-pointer {
+      position: absolute;
+      top: 5px;
+      left: calc(50% - 2.5px);
+      width: 5px;
+      height: 12px;
+      background: #12B5AE;
+      border-radius: 3px;
+      box-shadow: 0 0 6px #12B5AE;
+      pointer-events: none;
+      transition: transform 0.1s ease;
+      transform-origin: 2.5px 28px;
+    }
+    .console-knob-svg {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    /* MUSHROOM EMERGENCY STOP BUTTON MATCHING IMAGE */
+    .console-btn-stop {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #EF4444 0%, #B91C1C 65%, #7F1D1D 100%);
+      border: 3px solid #FCA5A5;
+      color: #FFFFFF;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 16px rgba(229, 72, 77, 0.45), inset 0 2px 4px rgba(255, 255, 255, 0.35);
+      transition: all 0.1s ease;
+      touch-action: manipulation;
+      flex-shrink: 0;
+    }
+    .console-btn-stop:hover {
+      box-shadow: 0 8px 22px rgba(229, 72, 77, 0.65), inset 0 2px 4px rgba(255, 255, 255, 0.45);
+    }
+    .console-btn-stop:active {
+      transform: scale(0.94);
+      box-shadow: 0 2px 8px rgba(229, 72, 77, 0.7);
+    }
+    .console-btn-stop.glowing {
+      animation: stopGlow 1.4s infinite ease-in-out;
+    }
+    @keyframes stopGlow {
+      0%, 100% { box-shadow: 0 6px 18px rgba(229, 72, 77, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.35); }
+      50% { box-shadow: 0 8px 26px rgba(229, 72, 77, 0.8), inset 0 2px 4px rgba(255, 255, 255, 0.5); }
+    }
+
+    /* RIGHT PARAMETERS GROUP: 2x2 TEXTURE + SPEED STEPPER */
+    .console-params-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      flex: 1;
+      min-width: 0;
+    }
+    .console-texture-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+    }
+    .console-tex-btn {
+      height: 32px;
+      border-radius: 8px;
+      background: #0E1624;
+      border: 1.5px solid #1E2D44;
+      color: #94A3B8;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .console-tex-btn:hover {
+      color: #F1F5F9;
+      border-color: #2D4263;
+      background: #131E30;
+    }
+    .console-tex-btn.active {
+      background: #12B5AE;
+      border-color: #15D1C8;
+      color: #040910;
+      font-weight: 800;
+      box-shadow: 0 0 14px rgba(18, 181, 174, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.35);
+    }
+
+    .console-speed-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      height: 24px;
+    }
+    .console-speed-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 5px;
+      background: #0E1624;
+      border: 1px solid #1E2D44;
+      color: #12B5AE;
+      font-size: 15px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.1s ease;
+      user-select: none;
+      line-height: 1;
+    }
+    .console-speed-btn:hover {
+      border-color: #12B5AE;
+      background: #131E30;
+    }
+    .console-speed-btn:active {
+      transform: scale(0.9);
+    }
+    .console-speed-tick {
+      flex: 1;
+      height: 7px;
+      border-radius: 9999px;
+      background: #131E30;
+      border: 1px solid #1B293F;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .console-speed-tick.active {
+      background: #12B5AE;
+      border-color: #15D1C8;
+      box-shadow: 0 0 8px rgba(18, 181, 174, 0.6);
+    }
+    .console-speed-label {
+      font-size: 13px;
+      font-weight: 800;
+      color: #12B5AE;
+      min-width: 54px;
+      text-align: right;
+      white-space: nowrap;
+      font-family: var(--font-mono);
+      cursor: pointer;
+    }
+
+    .console-quick-dish-bar {
+      margin-top: 10px;
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 2px 0;
+      scrollbar-width: none;
+    }
+    .console-quick-dish-pill {
+      height: 24px;
+      padding: 0 10px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      border-radius: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+    .console-quick-dish-pill:hover {
+      color: var(--text);
+      border-color: var(--teal);
+    }
+    .console-quick-dish-pill.active {
+      background: rgba(18, 181, 174, 0.15);
+      border-color: var(--teal);
+      color: var(--teal);
+      font-weight: 700;
+    }
+
+    /* RIGHT: SPECS & CONTROLLER CARDS */
+    .disp-specs-container {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      width: 100%;
+      min-width: 0;
+    }
+    .disp-card {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: var(--surface-specular);
+    }
+    .disp-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .disp-card-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.1px;
+    }
+    .disp-card-tag {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--teal);
+      background: rgba(20, 184, 166, 0.1);
+      border: 1px solid rgba(20, 184, 166, 0.25);
+      padding: 1px 7px;
+      border-radius: 4px;
+    }
+
+    .disp-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
     @media (max-width: 600px) {
-      .app-header {
-        padding: 0 10px;
+      .disp-metrics-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
-      .brand-sub, .header-badge {
-        display: none !important;
-      }
-      .desktop-view-switch {
-        display: none !important;
-      }
-      .mobile-seg-switch {
-        display: flex !important;
-      }
-      .main-workspace {
-        grid-template-columns: minmax(0, 1fr) !important;
-        padding: 4px;
-      }
-      /* Single view mode toggle on mobile */
-      body.mobile-mode-machine .phone-column {
-        display: none !important;
-      }
-      body.mobile-mode-app .machine-panel {
-        display: none !important;
-      }
-      /* Mobile machine panel */
-      .machine-panel {
-        grid-template-rows: auto auto minmax(0, 1fr);
-        padding: 6px;
-        gap: 6px;
-      }
-      .machine-top-grid {
-        grid-template-columns: minmax(0, 1fr);
-        grid-template-rows: auto auto;
-      }
-      /* Jar shrinks to 96px strip (Part 4.2) */
-      .jar-stage-card {
-        height: 96px !important;
-        cursor: pointer;
-      }
-      .jar-stage-card::after {
-        content: "🔍 Tap for large jar view";
-        position: absolute;
-        bottom: 2px;
-        right: 6px;
-        font-size: 12px;
-        color: var(--teal);
-      }
-      .grid-setup, .grid-sensors, .grid-env, .grid-adv {
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-      }
-      /* Mobile phone app: Full screen, no fake bezel or notch */
-      .phone-frame {
-        border: none !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
-        aspect-ratio: auto !important;
-        width: 100% !important;
-        height: 100% !important;
-      }
-      .phone-body {
-        padding: 6px;
-      }
-      /* Mobile inputs and touch targets >= 44x44 (Part 4.3) */
-      .btn-stop-machine {
-        width: 54px;
-        height: 54px;
-      }
-      .btn-texture-pill {
-        height: 34px;
-      }
-      .seg-btn {
-        height: 32px;
-      }
-      .form-item select, .form-item input {
-        height: 38px;
-        font-size: 16px;
-      }
+    }
+    .disp-metric-tile {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-inner);
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .disp-metric-label {
+      font-size: 11px;
+      color: var(--text-dim);
+      font-weight: 600;
+    }
+    .disp-metric-val {
+      font-family: var(--font-mono);
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .disp-metric-sub {
+      font-size: 10px;
+      color: var(--text-dim);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .disp-component-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .disp-comp-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-inner);
+      padding: 8px 10px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .disp-comp-row:hover, .disp-comp-row.active {
+      border-color: var(--teal);
+      background: rgba(20, 184, 166, 0.06);
+    }
+    .disp-comp-badge {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--teal);
+      background: var(--panel-2);
+      border: 1px solid rgba(20, 184, 166, 0.3);
+      width: 22px;
+      height: 22px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .disp-comp-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .disp-comp-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .disp-comp-desc {
+      font-size: 11px;
+      color: var(--text-dim);
+      line-height: 1.35;
+    }
+
+    .disp-ctrl-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .disp-ctrl-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .disp-ctrl-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .disp-btn-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .disp-ctrl-btn {
+      height: 28px;
+      padding: 0 10px;
+      font-size: 12px;
+      font-weight: 700;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .disp-ctrl-btn:hover {
+      color: var(--text);
+      border-color: var(--teal);
+    }
+    .disp-ctrl-btn.active {
+      background: var(--teal);
+      color: #04070E;
+      border-color: var(--teal);
+    }
+    .disp-select {
+      height: 28px;
+      padding: 0 8px;
+      font-size: 12px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 4px;
     }
   
 
@@ -3329,43 +4273,6 @@
       display: flex;
     }
 
-    /* Responsive viewport adjustments */
-    @media (max-width: 960px) {
-      #appRoot {
-        height: auto;
-        min-height: 100dvh;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-      }
-      .main-workspace {
-        display: flex;
-        flex-direction: column;
-        height: auto;
-        min-height: 0;
-        overflow: visible;
-        gap: 20px;
-        padding: 12px;
-      }
-      .machine-panel {
-        height: auto;
-        overflow: visible;
-      }
-      .phone-column {
-        height: 100%;
-        min-height: 0;
-        padding: 4px;
-      }
-      .phone-frame {
-        max-height: 100%;
-        height: 100%;
-        min-height: 0;
-        width: 100%;
-        max-width: 390px;
-      }
-    }
-
-
     /* DYNAMIC BATTERY LEVEL INDICATOR STYLES */
     .phone-battery-pct {
       font-size: 11px;
@@ -3449,27 +4356,84 @@
       will-change: transform;
     }
 
-    /* MOBILE VIEWPORT REFINEMENTS - PREVENT CLIPPING & FIT COMFORTABLY */
+    /* -------------------------------------------------------------
+       COMPLETE, BUG-FREE MOBILE & TABLET RESPONSIVE ENGINE (<= 768px)
+       ------------------------------------------------------------- */
     @media (max-width: 768px) {
+      #appRoot {
+        width: 100vw !important;
+        height: 100dvh !important;
+        max-height: 100dvh !important;
+        overflow: hidden !important;
+        display: grid !important;
+        grid-template-rows: 48px 44px minmax(0, 1fr) 24px !important;
+      }
       .desktop-view-switch {
         display: none !important;
       }
       .mobile-seg-switch {
         display: flex !important;
       }
+      .brand-sub {
+        display: none !important;
+      }
+      .app-header {
+        padding: 0 10px !important;
+      }
+      .header-actions .btn-header-action span:not(#headerAudioIcon) {
+        font-size: 11px;
+      }
       .main-workspace {
-        grid-template-columns: minmax(0, 1fr) !important;
-        padding: 4px !important;
+        display: block !important;
+        grid-template-columns: none !important;
+        width: 100% !important;
+        max-width: 100vw !important;
         height: 100% !important;
         min-height: 0 !important;
+        padding: 6px !important;
         overflow-y: auto !important;
+        overflow-x: hidden !important;
+        box-sizing: border-box !important;
       }
-      body.mobile-mode-machine .phone-column {
+
+      /* In default / split on mobile, show machine panel */
+      body:not(.view-mode-phone):not(.mobile-mode-app):not(.view-mode-display):not(.mobile-mode-display) .phone-column,
+      body:not(.view-mode-phone):not(.mobile-mode-app):not(.view-mode-display):not(.mobile-mode-display) .display-concept-panel {
         display: none !important;
       }
-      body.mobile-mode-app .machine-panel {
-        display: none !important;
+      body:not(.view-mode-phone):not(.mobile-mode-app):not(.view-mode-display):not(.mobile-mode-display) .machine-panel {
+        display: flex !important;
       }
+
+      /* Mobile Machine Panel */
+      .machine-panel {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        min-height: 100% !important;
+        padding: 8px 10px !important;
+        gap: 10px !important;
+        overflow-y: visible !important;
+        overflow-x: hidden !important;
+        box-sizing: border-box !important;
+      }
+      .machine-top-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+      }
+      .jar-stage-card {
+        height: 140px !important;
+      }
+      .controls-display-card {
+        height: auto !important;
+        min-height: 0 !important;
+      }
+      .grid-setup, .grid-sensors, .grid-env, .grid-adv {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      }
+
+      /* Mobile Phone App: Edge-to-edge native smartphone feel without heavy borders */
       .phone-column {
         width: 100% !important;
         max-width: 100% !important;
@@ -3490,6 +4454,7 @@
         border-radius: 0 !important;
         box-shadow: none !important;
         margin: 0 !important;
+        background: var(--bg) !important;
       }
       .phone-btn-action,
       .phone-btn-vol-up,
@@ -3506,18 +4471,217 @@
         padding: 0 12px !important;
       }
       .phone-body {
+        padding: 8px 12px 18px 12px !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+      }
+
+      /* Mobile Digital Motor Display Concept View */
+      .display-concept-panel {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        min-height: 100% !important;
         padding: 8px 10px !important;
+        gap: 10px !important;
+        overflow-y: visible !important;
+        box-sizing: border-box !important;
+      }
+      .disp-main-stage {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        width: 100% !important;
+      }
+      .disp-unit-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+      }
+      .motor-console-card {
+        width: 100% !important;
+        max-width: 440px !important;
+        margin: 0 auto !important;
+        padding: 12px 14px !important;
+        border-radius: 18px !important;
+        box-sizing: border-box !important;
+        gap: 10px !important;
+        overflow: hidden !important;
+      }
+      .console-oled-screen {
+        padding: 10px 12px !important;
+        border-radius: 12px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
+      .oled-dish-title {
+        font-size: 15px !important;
+      }
+      .oled-temp-num {
+        font-size: 24px !important;
+      }
+      .oled-temp-unit {
+        font-size: 13px !important;
+      }
+      .oled-limit-badge {
+        font-size: 11px !important;
+        padding: 2px 7px !important;
+      }
+      .oled-micro-telemetry {
+        font-size: 10px !important;
+        gap: 2px 5px !important;
+      }
+      .console-controls-deck {
+        gap: 10px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
+      .console-knob-stop-group {
+        gap: 8px !important;
+        flex-shrink: 0 !important;
+      }
+      .console-rotary-knob {
+        width: 52px !important;
+        height: 52px !important;
+      }
+      .console-btn-stop {
+        width: 48px !important;
+        height: 48px !important;
+        font-size: 11px !important;
+      }
+      .console-tex-btn {
+        height: 28px !important;
+        font-size: 11px !important;
+        padding: 0 4px !important;
+      }
+      .console-speed-row {
+        height: 22px !important;
+        gap: 3px !important;
+      }
+      .console-speed-btn {
+        width: 20px !important;
+        height: 20px !important;
+        font-size: 13px !important;
+      }
+      .console-speed-label {
+        font-size: 11px !important;
+        min-width: 44px !important;
+      }
+      .console-quick-dish-bar {
+        gap: 4px !important;
+        margin-top: 6px !important;
+      }
+      .console-quick-dish-pill {
+        height: 22px !important;
+        padding: 0 8px !important;
+        font-size: 11px !important;
+      }
+
+      /* Mobile Hardware Quick Controls in Machine Panel */
+      .machine-quick-controls {
+        gap: 8px !important;
+      }
+      .rotary-knob-wrapper,
+      .rotary-knob-dial {
+        width: 48px !important;
+        height: 48px !important;
+      }
+      .btn-stop-machine {
+        width: 46px !important;
+        height: 46px !important;
+        font-size: 11px !important;
+      }
+      .btn-texture-pill {
+        height: 22px !important;
+        font-size: 10px !important;
+        padding: 0 4px !important;
+      }
+      .seg-btn {
+        height: 32px;
+      }
+    }
+
+    /* Small Mobile Phones (<= 480px) */
+    @media (max-width: 480px) {
+      .motor-console-card {
+        padding: 10px 10px !important;
+        border-radius: 16px !important;
+      }
+      .console-oled-screen {
+        padding: 8px 10px !important;
+      }
+      .oled-temp-num {
+        font-size: 21px !important;
+      }
+      .oled-limit-badge {
+        font-size: 10px !important;
+        padding: 2px 5px !important;
+      }
+      .console-controls-deck {
+        gap: 6px !important;
+      }
+      .console-knob-stop-group {
+        gap: 6px !important;
+      }
+      .console-rotary-knob {
+        width: 48px !important;
+        height: 48px !important;
+      }
+      .console-btn-stop {
+        width: 44px !important;
+        height: 44px !important;
+        font-size: 10px !important;
+      }
+      .console-tex-btn {
+        height: 26px !important;
+        font-size: 10px !important;
+        padding: 0 2px !important;
+      }
+      .console-speed-label {
+        font-size: 10px !important;
+        min-width: 40px !important;
+      }
+      .rotary-knob-wrapper,
+      .rotary-knob-dial {
+        width: 44px !important;
+        height: 44px !important;
+      }
+      .btn-stop-machine {
+        width: 42px !important;
+        height: 42px !important;
+      }
+    }
+
+    /* Ultra-Narrow Viewports (<= 360px) */
+    @media (max-width: 360px) {
+      .console-controls-deck {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+      }
+      .console-knob-stop-group {
+        justify-content: center !important;
+      }
+      .machine-quick-controls {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+      }
+      .knob-stop-group {
+        justify-content: center !important;
       }
     }
 
 </style>
 </head>
-<body class="mobile-mode-machine">
+<body class="view-mode-split">
 
   <!-- P1-6 GLOBAL ERROR HANDLER BANNER -->
   <div class="global-error-banner" id="globalErrorBanner" role="alert">
-    <span>⚠️ APEXGRIND System Notice: An unexpected condition occurred.</span>
-    <button type="button" class="btn-reset-app" id="btnGlobalResetApp">Reset App State</button>
+    <span id="globalErrorMsgText">⚠️ APEXGRIND System Notice: An unexpected condition occurred.</span>
+    <div style="display:flex;gap:6px;align-items:center;">
+      <button type="button" class="btn-reset-app" id="btnGlobalResetApp">Reset App State</button>
+      <button type="button" class="btn-reset-app" id="btnDismissErrorBanner" style="background:rgba(255,255,255,0.2);cursor:pointer;" title="Dismiss notice">✕</button>
+    </div>
   </div>
 
   <!-- P1-2 GUIDED DEMO CAPTION BANNER -->
@@ -3570,7 +4734,7 @@
     <!-- 1.2 VIEW SWITCHER (44px) -->
     <nav class="view-switcher-bar" aria-label="Workspace Views">
       <div class="switcher-container">
-        <!-- Desktop segmented control: Split, Machine Only, Phone App Only -->
+        <!-- Desktop segmented control: Split, Machine Only, Phone App Only, Motor Display Concept -->
         <div class="segmented-control desktop-view-switch" role="tablist">
           <button type="button" class="seg-btn active" data-mode="split" role="tab" aria-selected="true">
             <span>◫ Split View</span>
@@ -3581,15 +4745,21 @@
           <button type="button" class="seg-btn" data-mode="phone" role="tab" aria-selected="false">
             <span>📱 Companion Phone</span>
           </button>
+          <button type="button" class="seg-btn" data-mode="display" role="tab" aria-selected="false">
+            <span>📟 Motor Display Concept</span>
+          </button>
         </div>
 
-        <!-- Mobile single-view switch (Machine | App) -->
+        <!-- Mobile single-view switch (Machine | App | Display) -->
         <div class="segmented-control mobile-seg-switch" role="tablist">
-          <button type="button" class="seg-btn active" data-mobile-mode="machine" role="tab" aria-selected="true">
+          <button type="button" class="seg-btn active" data-mode="machine" data-mobile-mode="machine" role="tab" aria-selected="true">
             <span>⚙️ Machine</span>
           </button>
-          <button type="button" class="seg-btn" data-mobile-mode="app" role="tab" aria-selected="false">
-            <span>📱 Phone App</span>
+          <button type="button" class="seg-btn" data-mode="phone" data-mobile-mode="app" role="tab" aria-selected="false">
+            <span>📱 App</span>
+          </button>
+          <button type="button" class="seg-btn" data-mode="display" data-mobile-mode="display" role="tab" aria-selected="false">
+            <span>📟 Display</span>
           </button>
         </div>
       </div>
@@ -3697,13 +4867,13 @@
                   <!-- Seated Blade Assembly (INSIDE jar above coupler at y=280, test 16 & 30) -->
                   <g id="seatedBladeGroup" transform="translate(150, 276)">
                     <!-- Perspective Base Shadow on Jar Cavity Floor -->
-                    <ellipse cx="0" cy="0" rx="48" ry="16" fill="rgba(0,0,0,0.65)" filter="blur(2px)"/>
+                    <ellipse cx="0" cy="0" rx="52" ry="16" fill="rgba(0,0,0,0.65)" filter="blur(2px)"/>
                     <!-- Spindle Coupling Hub Mount -->
                     <path d="M -16 -2 L -12 8 L 12 8 L 16 -2 Z" fill="#1E293B" stroke="#475569" stroke-width="1.2"/>
-                    <!-- Blade Precision Rotor (Uniform scale for true rigid zero-wobble zero-warping rotation) -->
-                    <g id="seatedBladePerspective" transform="scale(0.46, 0.46)">
+                    <!-- Blade Precision Rotor (Foreshortened in ground perspective: scale(0.48, 0.22) sits naturally on jar floor) -->
+                    <g id="seatedBladePerspective" transform="scale(0.48, 0.22)">
                       <!-- High-Speed Motion Blur Disc (Activates when motor is running) -->
-                      <circle id="bladeSpinBlur" cx="0" cy="0" r="75" fill="url(#bladeSteel)" opacity="0"/>
+                      <ellipse id="bladeSpinBlur" cx="0" cy="0" rx="72" ry="72" fill="url(#bladeSteel)" opacity="0"/>
                       <g class="blade-spin-group" id="bladeSpinGroup">
                         <!-- Arm 1 (Top-Left Serrated with 7 teeth) -->
                         <path d="M -15 -10 L -65 -60 L -60 -65 L -57 -62 L -53 -66 L -50 -63 L -46 -67 L -43 -64 L -39 -68 L -36 -65 L -32 -69 L -29 -66 L -8 -22 Z" fill="url(#bladeSteel)" stroke="#06090F" stroke-width="1.4" />
@@ -3715,6 +4885,7 @@
                         <path d="M -10 15 L -60 65 L -75 52 L -18 5 Z" fill="url(#bladeSteel)" stroke="#06090F" stroke-width="1.4" />
                         <!-- Central Hub Nut & Spindle -->
                         <circle cx="0" cy="0" r="16" fill="#1E293B" stroke="#475569" stroke-width="2" />
+                        <polygon points="0,-10 9,-5 9,5 0,10 -9,5 -9,-5" fill="#E2E8F0" stroke="#0F172A" stroke-width="1.2" />
                         <circle cx="0" cy="0" r="7" fill="#0F172A" stroke="#12B5AE" stroke-width="1.5" />
                       </g>
                     </g>
@@ -3733,41 +4904,145 @@
 
             <!-- Stage View 2: Blade 3D Studio -->
             <div class="blade-studio-wrap" id="stageStudioContainer">
+              <!-- Top Controls: Blade Model Selector & Quick Camera Angles -->
+              <div class="blade-studio-header-bar">
+                <div class="blade-model-selector-group" role="radiogroup" aria-label="Blade Architecture">
+                  <button type="button" class="blade-model-btn active" data-model="universal" id="btnBladeModUniversal" title="Universal 4-arm Quad-Edge for multi-purpose heavy milling">Universal</button>
+                  <button type="button" class="blade-model-btn" data-model="wet" id="btnBladeModWet" title="Wet Batter hydrodynamic scoop blade for viscous batters">Batter Pro</button>
+                  <button type="button" class="blade-model-btn" data-model="dry" id="btnBladeModDry" title="Dry Spice Tungsten dual-chisel blade for hard masalas">Dry Spice</button>
+                  <button type="button" class="blade-model-btn" data-model="whipper" id="btnBladeModWhipper" title="6-Point Emulsifier star disc for chutneys and purées">Whipper</button>
+                </div>
+                <div class="blade-cam-toolbar" aria-label="Camera Presets">
+                  <button type="button" class="blade-cam-btn active" id="btnCamIso" title="Isometric 3D Angle">3D</button>
+                  <button type="button" class="blade-cam-btn" id="btnCamTop" title="Top-Down Plan Angle">Top</button>
+                  <button type="button" class="blade-cam-btn" id="btnCamSide" title="Side Elevation Angle">Side</button>
+                  <button type="button" class="blade-cam-btn" id="btnCamOrbit" title="Toggle Auto-Orbit Turntable">🔄 Orbit</button>
+                  <button type="button" class="blade-cam-btn" id="btnCamReset" title="Reset View Angle">🎯</button>
+                </div>
+              </div>
+
+              <!-- Interactive 3D Gimbal Viewport -->
               <div class="blade-3d-viewport" id="blade3dViewport" title="Click and drag to rotate blade in 3D">
                 <div class="blade-3d-gimbal" id="blade3dGimbal">
-                  <svg class="blade-hero-svg" viewBox="0 0 320 280">
+                  <svg class="blade-hero-svg" id="bladeHeroSvg" viewBox="0 0 340 300">
                     <defs>
                       <linearGradient id="heroBladeSteel" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#94A3B8" /><stop offset="45%" stop-color="#E2E8F0" /><stop offset="100%" stop-color="#475569" />
+                        <stop offset="0%" stop-color="#475569" />
+                        <stop offset="25%" stop-color="#94A3B8" />
+                        <stop offset="50%" stop-color="#F1F5F9" />
+                        <stop offset="75%" stop-color="#94A3B8" />
+                        <stop offset="100%" stop-color="#334155" />
                       </linearGradient>
                       <linearGradient id="heroFacetGleam" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stop-color="#38BDF8" /><stop offset="100%" stop-color="#12B5AE" />
+                        <stop offset="0%" stop-color="#38BDF8" />
+                        <stop offset="50%" stop-color="#FFFFFF" />
+                        <stop offset="100%" stop-color="#12B5AE" />
                       </linearGradient>
+                      <radialGradient id="vortexGlow" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="rgba(56, 189, 248, 0.4)" />
+                        <stop offset="60%" stop-color="rgba(18, 181, 174, 0.15)" />
+                        <stop offset="100%" stop-color="rgba(18, 181, 174, 0)" />
+                      </radialGradient>
                     </defs>
-                    <ellipse cx="160" cy="240" rx="90" ry="20" fill="rgba(0,0,0,0.5)" filter="blur(4px)" />
-                    <g id="bladeHeroRotateGroup" transform="translate(160, 130)">
-                      <ellipse id="heroBladeSpinBlur" cx="0" cy="0" rx="125" ry="125" fill="url(#heroBladeSteel)" opacity="0" /><g class="blade-spin-group" id="heroSpinSubGroup">
-                        <!-- Arm 1: Top-Left Serrated -->
-                        <path d="M -18 -8 L -100 -90 L -115 -75 L -30 6 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1" />
-                        <path d="M -100 -90 L -94 -84 L -88 -90 L -82 -84 L -76 -90 L -70 -84 L -64 -90 L -58 -84 L -52 -90 L -46 -84 L -40 -90 L -34 -84 L -28 -90 L -22 -84 L -18 -88" fill="none" stroke="url(#heroFacetGleam)" stroke-width="2.2" stroke-linecap="round" />
-                        <!-- Arm 2: Bottom-Right Serrated -->
-                        <path d="M 18 8 L 100 90 L 115 75 L 30 -6 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1" />
-                        <path d="M 100 90 L 94 84 L 88 90 L 82 84 L 76 90 L 70 84 L 64 90 L 58 84 L 52 90 L 46 84 L 40 90 L 34 84 L 28 90 L 22 84 L 18 88" fill="none" stroke="url(#heroFacetGleam)" stroke-width="2.2" stroke-linecap="round" />
-                        <!-- Arm 3: Top-Right Smooth -->
-                        <path d="M 12 -14 L 95 -95 L 114 -78 L 26 4 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1" />
-                        <!-- Arm 4: Bottom-Left Smooth -->
-                        <path d="M -12 14 L -95 95 L -114 78 L -26 -4 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1" />
-                        <!-- Spindle Hub -->
-                        <circle cx="0" cy="0" r="26" fill="#1E242E" stroke="#475569" stroke-width="2" />
+
+                    <!-- Base Floor Shadow & Perspective Ring -->
+                    <ellipse cx="170" cy="255" rx="100" ry="22" fill="rgba(0,0,0,0.6)" filter="blur(5px)" />
+                    <ellipse cx="170" cy="255" rx="75" ry="16" fill="none" stroke="rgba(56, 189, 248, 0.15)" stroke-width="1" stroke-dasharray="3,3" />
+
+                    <!-- Center Gimbal Spindle Assembly at (170, 140) -->
+                    <g id="bladeHeroRotateGroup" transform="translate(170, 140)">
+                      <!-- Dynamic Motion Blur Radial Disc -->
+                      <ellipse id="heroBladeSpinBlur" cx="0" cy="0" rx="130" ry="130" fill="url(#heroBladeSteel)" opacity="0" />
+
+                      <!-- Aerodynamic Vortex Ribbon Trails (toggled via dynamics button) -->
+                      <g id="heroVortexRibbons" opacity="0.6">
+                        <path d="M -90 -80 C -120 -40 -130 30 -80 90" fill="none" stroke="#38BDF8" stroke-width="1.6" stroke-dasharray="6,4" opacity="0.5" />
+                        <path d="M 90 80 C 120 40 130 -30 80 -90" fill="none" stroke="#12B5AE" stroke-width="1.6" stroke-dasharray="6,4" opacity="0.5" />
+                        <circle cx="0" cy="0" r="110" fill="url(#vortexGlow)" opacity="0.3" />
+                      </g>
+
+                      <!-- Spinning Blade Subgroup (Rotates with bladeCurrentAngle) -->
+                      <g class="blade-spin-group" id="heroSpinSubGroup">
+                        <!-- 1. UNIVERSAL 4-ARM QUAD-EDGE (Default Model) -->
+                        <g id="heroModelUniversal">
+                          <!-- Arm 1: Top-Left Serrated (7 Teeth) -->
+                          <path d="M -18 -8 L -100 -90 L -115 -75 L -30 6 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.2" />
+                          <path d="M -100 -90 L -94 -84 L -88 -90 L -82 -84 L -76 -90 L -70 -84 L -64 -90 L -58 -84 L -52 -90 L -46 -84 L -40 -90 L -34 -84 L -28 -90 L -22 -84 L -18 -88" fill="none" stroke="url(#heroFacetGleam)" stroke-width="2.4" stroke-linecap="round" />
+                          <!-- Arm 2: Bottom-Right Serrated (7 Teeth) -->
+                          <path d="M 18 8 L 100 90 L 115 75 L 30 -6 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.2" />
+                          <path d="M 100 90 L 94 84 L 88 90 L 82 84 L 76 90 L 70 84 L 64 90 L 58 84 L 52 90 L 46 84 L 40 90 L 34 84 L 28 90 L 22 84 L 18 88" fill="none" stroke="url(#heroFacetGleam)" stroke-width="2.4" stroke-linecap="round" />
+                          <!-- Arm 3: Top-Right Beveled Chisel Blade -->
+                          <path d="M 12 -14 L 95 -95 L 114 -78 L 26 4 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.2" />
+                          <line x1="12" y1="-14" x2="114" y2="-78" stroke="url(#heroFacetGleam)" stroke-width="2" />
+                          <!-- Arm 4: Bottom-Left Beveled Chisel Blade -->
+                          <path d="M -12 14 L -95 95 L -114 78 L -26 -4 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.2" />
+                          <line x1="-12" y1="14" x2="-114" y2="78" stroke="url(#heroFacetGleam)" stroke-width="2" />
+                        </g>
+
+                        <!-- 2. WET BATTER PRO (Curved Hydrodynamic Scoops) -->
+                        <g id="heroModelWet" style="display:none;">
+                          <path d="M -15 -10 C -50 -70 -90 -85 -118 -60 C -105 -45 -70 -40 -25 8 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.2" />
+                          <path d="M 15 10 C 50 70 90 85 118 60 C 105 45 70 40 25 -8 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.2" />
+                          <path d="M 10 -15 C 70 -50 85 -90 60 -118 C 45 -105 40 -70 -8 -25 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.2" />
+                          <path d="M -10 15 C -70 50 -85 90 -60 118 C -45 105 -40 70 8 25 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.2" />
+                          <circle cx="-100" cy="-55" r="4" fill="#38BDF8" opacity="0.8" />
+                          <circle cx="100" cy="55" r="4" fill="#38BDF8" opacity="0.8" />
+                          <circle cx="55" cy="-100" r="4" fill="#38BDF8" opacity="0.8" />
+                          <circle cx="-55" cy="100" r="4" fill="#38BDF8" opacity="0.8" />
+                        </g>
+
+                        <!-- 3. DRY SPICE TUNGSTEN 2-ARM (Heavy Chisel) -->
+                        <g id="heroModelDry" style="display:none;">
+                          <path d="M -22 -16 L -120 -82 L -126 -52 L -32 16 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.5" />
+                          <polygon points="-120,-82 -126,-52 -95,-45 -22,-16" fill="#64748B" />
+                          <path d="M 22 16 L 120 82 L 126 52 L 32 -16 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.5" />
+                          <polygon points="120,82 126,52 95,45 22,16" fill="#64748B" />
+                          <line x1="-120" y1="-82" x2="-32" y2="16" stroke="url(#heroFacetGleam)" stroke-width="2.5" />
+                          <line x1="120" y1="82" x2="32" y2="-16" stroke="url(#heroFacetGleam)" stroke-width="2.5" />
+                        </g>
+
+                        <!-- 4. STAR EMULSIFIER DISC (6-Point Fluted Aerator) -->
+                        <g id="heroModelWhipper" style="display:none;">
+                          <polygon points="0,-115 28,-50 100,-60 55,-10 90,45 30,35 0,115 -28,50 -100,60 -55,10 -90,-45 -30,-35" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.2" />
+                          <circle cx="0" cy="-65" r="5" fill="#0F172A" />
+                          <circle cx="56" cy="-32" r="5" fill="#0F172A" />
+                          <circle cx="56" cy="32" r="5" fill="#0F172A" />
+                          <circle cx="0" cy="65" r="5" fill="#0F172A" />
+                          <circle cx="-56" cy="32" r="5" fill="#0F172A" />
+                          <circle cx="-56" cy="-32" r="5" fill="#0F172A" />
+                          <circle cx="0" cy="0" r="48" fill="none" stroke="url(#heroFacetGleam)" stroke-width="1.5" stroke-dasharray="4,4" />
+                        </g>
+
+                        <!-- Central Hex Locking Nut & Rotor Hub -->
+                        <circle cx="0" cy="0" r="28" fill="#1E242E" stroke="#475569" stroke-width="2" />
+                        <polygon points="0,-18 15,-9 15,9 0,18 -15,9 -15,-9" fill="#E2E8F0" stroke="#0F172A" stroke-width="1.5" />
                         <circle cx="0" cy="0" r="12" fill="#070B14" stroke="#12B5AE" stroke-width="1.5" />
+                        <circle cx="0" cy="0" r="5" fill="#38BDF8" />
                       </g>
                     </g>
                   </svg>
                 </div>
               </div>
-              <div class="blade-spec-pill">
-                <span id="studioBladeTitle" style="font-weight:700;color:var(--teal);">Universal 4-arm blade</span>
-                <span id="studioBladeSub">• Cap: Speed 5</span>
+
+              <!-- Bottom Dynamics Control Deck -->
+              <div class="blade-studio-bottom-deck">
+                <div class="blade-dynamics-toolbar">
+                  <div class="blade-dyn-actions">
+                    <button type="button" class="blade-dyn-btn" id="btnStudioTestSpin" title="Spin blade in 3D studio independently to test cutting dynamics">▶️ Test Spin</button>
+                    <button type="button" class="blade-dyn-btn" id="btnStudioSlowMo" title="Toggle 0.1x slow-motion strobe view">⚡ Slow-Mo</button>
+                    <button type="button" class="blade-dyn-btn active" id="btnStudioVortex" title="Toggle aerodynamic vortex ribbons">🌀 Vortex</button>
+                  </div>
+                  <div class="blade-telemetry-row">
+                    <span class="blade-telem-chip">RPM: <span class="blade-telem-val" id="studioTelemRpm">0</span></span>
+                    <span class="blade-telem-chip">Tip: <span class="blade-telem-val" id="studioTelemTip">0 m/s</span></span>
+                    <span class="blade-telem-chip">Cuts: <span class="blade-telem-val" id="studioTelemCuts">0/s</span></span>
+                  </div>
+                </div>
+
+                <div class="blade-spec-pill">
+                  <span id="studioBladeTitle" style="font-weight:700;color:var(--teal);">Universal 4-arm Quad-Edge</span>
+                  <span id="studioBladeSub" style="color:var(--text-dim);">SUS-304 Hardened Stainless Steel • Cap: Speed 5</span>
+                </div>
               </div>
             </div>
           </div>
@@ -3827,12 +5102,14 @@
                   <button type="button" class="btn-texture-pill" data-texture="Paste" role="radio" aria-checked="false">Paste</button>
                 </div>
                 <div class="speed-bars-row">
-                  <div class="speed-tick active" data-speed="1"></div>
-                  <div class="speed-tick active" data-speed="2"></div>
-                  <div class="speed-tick" data-speed="3"></div>
-                  <div class="speed-tick" data-speed="4"></div>
-                  <div class="speed-tick" data-speed="5"></div>
-                  <span class="speed-label-text" id="speedLabelText">Speed 2</span>
+                  <button type="button" class="btn-speed-step" id="btnSpeedDown" aria-label="Decrease Speed" title="Decrease Speed">−</button>
+                  <div class="speed-tick active" data-speed="1" title="Speed 1"></div>
+                  <div class="speed-tick active" data-speed="2" title="Speed 2"></div>
+                  <div class="speed-tick" data-speed="3" title="Speed 3"></div>
+                  <div class="speed-tick" data-speed="4" title="Speed 4"></div>
+                  <div class="speed-tick" data-speed="5" title="Speed 5"></div>
+                  <button type="button" class="btn-speed-step" id="btnSpeedUp" aria-label="Increase Speed" title="Increase Speed">+</button>
+                  <span class="speed-label-text" id="speedLabelText" style="cursor:pointer;" title="Click to cycle speed">Speed 2</span>
                 </div>
               </div>
             </div>
@@ -4441,6 +5718,274 @@
           </div>
         </div>
       </section>
+
+      <!-- -----------------------------------------------------------
+           PART 5: DIGITAL MOTOR DISPLAY CONCEPT MODULE (Standalone Unit)
+           ----------------------------------------------------------- -->
+      <section class="display-concept-panel" id="displayConceptPanel" aria-label="Digital Motor Display Concept Unit">
+        <div class="disp-concept-shell">
+          
+          <!-- TOP TOOLBAR & QUICK STATE SIMULATOR -->
+          <div class="disp-concept-toolbar">
+            <div class="disp-toolbar-info">
+              <div class="disp-toolbar-title-row">
+                <span class="disp-module-badge">Standalone Concept</span>
+                <h2 class="disp-toolbar-title">BLDC Motor Embedded Digital Glass Display</h2>
+              </div>
+              <p class="disp-toolbar-desc">
+                High-contrast circular AMOLED optical interface showing active tachometer, multi-sensor thermal guard, texture phase granulometry, and hardware interlocks.
+              </p>
+            </div>
+
+            <!-- Operational State Simulation Bar -->
+            <div class="disp-state-chips-bar" role="toolbar" aria-label="Simulate Display State">
+              <span class="disp-chips-label">Simulate Display State:</span>
+              <div class="disp-chips-scroll">
+                <button type="button" class="disp-chip-btn active" data-disp-state="idle">Ready / Idle</button>
+                <button type="button" class="disp-chip-btn" data-disp-state="grinding">Grinding (10.8k RPM)</button>
+                <button type="button" class="disp-chip-btn" data-disp-state="cooling">Thermal Pause (Cooling)</button>
+                <button type="button" class="disp-chip-btn" data-disp-state="jam">Overload (E1 Torque Jam)</button>
+                <button type="button" class="disp-chip-btn" data-disp-state="interlock">Lid Open (E3 Interlock)</button>
+                <button type="button" class="disp-chip-btn" data-disp-state="done">Batch Complete</button>
+                <button type="button" class="disp-chip-btn" data-disp-state="cleaning">Auto-Clean Cycle</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- MAIN STAGE: THE HERO MOTOR DISPLAY + COMPONENT INSPECTOR -->
+          <div class="disp-main-stage">
+
+            <!-- LEFT: PHYSICAL HARDWARE DISPLAY & CONTROL CONSOLE -->
+            <div class="disp-unit-container">
+              
+              <div class="motor-console-card" id="motorConsoleCard">
+                <!-- TOP OLED SCREEN -->
+                <div class="console-oled-screen" id="consoleOledScreen">
+                  <div class="oled-screen-glare"></div>
+
+                  <!-- Row 1: Dish Title & Status Badge -->
+                  <div class="oled-header-row">
+                    <div class="oled-dish-title" id="dispOledDishTitle">Idli batter</div>
+                    <div class="oled-status-badge" id="dispOledStatusBadge">READY</div>
+                  </div>
+
+                  <!-- Row 2: Digital Food Temp + Limit Badge -->
+                  <div class="oled-temp-row">
+                    <div class="oled-temp-box">
+                      <span class="oled-temp-num" id="dispOledTempVal">28.0</span>
+                      <span class="oled-temp-unit">°C est.</span>
+                    </div>
+                    <div class="oled-limit-badge" id="dispOledLimitBadge">Limit 34 °C</div>
+                  </div>
+
+                  <!-- High-Tech Telemetry Strip (Closed-Loop BLDC & Power) -->
+                  <div class="oled-micro-telemetry" id="dispOledMicroTelem">
+                    <span class="telem-item highlight" id="dispOledRpm">0 RPM</span>
+                    <span class="telem-dot">•</span>
+                    <span class="telem-item" id="dispOledWatts">0 W</span>
+                    <span class="telem-dot">•</span>
+                    <span class="telem-item" id="dispOledCurrent">0.0 A</span>
+                    <span class="telem-dot">•</span>
+                    <span class="telem-item" id="dispOledSafety">Safe Zone</span>
+                  </div>
+
+                  <!-- Row 3 & 4: Progress Bar & Status Labels -->
+                  <div class="oled-progress-wrap">
+                    <div class="oled-progress-track">
+                      <div class="oled-progress-fill" id="dispOledProgressFill" style="width: 2%;"></div>
+                    </div>
+                    <div class="oled-progress-labels">
+                      <span id="dispOledProgressText">Progress: 2%</span>
+                      <span id="dispOledPausesText">Pauses: 0</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- BOTTOM HARDWARE CONTROLS DECK -->
+                <div class="console-controls-deck">
+                  <!-- Rotary Knob & STOP Button -->
+                  <div class="console-knob-stop-group">
+                    <!-- Rotary Knob with Curved Cap Label -->
+                    <div class="console-rotary-knob" id="consoleRotaryKnob" title="Press to Start/Pause motor, turn to change speed">
+                      <div class="console-knob-pointer" id="consoleKnobPointer"></div>
+                      <svg viewBox="0 0 100 100" class="console-knob-svg">
+                        <defs>
+                          <path id="knobTextArc" d="M 18,65 A 36,36 0 0,0 82,65" fill="none" />
+                        </defs>
+                        <text fill="#FFFFFF" font-size="13" font-weight="900" letter-spacing="2">
+                          <textPath href="#knobTextArc" startOffset="50%" text-anchor="middle" id="consoleKnobCurvedText">START</textPath>
+                        </text>
+                      </svg>
+                    </div>
+
+                    <!-- Red Mushroom Emergency STOP Button with Glow -->
+                    <button type="button" class="console-btn-stop" id="consoleBtnStop" aria-label="Emergency Stop" title="Emergency Stop">
+                      STOP
+                    </button>
+                  </div>
+
+                  <!-- 2x2 Texture Matrix & Speed Stepper -->
+                  <div class="console-params-group">
+                    <div class="console-texture-grid" role="radiogroup" aria-label="Texture Granulometry">
+                      <button type="button" class="console-tex-btn" data-texture="Coarse" role="radio" aria-checked="false">Coarse</button>
+                      <button type="button" class="console-tex-btn active" data-texture="Medium" role="radio" aria-checked="true">Medium</button>
+                      <button type="button" class="console-tex-btn" data-texture="Fine" role="radio" aria-checked="false">Fine</button>
+                      <button type="button" class="console-tex-btn" data-texture="Paste" role="radio" aria-checked="false">Paste</button>
+                    </div>
+
+                    <div class="console-speed-row" aria-label="Motor Speed Level">
+                      <button type="button" class="console-speed-btn" id="btnConsoleSpeedDown" title="Decrease Speed">−</button>
+                      <div class="console-speed-tick active" data-speed="1" title="Speed 1"></div>
+                      <div class="console-speed-tick" data-speed="2" title="Speed 2"></div>
+                      <div class="console-speed-tick" data-speed="3" title="Speed 3"></div>
+                      <div class="console-speed-tick" data-speed="4" title="Speed 4"></div>
+                      <div class="console-speed-tick" data-speed="5" title="Speed 5"></div>
+                      <button type="button" class="console-speed-btn" id="btnConsoleSpeedUp" title="Increase Speed">+</button>
+                      <span class="console-speed-label" id="consoleSpeedLabelText" title="Click to cycle speed">Speed 1</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Quick Dish Preset Switcher directly below console -->
+                <div class="console-quick-dish-bar" role="toolbar" aria-label="Quick Preset Switcher">
+                  <button type="button" class="console-quick-dish-pill active" data-dish="Idli batter">Idli batter (34°C)</button>
+                  <button type="button" class="console-quick-dish-pill" data-dish="Coconut chutney">Chutney (30°C)</button>
+                  <button type="button" class="console-quick-dish-pill" data-dish="Garam masala">Garam Masala (42°C)</button>
+                  <button type="button" class="console-quick-dish-pill" data-dish="Ginger garlic paste">Ginger-Garlic (38°C)</button>
+                  <button type="button" class="console-quick-dish-pill" data-dish="Turmeric root">Turmeric (40°C)</button>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- RIGHT: COMPONENT ARCHITECTURE & LIVE TELEMETRY MATRIX -->
+            <div class="disp-specs-container">
+              
+              <!-- Live Display Metrics Card -->
+              <div class="disp-card">
+                <div class="disp-card-header">
+                  <span class="disp-card-title">Live Hardware Telemetry Feed</span>
+                  <span class="disp-card-tag" id="dispLiveSyncTag">⚡ Synchronized with Motor</span>
+                </div>
+                <div class="disp-metrics-grid">
+                  <div class="disp-metric-tile">
+                    <span class="disp-metric-label">Actual RPM</span>
+                    <span class="disp-metric-val" id="dispCardRpm">10,800</span>
+                    <span class="disp-metric-sub">Closed-Loop Hall Feedback</span>
+                  </div>
+                  <div class="disp-metric-tile">
+                    <span class="disp-metric-label">Food Temp</span>
+                    <span class="disp-metric-val" id="dispCardTemp">31.4 °C</span>
+                    <span class="disp-metric-sub">Lag-Compensated Digital Est.</span>
+                  </div>
+                  <div class="disp-metric-tile">
+                    <span class="disp-metric-label">Torque Load</span>
+                    <span class="disp-metric-val" id="dispCardTorque">62%</span>
+                    <span class="disp-metric-sub">480W Current Draw</span>
+                  </div>
+                  <div class="disp-metric-tile">
+                    <span class="disp-metric-label">Thermal Delta</span>
+                    <span class="disp-metric-val" id="dispCardDelta">+0.22 °C/s</span>
+                    <span class="disp-metric-sub">Predictive Guard Armed</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Display Components Technical Breakdown Tiles -->
+              <div class="disp-card">
+                <div class="disp-card-header">
+                  <span class="disp-card-title">Embedded Display Component Architecture</span>
+                  <span class="disp-card-tag">Industrial Concept</span>
+                </div>
+                <div class="disp-component-list">
+                  
+                  <div class="disp-comp-row active" data-highlight="speed">
+                    <div class="disp-comp-badge">01</div>
+                    <div class="disp-comp-info">
+                      <div class="disp-comp-name">240° Segmented Dynamic Tachometer</div>
+                      <div class="disp-comp-desc">Precision BLDC speed arc with 24 individual LED segments. Visually escalates from Teal (Speeds 1-3) to Cyan (Speed 4) to Amber (Speed 5 / Turbo 22,000 RPM).</div>
+                    </div>
+                  </div>
+
+                  <div class="disp-comp-row" data-highlight="thermal">
+                    <div class="disp-comp-badge">02</div>
+                    <div class="disp-comp-info">
+                      <div class="disp-comp-name">Thermal Safety Core with Dual Arc</div>
+                      <div class="disp-comp-desc">Large high-contrast temperature indicator displaying digital food temp with dynamic limit boundary and cooling resume countdown.</div>
+                    </div>
+                  </div>
+
+                  <div class="disp-comp-row" data-highlight="interlock">
+                    <div class="disp-comp-badge">03</div>
+                    <div class="disp-comp-info">
+                      <div class="disp-comp-name">Multi-Sensor Safety & Hardware Interlock Matrix</div>
+                      <div class="disp-comp-desc">Live status readout of Hall-effect lid sensor, microswitch jar coupler, dynamic strain-gauge tare scale, and BLE companion telemetry.</div>
+                    </div>
+                  </div>
+
+                  <div class="disp-comp-row" data-highlight="halo">
+                    <div class="disp-comp-badge">04</div>
+                    <div class="disp-comp-info">
+                      <div class="disp-comp-name">360° Glanceable Ambient Aura LED Halo</div>
+                      <div class="disp-comp-desc">High-luminance perimeter diffuser projecting kitchen-wide visual status: Steady Cyan (Ready), Pulsing Emerald (Grinding), Amber Flash (Cooling Pause), Red Alarm (Fault).</div>
+                    </div>
+                  </div>
+
+                  <div class="disp-comp-row" data-highlight="glass">
+                    <div class="disp-comp-badge">05</div>
+                    <div class="disp-comp-info">
+                      <div class="disp-comp-name">Oleophobic Anti-Fingerprint Curved Glass</div>
+                      <div class="disp-comp-desc">Chemically tempered optical sapphire glass rated IPX4 water/spice splash resistant with scratch-resistant capacitive touch.</div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Quick Parameter Controls Directly in Concept Module -->
+              <div class="disp-card">
+                <div class="disp-card-header">
+                  <span class="disp-card-title">Interactive Display Parameter Controller</span>
+                  <span class="disp-card-tag">Hardware Sync</span>
+                </div>
+                <div class="disp-ctrl-bar">
+                  <div class="disp-ctrl-group">
+                    <label class="disp-ctrl-label">Speed Level:</label>
+                    <div class="disp-btn-group">
+                      <button type="button" class="disp-ctrl-btn" data-disp-spd="1">1</button>
+                      <button type="button" class="disp-ctrl-btn" data-disp-spd="2">2</button>
+                      <button type="button" class="disp-ctrl-btn active" data-disp-spd="3">3</button>
+                      <button type="button" class="disp-ctrl-btn" data-disp-spd="4">4</button>
+                      <button type="button" class="disp-ctrl-btn" data-disp-spd="5">5</button>
+                    </div>
+                  </div>
+
+                  <div class="disp-ctrl-group">
+                    <label class="disp-ctrl-label">Dish Preset:</label>
+                    <select id="selDispConceptDish" class="disp-select">
+                      <option value="Idli batter">Idli batter (34°C, Spd 3)</option>
+                      <option value="Garam masala">Garam masala (42°C, Spd 4)</option>
+                      <option value="Coconut chutney">Coconut chutney (30°C, Spd 2)</option>
+                      <option value="Ginger garlic paste">Ginger garlic paste (38°C, Spd 3)</option>
+                      <option value="Rasam powder">Rasam powder (39°C, Spd 4)</option>
+                    </select>
+                  </div>
+
+                  <div class="disp-ctrl-group">
+                    <label class="disp-ctrl-label">Display Appearance:</label>
+                    <div class="disp-btn-group">
+                      <button type="button" class="disp-ctrl-btn active" id="btnDispModeDark">AMOLED Black</button>
+                      <button type="button" class="disp-ctrl-btn" id="btnDispModeBright">High-Nit Day</button>
+                      <button type="button" class="disp-ctrl-btn" id="btnDispModeWire">Diagnostics</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- 1.2 FOOTER (24px) -->
@@ -4702,12 +6247,17 @@
       activeWatts: 0,
       // Sensor telemetry history for line chart
       telemetry: [{ time: 0, sensorTemp: CONFIG.ambient, trueTemp: CONFIG.ambient, paused: false }],
-      // 3D Blade Studio Gimbal Rotations
+      // 3D Blade Studio Gimbal Rotations & Dynamics
       bladeRotX: 18,
       bladeRotY: 0,
       isGimbalDragging: false,
       gimbalStartX: 0,
-      gimbalStartY: 0
+      gimbalStartY: 0,
+      activeBladeModel: 'universal',
+      bladeSlowMotion: false,
+      bladeAutoOrbit: false,
+      bladeStudioSpin: false,
+      bladeVortexVisible: true
     };
 
     /* -------------------------------------------------------------
@@ -4826,6 +6376,33 @@
       }
       if (audioCtx && audioCtx.state === 'suspended') {
         audioCtx.resume().catch(() => {});
+      }
+    }
+
+    let pinkNoiseBuffer = null;
+    function getPinkNoiseBuffer() {
+      if (!audioCtx) return null;
+      if (pinkNoiseBuffer) return pinkNoiseBuffer;
+      try {
+        const bufferSize = audioCtx.sampleRate * 2; // 2s loop
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          b0 = 0.99886 * b0 + white * 0.0555179;
+          b1 = 0.99332 * b1 + white * 0.0750759;
+          b2 = 0.96900 * b2 + white * 0.1538520;
+          b3 = 0.86650 * b3 + white * 0.3104856;
+          b4 = 0.55000 * b4 + white * 0.5329522;
+          b5 = -0.7616 * b5 - white * 0.0168980;
+          data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.11;
+          b6 = white * 0.115926;
+        }
+        pinkNoiseBuffer = buffer;
+        return pinkNoiseBuffer;
+      } catch (err) {
+        return null;
       }
     }
 
@@ -4993,27 +6570,39 @@
       const dt = Math.min(0.1, (timestamp - lastAnimTimestamp) / 1000);
       lastAnimTimestamp = timestamp;
 
-      // Target angular velocity: Speed 1 = 800 deg/s up to Speed 5 = 3600 deg/s
+      // Target angular velocity: Speed 1 = 1450 deg/s up to Speed 5 = 4100 deg/s
       let targetVelocity = 0;
-      if (SIM.motorOn && SIM.status === 'Grinding') {
-        targetVelocity = 600 + (SIM.speed * 600);
+      const isSpinning = (SIM.motorOn && SIM.status === 'Grinding') || SIM.bladeStudioSpin;
+      if (isSpinning) {
+        targetVelocity = 800 + (SIM.speed * 650);
+        if (SIM.bladeSlowMotion) {
+          targetVelocity *= 0.08; // Stroboscopic Slow-Motion Mode (0.08x)
+        }
       }
 
       // Smooth spool-up and coast-down inertia physics
       if (bladeAngularVelocity < targetVelocity) {
-        bladeAngularVelocity = Math.min(targetVelocity, bladeAngularVelocity + 4200 * dt);
+        bladeAngularVelocity = Math.min(targetVelocity, bladeAngularVelocity + 4400 * dt);
       } else if (bladeAngularVelocity > targetVelocity) {
-        bladeAngularVelocity = Math.max(0, bladeAngularVelocity - 2600 * dt);
+        bladeAngularVelocity = Math.max(0, bladeAngularVelocity - 2800 * dt);
       }
+
+      // 3D Studio Auto-Orbit turntable
+      if (SIM.bladeAutoOrbit) {
+        SIM.bladeRotY = (SIM.bladeRotY + 24 * dt) % 360;
+        const gimEl = document.getElementById('blade3dGimbal');
+        if (gimEl) gimEl.style.transform = `rotateX(${SIM.bladeRotX}deg) rotateY(${SIM.bladeRotY}deg)`;
+      }
+
+      const spinGroup = document.getElementById('bladeSpinGroup');
+      const heroSub = document.getElementById('heroSpinSubGroup');
+      const blurDisc = document.getElementById('bladeSpinBlur');
+      const heroBlur = document.getElementById('heroBladeSpinBlur');
+      const vortexRibbons = document.getElementById('heroVortexRibbons');
 
       if (bladeAngularVelocity > 0.1) {
         bladeCurrentAngle = (bladeCurrentAngle + bladeAngularVelocity * dt) % 360;
         const rotVal = bladeCurrentAngle.toFixed(1);
-
-        const spinGroup = document.getElementById('bladeSpinGroup');
-        const heroSub = document.getElementById('heroSpinSubGroup');
-        const blurDisc = document.getElementById('bladeSpinBlur');
-        const heroBlur = document.getElementById('heroBladeSpinBlur');
 
         if (spinGroup) {
           spinGroup.setAttribute('transform', `rotate(${rotVal}, 0, 0)`);
@@ -5026,36 +6615,67 @@
           if (heroSub.style.transformOrigin) heroSub.style.transformOrigin = '';
         }
 
-        // Motion blur disc opacity scales with blade speed
-        const blurOpacity = Math.min(0.65, (bladeAngularVelocity / 3600) * 0.7);
+        // Motion blur disc opacity scales delicately with blade speed
+        const blurOpacity = SIM.bladeSlowMotion ? 0.04 : Math.min(0.32, (bladeAngularVelocity / 4100) * 0.36);
         if (blurDisc) blurDisc.setAttribute('opacity', blurOpacity.toFixed(2));
         if (heroBlur) heroBlur.setAttribute('opacity', blurOpacity.toFixed(2));
 
-        // Dynamic swirling food particles in cutaway mode
+        // Aerodynamic vortex ribbons
+        if (vortexRibbons) {
+          if (SIM.bladeVortexVisible) {
+            vortexRibbons.style.display = 'block';
+            vortexRibbons.setAttribute('opacity', Math.min(0.85, 0.2 + (bladeAngularVelocity / 4100) * 0.65).toFixed(2));
+            vortexRibbons.setAttribute('transform', `rotate(${(-rotVal * 0.6).toFixed(1)}, 0, 0)`);
+          } else {
+            vortexRibbons.style.display = 'none';
+          }
+        }
+
+        // Dynamic 3D helical vortex food particles in cutaway jar mode
         const pGroup = document.getElementById('cutawayParticlesGroup');
         if (pGroup && SIM.motorOn && SIM.status === 'Grinding') {
-          const pCount = 10;
+          const pCount = 12;
           let pSvg = '';
-          const t = (timestamp / 1000) * (2.0 + SIM.speed * 0.9);
+          const t = (timestamp / 1000) * (2.2 + SIM.speed * 0.9);
+          // Color based on active dish
+          let pColor = '#F59E0B'; // Garam masala / turmeric default
+          if (SIM.currentDish?.includes('Idli')) pColor = '#FEF3C7';
+          else if (SIM.currentDish?.includes('Chutney')) pColor = '#F8FAFC';
+          else if (SIM.currentDish?.includes('Paste')) pColor = '#D97706';
+
           for (let i = 0; i < pCount; i++) {
-            const angle = t * 3.5 + (i * (Math.PI * 2 / pCount));
-            const rad = 24 + (i % 3) * 14;
-            const px = (98 + Math.cos(angle) * rad).toFixed(1);
-            const py = (235 + Math.sin(angle) * (rad * 0.42) - (SIM.progress * 0.12)).toFixed(1);
-            const r = Math.max(1.2, (3.2 - (SIM.progress / 45))).toFixed(1);
-            const op = (0.55 + Math.sin(angle) * 0.25).toFixed(2);
-            pSvg += `<circle cx="${px}" cy="${py}" r="${r}" fill="#F59E0B" opacity="${op}"/>`;
+            const phase = (i * (Math.PI * 2 / pCount));
+            const angle = t * 3.6 + phase;
+            const rad = 20 + ((i * 7) % 22);
+            const px = (96 + Math.cos(angle) * rad).toFixed(1);
+            // 3D helical vertical suction towards blade and upward wall wash
+            const py = (242 + Math.sin(angle) * (rad * 0.38) - (SIM.progress * 0.14) + Math.sin(t * 2 + i) * 5).toFixed(1);
+            const r = Math.max(1.1, (3.2 - (SIM.progress / 40))).toFixed(1);
+            const op = (0.5 + Math.sin(angle) * 0.3).toFixed(2);
+            pSvg += `<circle cx="${px}" cy="${py}" r="${r}" fill="${pColor}" opacity="${op}"/>`;
           }
           pGroup.innerHTML = pSvg;
         }
       } else {
-        const blurDisc = document.getElementById('bladeSpinBlur');
-        const heroBlur = document.getElementById('heroBladeSpinBlur');
         if (blurDisc) blurDisc.setAttribute('opacity', '0');
         if (heroBlur) heroBlur.setAttribute('opacity', '0');
+        if (vortexRibbons) vortexRibbons.setAttribute('opacity', '0');
         const pGroup = document.getElementById('cutawayParticlesGroup');
         if (pGroup && pGroup.innerHTML) pGroup.innerHTML = '';
       }
+
+      // Live Telemetry updates in 3D Blade Studio
+      const rpmVal = Math.round(bladeAngularVelocity * 4.2);
+      const tipVal = (bladeAngularVelocity * 0.024).toFixed(1);
+      const cutsPerRev = (SIM.activeBladeModel === 'dry') ? 2 : ((SIM.activeBladeModel === 'whipper') ? 6 : 4);
+      const cutsVal = Math.round((rpmVal / 60) * cutsPerRev);
+
+      const rEl = document.getElementById('studioTelemRpm');
+      if (rEl) rEl.textContent = rpmVal.toLocaleString();
+      const tEl = document.getElementById('studioTelemTip');
+      if (tEl) tEl.textContent = `${tipVal} m/s`;
+      const cEl = document.getElementById('studioTelemCuts');
+      if (cEl) cEl.textContent = `${cutsVal}/s`;
 
       bladeAnimReq = requestAnimationFrame(bladeAnimationStep);
     }
@@ -5449,8 +7069,13 @@
       if (SIM.motorOn) {
         playMotorSound(SIM.speed);
         updateMachineDisplay();
-        updateLiveSensorScreen();
+        updateAppLiveDisplay();
       }
+    }
+
+    function updateLiveSensorScreen() {
+      updateMachineDisplay();
+      updateAppLiveDisplay();
     }
 
     function setMotorTexture(tex) {
@@ -5511,6 +7136,9 @@
 
       const sWeight = document.getElementById('valSensorWeight');
       if (sWeight) sWeight.textContent = `${SIM.batchWeight} g`;
+
+      // Keep digital motor display concept in live sync
+      updateDigitalMotorDisplay();
     }
 
     function updateAppLiveDisplay() {
@@ -5542,95 +7170,318 @@
     }
 
     /* -------------------------------------------------------------
-       A8 FIX: TELEMETRY CHART (Auto-fitting Y-axis, gridlines, pauses)
+       PART 5: DIGITAL MOTOR DISPLAY CONCEPT MODULE LOGIC
+       ------------------------------------------------------------- */
+    let dispSimulatedState = 'live';
+
+    function updateDigitalMotorDisplay(overrideState) {
+      try {
+        const stateToUse = overrideState || dispSimulatedState;
+
+        // Elements on the Hardware Console matching reference image
+        const oledDish = document.getElementById('dispOledDishTitle');
+        const oledBadge = document.getElementById('dispOledStatusBadge');
+        const oledTemp = document.getElementById('dispOledTempVal');
+        const oledLimit = document.getElementById('dispOledLimitBadge');
+        const oledRpm = document.getElementById('dispOledRpm');
+        const oledWatts = document.getElementById('dispOledWatts');
+        const oledCurrent = document.getElementById('dispOledCurrent');
+        const oledSafety = document.getElementById('dispOledSafety');
+        const oledFill = document.getElementById('dispOledProgressFill');
+        const oledProgTxt = document.getElementById('dispOledProgressText');
+        const oledPausesTxt = document.getElementById('dispOledPausesText');
+        const consoleCard = document.getElementById('motorConsoleCard');
+        const knobCurvedText = document.getElementById('consoleKnobCurvedText');
+        const knobPointer = document.getElementById('consoleKnobPointer');
+        const btnStop = document.getElementById('consoleBtnStop');
+        const speedLbl = document.getElementById('consoleSpeedLabelText');
+
+        // Metric tiles
+        const cRpm = document.getElementById('dispCardRpm');
+        const cTemp = document.getElementById('dispCardTemp');
+        const cTorque = document.getElementById('dispCardTorque');
+        const cDelta = document.getElementById('dispCardDelta');
+
+        let activeSpd = SIM.speed;
+        let activeRpm = SIM.motorOn ? SIM.speed * 3600 : 0;
+        let activeTemp = SIM.sensorTemp;
+        let activeProg = SIM.progress;
+        let activeStatus = SIM.status;
+        let statusBadgeClass = '';
+        let haloClass = '';
+        let knobLabel = 'START';
+        let safetyText = 'Safe Zone';
+
+        if (stateToUse === 'idle') {
+          activeRpm = 0;
+          activeStatus = 'READY';
+          statusBadgeClass = '';
+          haloClass = '';
+          knobLabel = 'START';
+          safetyText = 'Standby Safe';
+        } else if (stateToUse === 'grinding') {
+          activeSpd = Math.max(3, SIM.speed);
+          activeRpm = activeSpd * 3600;
+          activeStatus = 'GRINDING';
+          statusBadgeClass = 'grinding';
+          haloClass = 'halo-grinding';
+          activeProg = Math.max(12, SIM.progress);
+          knobLabel = 'PAUSE';
+          safetyText = `Margin: ${(SIM.limit - activeTemp).toFixed(1)} °C`;
+        } else if (stateToUse === 'cooling') {
+          activeRpm = 0;
+          activeStatus = 'PAUSED';
+          statusBadgeClass = 'paused';
+          haloClass = 'halo-cooling';
+          activeTemp = SIM.limit;
+          knobLabel = 'COOL';
+          safetyText = 'Thermal Guard Active';
+        } else if (stateToUse === 'jam') {
+          activeRpm = 0;
+          activeStatus = 'E1 JAM';
+          statusBadgeClass = 'fault';
+          haloClass = 'halo-fault';
+          knobLabel = 'ERR';
+          safetyText = 'Overload Interlock Trip';
+        } else if (stateToUse === 'interlock') {
+          activeRpm = 0;
+          activeStatus = 'E3 LID OPEN';
+          statusBadgeClass = 'fault';
+          haloClass = 'halo-fault';
+          knobLabel = 'LOCK';
+          safetyText = 'Interlock Disengaged';
+        } else if (stateToUse === 'done') {
+          activeRpm = 0;
+          activeStatus = 'DONE';
+          statusBadgeClass = 'done';
+          haloClass = '';
+          activeProg = 100;
+          knobLabel = 'RESET';
+          safetyText = 'Batch Complete';
+        } else if (stateToUse === 'cleaning') {
+          activeSpd = 5;
+          activeRpm = 18000;
+          activeStatus = 'AUTO-CLEAN';
+          statusBadgeClass = 'grinding';
+          haloClass = 'halo-grinding';
+          knobLabel = 'STOP';
+          safetyText = 'Pulsed Hydro-Scour';
+        } else {
+          // Live state
+          if (SIM.motorOn && SIM.status === 'Grinding') {
+            activeStatus = 'GRINDING';
+            statusBadgeClass = 'grinding';
+            haloClass = 'halo-grinding';
+            knobLabel = 'PAUSE';
+            safetyText = `Margin: ${(SIM.limit - activeTemp).toFixed(1)} °C`;
+          } else if (SIM.status === 'Paused to cool') {
+            activeStatus = 'PAUSED';
+            statusBadgeClass = 'paused';
+            haloClass = 'halo-cooling';
+            knobLabel = 'COOL';
+            safetyText = 'Cooldown Active';
+          } else if (SIM.activeFaultCode) {
+            activeStatus = SIM.activeFaultCode;
+            statusBadgeClass = 'fault';
+            haloClass = 'halo-fault';
+            knobLabel = 'ERR';
+            safetyText = 'Safety Fault Trip';
+          } else if (SIM.status === 'Done') {
+            activeStatus = 'DONE';
+            statusBadgeClass = 'done';
+            knobLabel = 'RESET';
+            safetyText = 'Batch Complete';
+          } else {
+            activeStatus = 'READY';
+            statusBadgeClass = '';
+            knobLabel = 'START';
+            safetyText = 'Safe Zone';
+          }
+        }
+
+        // 1. OLED Screen Fields
+        if (oledDish) oledDish.textContent = SIM.currentDish || 'Idli batter';
+        if (oledBadge) {
+          oledBadge.textContent = activeStatus;
+          oledBadge.className = 'oled-status-badge' + (statusBadgeClass ? ' ' + statusBadgeClass : '');
+        }
+        if (oledTemp) {
+          oledTemp.textContent = SIM.simulateSensorFault ? '---' : activeTemp.toFixed(1);
+        }
+        if (oledLimit) {
+          oledLimit.textContent = `Limit ${SIM.limit} °C`;
+        }
+        if (oledRpm) {
+          oledRpm.textContent = activeRpm > 0 ? `${activeRpm.toLocaleString()} RPM` : '0 RPM';
+        }
+        const activeWatts = Math.round(CONFIG.powerWatts[activeSpd] * (activeRpm > 0 ? (SIM.motorLoadFactor || 1) : 0));
+        if (oledWatts) {
+          oledWatts.textContent = `${activeWatts} W`;
+        }
+        const activeCurrent = activeRpm > 0 ? ((CONFIG.powerWatts[activeSpd] / 230) * (SIM.motorLoadFactor || 1)).toFixed(1) : '0.0';
+        if (oledCurrent) {
+          oledCurrent.textContent = `${activeCurrent} A`;
+        }
+        if (oledSafety) {
+          oledSafety.textContent = safetyText;
+        }
+        if (oledFill) {
+          oledFill.style.width = `${activeProg.toFixed(1)}%`;
+        }
+        if (oledProgTxt) {
+          oledProgTxt.textContent = `Progress: ${Math.round(activeProg)}%`;
+        }
+        if (oledPausesTxt) {
+          oledPausesTxt.textContent = `Pauses: ${SIM.pausesCount}`;
+        }
+
+        // 2. Chassis Halo Glow
+        if (consoleCard) {
+          consoleCard.className = 'motor-console-card' + (haloClass ? ' ' + haloClass : '');
+        }
+
+        // 3. Hardware Controls on Console Deck
+        if (knobCurvedText) {
+          knobCurvedText.textContent = knobLabel;
+        }
+        if (knobPointer) {
+          const angles = { 1: -60, 2: -30, 3: 0, 4: 30, 5: 60 };
+          knobPointer.style.transform = `rotate(${angles[activeSpd] || 0}deg)`;
+        }
+        if (btnStop) {
+          btnStop.classList.toggle('glowing', activeRpm > 0);
+        }
+
+        // Texture 2x2 grid buttons on console
+        document.querySelectorAll('.console-tex-btn').forEach(btn => {
+          const tex = btn.getAttribute('data-texture');
+          const isAct = (tex === SIM.texture);
+          btn.classList.toggle('active', isAct);
+          btn.setAttribute('aria-checked', isAct ? 'true' : 'false');
+        });
+
+        // Speed ticks & label on console
+        document.querySelectorAll('.console-speed-tick').forEach(tick => {
+          const sVal = parseInt(tick.getAttribute('data-speed'), 10);
+          tick.classList.toggle('active', sVal <= activeSpd);
+        });
+        if (speedLbl) {
+          speedLbl.textContent = `Speed ${activeSpd}`;
+        }
+
+        // Quick dish pills on console
+        document.querySelectorAll('.console-quick-dish-pill').forEach(pill => {
+          const dName = pill.getAttribute('data-dish');
+          pill.classList.toggle('active', dName === SIM.currentDish);
+        });
+
+        // Metrics cards on right
+        if (cRpm) cRpm.textContent = activeRpm > 0 ? activeRpm.toLocaleString() : '0';
+        if (cTemp) cTemp.textContent = `${activeTemp.toFixed(1)} °C`;
+        if (cTorque) cTorque.textContent = activeRpm > 0 ? `${Math.round((SIM.motorLoadFactor || 1) * 65)}%` : '0%';
+        if (cDelta) cDelta.textContent = activeRpm > 0 ? `+0.22 °C/s` : 'Cooling (Ambient)';
+      } catch (err) {
+        // Silently absorb rendering quirks on hidden views
+      }
+    }
+
+    /* -------------------------------------------------------------
+       A8 FIX: TELEMETRY CHART (Safe, Crash-Proof Rendering)
        ------------------------------------------------------------- */
     function renderLiveChart() {
-      const canvas = document.getElementById('liveChartCanvas');
-      if (!canvas) return;
-      const parent = canvas.parentElement;
-      if (!parent) return;
-      const ctx = canvas.getContext ? canvas.getContext('2d') : null;
-      if (!ctx) return;
+      try {
+        const canvas = document.getElementById('liveChartCanvas');
+        if (!canvas) return;
+        const parent = canvas.parentElement;
+        if (!parent || parent.offsetParent === null) return;
+        
+        const rect = parent.getBoundingClientRect();
+        if (rect.width < 40 || rect.height < 40) return;
 
-      const rect = parent.getBoundingClientRect();
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      ctx.scale(dpr, dpr);
+        const dpr = Math.min(2, window.devicePixelRatio || 1);
+        canvas.width = Math.floor(rect.width * dpr);
+        canvas.height = Math.floor(rect.height * dpr);
 
-      const w = rect.width;
-      const h = rect.height;
-      if (w <= 0 || h <= 0) return;
+        const ctx = canvas.getContext ? canvas.getContext('2d') : null;
+        if (!ctx) return;
 
-      ctx.clearRect(0, 0, w, h);
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.scale(dpr, dpr);
 
-      // Auto-fit Y-axis range: [ambient - 1, limit + 2] (A8 FIX)
-      const yMin = CONFIG.ambient - 1.0;
-      const yMax = SIM.limit + 2.0;
-      const padLeft = 26;
-      const padRight = 8;
-      const padTop = 6;
-      const padBottom = 16;
-      const chartW = w - padLeft - padRight;
-      const chartH = h - padTop - padBottom;
+        const w = rect.width;
+        const h = rect.height;
+        ctx.clearRect(0, 0, w, h);
 
-      function getY(temp) {
-        const clamped = Math.max(yMin, Math.min(yMax, temp));
-        return padTop + chartH - ((clamped - yMin) / (yMax - yMin)) * chartH;
-      }
+        // Auto-fit Y-axis range: [ambient - 1, limit + 2] (A8 FIX)
+        const yMin = CONFIG.ambient - 1.0;
+        const yMax = Math.max(yMin + 4, SIM.limit + 2.0);
+        const padLeft = 26;
+        const padRight = 8;
+        const padTop = 6;
+        const padBottom = 16;
+        const chartW = Math.max(10, w - padLeft - padRight);
+        const chartH = Math.max(10, h - padTop - padBottom);
 
-      // Draw horizontal gridlines every 2 °C with labels
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-      ctx.lineWidth = 1;
-      ctx.fillStyle = '#64748B';
-      ctx.font = '12px ui-monospace, monospace';
-      ctx.textAlign = 'right';
-      ctx.textBaseline = 'middle';
-
-      for (let t = Math.ceil(yMin); t <= yMax; t += 2) {
-        const y = getY(t);
-        ctx.beginPath();
-        ctx.moveTo(padLeft, y);
-        ctx.lineTo(w - padRight, y);
-        ctx.stroke();
-        ctx.fillText(`${t}°`, padLeft - 4, y);
-      }
-
-      // Limit line (Red dashed line)
-      const yLimit = getY(SIM.limit);
-      ctx.strokeStyle = '#E5484D';
-      ctx.setLineDash([4, 3]);
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(padLeft, yLimit);
-      ctx.lineTo(w - padRight, yLimit);
-      ctx.stroke();
-      ctx.setLineDash([]);
-
-      const pts = SIM.telemetry;
-      if (pts.length < 2) return;
-
-      // Draw pause shaded regions
-      ctx.fillStyle = 'rgba(255, 184, 77, 0.15)';
-      for (let i = 0; i < pts.length; i++) {
-        if (pts[i].paused) {
-          const xStart = padLeft + (i / (pts.length - 1)) * chartW;
-          const xEnd = padLeft + ((i + 1) / (pts.length - 1)) * chartW;
-          ctx.fillRect(xStart, padTop, Math.max(2, xEnd - xStart), chartH);
+        function getY(temp) {
+          const clamped = Math.max(yMin, Math.min(yMax, temp));
+          return padTop + chartH - ((clamped - yMin) / (yMax - yMin)) * chartH;
         }
-      }
 
-      // Draw sensor temperature curve (Teal line with glow)
-      ctx.strokeStyle = '#38BDF8';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      for (let i = 0; i < pts.length; i++) {
-        const x = padLeft + (i / (pts.length - 1)) * chartW;
-        const y = getY(pts[i].sensorTemp);
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+        // Draw horizontal gridlines every 2 °C with labels
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+        ctx.lineWidth = 1;
+        ctx.fillStyle = '#64748B';
+        ctx.font = '12px ui-monospace, monospace';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+
+        for (let t = Math.ceil(yMin); t <= yMax; t += 2) {
+          const y = getY(t);
+          ctx.beginPath();
+          ctx.moveTo(padLeft, y);
+          ctx.lineTo(w - padRight, y);
+          ctx.stroke();
+          ctx.fillText(`${t}°`, padLeft - 4, y);
+        }
+
+        // Limit line (Red dashed line)
+        const yLimit = getY(SIM.limit);
+        ctx.strokeStyle = '#E5484D';
+        ctx.setLineDash([4, 3]);
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(padLeft, yLimit);
+        ctx.lineTo(w - padRight, yLimit);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        const pts = SIM.telemetry;
+        if (pts.length < 2) return;
+
+        // Draw pause shaded regions
+        ctx.fillStyle = 'rgba(255, 184, 77, 0.15)';
+        for (let i = 0; i < pts.length; i++) {
+          if (pts[i].paused) {
+            const xStart = padLeft + (i / (pts.length - 1)) * chartW;
+            const xEnd = padLeft + ((i + 1) / (pts.length - 1)) * chartW;
+            ctx.fillRect(xStart, padTop, Math.max(2, xEnd - xStart), chartH);
+          }
+        }
+
+        // Draw sensor temperature curve (Teal line with glow)
+        ctx.strokeStyle = '#38BDF8';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let i = 0; i < pts.length; i++) {
+          const x = padLeft + (i / (pts.length - 1)) * chartW;
+          const y = getY(pts[i].sensorTemp);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      } catch (err) {
+        // Silently absorb any transient measurement glitches
       }
-      ctx.stroke();
     }
 
     /* -------------------------------------------------------------
@@ -6396,20 +8247,72 @@
        P1-6: GLOBAL ERROR HANDLER
        ------------------------------------------------------------- */
     window.addEventListener('error', (evt) => {
-      console.error('APEXGRIND Global Error caught:', evt.error);
+      const msg = (evt && evt.message) ? evt.message : String(evt?.error || evt || '');
+      // Filter out benign browser/iframe quirks, network drops, websocket reconnections, extensions, and non-fatal events
+      if (
+        !msg ||
+        msg.includes('ResizeObserver') ||
+        msg.includes('Script error') ||
+        msg.includes('favicon') ||
+        msg.includes('evalmachine') ||
+        msg.includes('WebSocket') ||
+        msg.includes('ws:') ||
+        msg.includes('Failed to fetch') ||
+        msg.includes('NetworkError') ||
+        msg.includes('Load failed') ||
+        msg.includes('user gesture') ||
+        msg.includes('AudioContext') ||
+        msg.includes('play()') ||
+        msg.includes('AbortError') ||
+        msg.includes('chrome-extension') ||
+        msg.includes('moz-extension')
+      ) {
+        return;
+      }
+      console.warn('APEXGRIND Global Error caught:', evt?.error || evt);
       const banner = document.getElementById('globalErrorBanner');
+      const textSpan = document.getElementById('globalErrorMsgText');
+      if (textSpan && msg) {
+        textSpan.textContent = `⚠️ System Notice: ${msg.slice(0, 100)}`;
+      }
       if (banner) banner.classList.add('active');
     });
 
     window.addEventListener('unhandledrejection', (evt) => {
-      console.error('APEXGRIND Unhandled Rejection:', evt.reason);
+      const reason = evt?.reason;
+      const msg = (reason && reason.message) ? reason.message : String(reason || '');
+      if (
+        !msg ||
+        msg.includes('ResizeObserver') ||
+        msg.includes('AudioContext') ||
+        msg.includes('user gesture') ||
+        msg.includes('AbortError') ||
+        msg.includes('play()') ||
+        msg.includes('WebSocket') ||
+        msg.includes('Failed to fetch') ||
+        msg.includes('NetworkError') ||
+        msg.includes('Load failed') ||
+        msg.includes('chrome-extension')
+      ) {
+        return;
+      }
+      console.warn('APEXGRIND Unhandled Rejection:', evt.reason);
       const banner = document.getElementById('globalErrorBanner');
+      const textSpan = document.getElementById('globalErrorMsgText');
+      if (textSpan && msg) {
+        textSpan.textContent = `⚠️ System Notice: ${msg.slice(0, 100)}`;
+      }
       if (banner) banner.classList.add('active');
     });
 
     document.getElementById('btnGlobalResetApp')?.addEventListener('click', () => {
       localStorage.removeItem(STORAGE_KEY);
       window.location.reload();
+    });
+
+    document.getElementById('btnDismissErrorBanner')?.addEventListener('click', () => {
+      const banner = document.getElementById('globalErrorBanner');
+      if (banner) banner.classList.remove('active');
     });
 
     /* -------------------------------------------------------------
@@ -6782,34 +8685,170 @@
        INITIALIZATION & EVENT BINDINGS
        ------------------------------------------------------------- */
     function initApp() {
-      // 1. View Switcher Mode Handler
+      // 1. Unified View Switcher Handler (Split | Machine | Phone | Display Concept)
+      function setAppViewMode(mode) {
+        document.body.classList.remove(
+          'view-mode-split', 'view-mode-machine', 'view-mode-phone', 'view-mode-display',
+          'mobile-mode-machine', 'mobile-mode-app', 'mobile-mode-display'
+        );
+        document.body.classList.add(`view-mode-${mode}`);
+        if (mode === 'machine') document.body.classList.add('mobile-mode-machine');
+        else if (mode === 'phone') document.body.classList.add('mobile-mode-app');
+        else if (mode === 'display') document.body.classList.add('mobile-mode-display');
+
+        // Update all desktop and mobile buttons in sync
+        document.querySelectorAll('.seg-btn[data-mode]').forEach(b => {
+          const isActive = (b.getAttribute('data-mode') === mode);
+          b.classList.toggle('active', isActive);
+          b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+
+        if (mode === 'display') {
+          updateDigitalMotorDisplay();
+        }
+        setTimeout(renderLiveChart, 50);
+      }
+
       document.querySelectorAll('.seg-btn[data-mode]').forEach(btn => {
         btn.addEventListener('click', () => {
           const mode = btn.getAttribute('data-mode');
-          document.querySelectorAll('.seg-btn[data-mode]').forEach(b => {
-            b.classList.toggle('active', b === btn);
-            b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
-          });
-          document.body.classList.remove('view-mode-machine', 'view-mode-phone');
-          if (mode === 'machine') document.body.classList.add('view-mode-machine');
-          else if (mode === 'phone') document.body.classList.add('view-mode-phone');
-          setTimeout(renderLiveChart, 50);
+          if (mode) setAppViewMode(mode);
         });
       });
 
-      // Mobile mode switch (Machine | Phone App)
-      document.querySelectorAll('.seg-btn[data-mobile-mode]').forEach(btn => {
+      // 1B. Digital Motor Display Concept Interactions
+      // Simulation state chips
+      document.querySelectorAll('.disp-chip-btn[data-disp-state]').forEach(btn => {
         btn.addEventListener('click', () => {
-          const mMode = btn.getAttribute('data-mobile-mode');
-          document.querySelectorAll('.seg-btn[data-mobile-mode]').forEach(b => {
-            b.classList.toggle('active', b === btn);
-            b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
-          });
-          document.body.classList.remove('mobile-mode-machine', 'mobile-mode-app');
-          if (mMode === 'machine') document.body.classList.add('mobile-mode-machine');
-          else document.body.classList.add('mobile-mode-app');
-          setTimeout(renderLiveChart, 50);
+          const st = btn.getAttribute('data-disp-state');
+          document.querySelectorAll('.disp-chip-btn[data-disp-state]').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          dispSimulatedState = st;
+          updateDigitalMotorDisplay(st);
+          showToast(`Display Concept: Simulated state "${st.toUpperCase()}"`);
         });
+      });
+
+      // 1B. Digital Motor Display Concept Console Deck Interactions
+      // Rotary Knob click to toggle run/pause
+      document.getElementById('consoleRotaryKnob')?.addEventListener('click', () => {
+        toggleMotorRun();
+        updateDigitalMotorDisplay();
+      });
+      // Knob wheel to adjust speed
+      document.getElementById('consoleRotaryKnob')?.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        if (e.deltaY < 0) setMotorSpeed(SIM.speed + 1);
+        else if (e.deltaY > 0) setMotorSpeed(SIM.speed - 1);
+        updateDigitalMotorDisplay();
+      }, { passive: false });
+
+      // Mushroom STOP button
+      document.getElementById('consoleBtnStop')?.addEventListener('click', () => {
+        stopMotorRun();
+        updateDigitalMotorDisplay();
+      });
+
+      // 2x2 Texture grid buttons on console
+      document.querySelectorAll('.console-tex-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tex = btn.getAttribute('data-texture');
+          setMotorTexture(tex);
+          updateDigitalMotorDisplay();
+        });
+      });
+
+      // Speed buttons & ticks on console
+      document.getElementById('btnConsoleSpeedDown')?.addEventListener('click', () => {
+        setMotorSpeed(SIM.speed - 1);
+        updateDigitalMotorDisplay();
+      });
+      document.getElementById('btnConsoleSpeedUp')?.addEventListener('click', () => {
+        setMotorSpeed(SIM.speed + 1);
+        updateDigitalMotorDisplay();
+      });
+      document.getElementById('consoleSpeedLabelText')?.addEventListener('click', () => {
+        setMotorSpeed((SIM.speed % 5) + 1);
+        updateDigitalMotorDisplay();
+      });
+      document.querySelectorAll('.console-speed-tick').forEach(tick => {
+        tick.addEventListener('click', () => {
+          const s = parseInt(tick.getAttribute('data-speed'), 10);
+          setMotorSpeed(s);
+          updateDigitalMotorDisplay();
+        });
+      });
+
+      // Quick Dish Pills below console
+      document.querySelectorAll('.console-quick-dish-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+          const dName = pill.getAttribute('data-dish');
+          selectDishByName(dName);
+          updateDigitalMotorDisplay();
+          showToast(`Preset: Selected ${dName}`);
+        });
+      });
+
+      // OLED screen tap to toggle run/pause
+      document.getElementById('consoleOledScreen')?.addEventListener('click', () => {
+        toggleMotorRun();
+        updateDigitalMotorDisplay();
+      });
+
+      // Speed buttons inside concept module
+      document.querySelectorAll('.disp-ctrl-btn[data-disp-spd]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const spd = parseInt(btn.getAttribute('data-disp-spd'), 10);
+          setMotorSpeed(spd);
+          document.querySelectorAll('.disp-ctrl-btn[data-disp-spd]').forEach(b => {
+            b.classList.toggle('active', parseInt(b.getAttribute('data-disp-spd'), 10) === spd);
+          });
+          updateDigitalMotorDisplay();
+        });
+      });
+
+      // Dish selector inside concept module
+      document.getElementById('selDispConceptDish')?.addEventListener('change', (e) => {
+        const dishName = e.target.value;
+        selectDishByName(dishName);
+        updateDigitalMotorDisplay();
+      });
+
+      // Component highlight inspector rows
+      document.querySelectorAll('.disp-comp-row').forEach(row => {
+        row.addEventListener('click', () => {
+          document.querySelectorAll('.disp-comp-row').forEach(r => r.classList.remove('active'));
+          row.classList.add('active');
+          const hi = row.getAttribute('data-highlight');
+          const halo = document.getElementById('dispHaloAura');
+          if (hi === 'halo' && halo) {
+            halo.style.transform = 'scale(1.05)';
+            setTimeout(() => { if (halo) halo.style.transform = ''; }, 600);
+          }
+        });
+      });
+
+      // Display Appearance Modes
+      document.getElementById('btnDispModeDark')?.addEventListener('click', () => {
+        document.getElementById('btnDispModeDark')?.classList.add('active');
+        document.getElementById('btnDispModeBright')?.classList.remove('active');
+        document.getElementById('btnDispModeWire')?.classList.remove('active');
+        const oled = document.getElementById('consoleOledScreen');
+        if (oled) oled.style.filter = 'none';
+      });
+      document.getElementById('btnDispModeBright')?.addEventListener('click', () => {
+        document.getElementById('btnDispModeBright')?.classList.add('active');
+        document.getElementById('btnDispModeDark')?.classList.remove('active');
+        document.getElementById('btnDispModeWire')?.classList.remove('active');
+        const oled = document.getElementById('consoleOledScreen');
+        if (oled) oled.style.filter = 'brightness(1.3) contrast(1.1)';
+      });
+      document.getElementById('btnDispModeWire')?.addEventListener('click', () => {
+        document.getElementById('btnDispModeWire')?.classList.add('active');
+        document.getElementById('btnDispModeDark')?.classList.remove('active');
+        document.getElementById('btnDispModeBright')?.classList.remove('active');
+        const oled = document.getElementById('consoleOledScreen');
+        if (oled) oled.style.filter = 'drop-shadow(0 0 6px #14B8A6)';
       });
 
       // 2. Machine Top Stage Tabs (Jar vs 3D Studio)
@@ -6887,7 +8926,16 @@
         });
       });
 
-      // Speed bars
+      // Speed controls (Plus, Minus, Ticks, Label click for dynamic adjustment)
+      document.getElementById('btnSpeedDown')?.addEventListener('click', () => {
+        setMotorSpeed(SIM.speed - 1);
+      });
+      document.getElementById('btnSpeedUp')?.addEventListener('click', () => {
+        setMotorSpeed(SIM.speed + 1);
+      });
+      document.getElementById('speedLabelText')?.addEventListener('click', () => {
+        setMotorSpeed((SIM.speed % 5) + 1);
+      });
       document.querySelectorAll('.speed-tick').forEach(tick => {
         tick.addEventListener('click', () => {
           const spd = parseInt(tick.getAttribute('data-speed'), 10);
@@ -6946,6 +8994,219 @@
       document.getElementById('btnLaunchExperiment')?.addEventListener('click', runGuardExperiment);
       document.getElementById('btnLaunchGuidedDemo')?.addEventListener('click', startGuidedDemo);
       document.getElementById('btnDemoSkip')?.addEventListener('click', stopGuidedDemo);
+      document.getElementById('btnDemoPauseResume')?.addEventListener('click', () => {
+        demoPaused = !demoPaused;
+        const btn = document.getElementById('btnDemoPauseResume');
+        if (demoPaused) {
+          if (demoTimer) clearTimeout(demoTimer);
+          if (btn) btn.textContent = 'Resume';
+          showToast('Guided demo paused.');
+        } else {
+          if (btn) btn.textContent = 'Pause';
+          runNextDemoStep();
+          showToast('Guided demo resumed.');
+        }
+      });
+
+      // History pagination & CSV export
+      document.getElementById('btnHistPrevPage')?.addEventListener('click', () => {
+        if (historyCurrentPage > 1) {
+          historyCurrentPage--;
+          renderHistoryTab();
+        }
+      });
+      document.getElementById('btnHistNextPage')?.addEventListener('click', () => {
+        const perPage = (window.innerHeight < 750) ? 2 : 3;
+        const totalPages = Math.max(1, Math.ceil((APP_STATE.history || []).length / perPage));
+        if (historyCurrentPage < totalPages) {
+          historyCurrentPage++;
+          renderHistoryTab();
+        }
+      });
+      document.getElementById('btnExportHistoryCsv')?.addEventListener('click', () => {
+        const hist = APP_STATE.history || [];
+        if (hist.length === 0) {
+          showToast('No history records to export.');
+          return;
+        }
+        const headers = ['id', 'dish', 'profile', 'timestamp', 'durationSec', 'peakTemp', 'limit', 'pauses', 'estFineFraction', 'measuredFineFraction', 'energyKwh'];
+        const rows = hist.map(s => [
+          s.id,
+          `"${(s.dish || '').replace(/"/g, '""')}"`,
+          `"${(s.profile || '').replace(/"/g, '""')}"`,
+          `"${s.timestamp || ''}"`,
+          s.durationSec,
+          s.peakTemp,
+          s.limit,
+          s.pauses,
+          s.estFineFraction,
+          s.measuredFineFraction !== null ? s.measuredFineFraction : '',
+          s.energyKwh || 0
+        ]);
+        const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `apexgrind-history-${Date.now()}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Exported history as CSV file.');
+      });
+
+      // Preset Edit & Reset
+      document.getElementById('btnEditPresetSheet')?.addEventListener('click', () => {
+        const picker = document.getElementById('selPresetDishPicker');
+        const p = APP_STATE.presets.find(item => item.id === picker?.value);
+        if (!p) return;
+        openAppModal(`✏️ Edit Preset: ${escapeHtml(p.name)}`, `
+          <div style="display:flex;flex-direction:column;gap:10px;font-size:12px;color:var(--text);">
+            <div class="form-item">
+              <label>Preset Name</label>
+              <input type="text" id="editPresetName" value="${escapeHtml(p.name)}" style="height:38px;padding:0 8px;background:var(--panel-2);border:1px solid var(--border);color:var(--text);border-radius:4px;">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div class="form-item">
+                <label>Target Temp Limit (°C)</label>
+                <input type="number" id="editPresetLimit" value="${p.limit}" min="25" max="65" style="height:38px;padding:0 8px;background:var(--panel-2);border:1px solid var(--border);color:var(--text);border-radius:4px;">
+              </div>
+              <div class="form-item">
+                <label>Speed (1-5)</label>
+                <input type="number" id="editPresetSpeed" value="${p.speed}" min="1" max="5" style="height:38px;padding:0 8px;background:var(--panel-2);border:1px solid var(--border);color:var(--text);border-radius:4px;">
+              </div>
+            </div>
+            <div class="form-item">
+              <label>Texture</label>
+              <select id="editPresetTexture" style="height:38px;padding:0 8px;background:var(--panel-2);border:1px solid var(--border);color:var(--text);border-radius:4px;">
+                <option value="Coarse" ${p.texture==='Coarse'?'selected':''}>Coarse</option>
+                <option value="Medium" ${p.texture==='Medium'?'selected':''}>Medium</option>
+                <option value="Fine" ${p.texture==='Fine'?'selected':''}>Fine</option>
+                <option value="Paste" ${p.texture==='Paste'?'selected':''}>Paste</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:4px;">
+              <button type="button" class="btn-preset-main" id="btnSavePresetEdit">Save Changes</button>
+            </div>
+          </div>
+        `);
+        document.getElementById('btnSavePresetEdit')?.addEventListener('click', () => {
+          const nameInput = document.getElementById('editPresetName');
+          const limitInput = document.getElementById('editPresetLimit');
+          const speedInput = document.getElementById('editPresetSpeed');
+          const texInput = document.getElementById('editPresetTexture');
+          const newName = (nameInput?.value || '').trim();
+          const newLimit = parseFloat(limitInput?.value);
+          const newSpeed = parseInt(speedInput?.value, 10);
+          const newTex = texInput?.value;
+
+          if (!newName) {
+            showToast('Error: Preset name cannot be empty.');
+            return;
+          }
+          if (isNaN(newLimit) || newLimit < 25 || newLimit > 65) {
+            showToast('Error: Limit must be between 25°C and 65°C.');
+            return;
+          }
+          if (isNaN(newSpeed) || newSpeed < 1 || newSpeed > 5) {
+            showToast('Error: Speed must be between 1 and 5.');
+            return;
+          }
+
+          p.name = newName;
+          p.limit = newLimit;
+          p.speed = newSpeed;
+          p.texture = newTex;
+          safeSetStorage(APP_STATE);
+          populateDishSelect();
+          renderPresetsTab();
+          closeAppModal();
+          showToast(`Updated preset "${newName}".`);
+        });
+      });
+
+      document.getElementById('btnResetPreset')?.addEventListener('click', () => {
+        const picker = document.getElementById('selPresetDishPicker');
+        const defaultPresets = [
+          { id: 'p1', name: 'Idli batter', speed: 3, texture: 'Medium', limit: 34.0, noise: 'Quiet 68dB' },
+          { id: 'p2', name: 'Garam masala', speed: 4, texture: 'Fine', limit: 42.0, noise: 'Brisk 74dB' },
+          { id: 'p3', name: 'Coconut chutney', speed: 2, texture: 'Coarse', limit: 30.0, noise: 'Whisper 62dB' },
+          { id: 'p4', name: 'Ginger garlic paste', speed: 3, texture: 'Paste', limit: 38.0, noise: 'Steady 71dB' }
+        ];
+        const orig = defaultPresets.find(item => item.id === picker?.value);
+        const p = APP_STATE.presets.find(item => item.id === picker?.value);
+        if (p && orig) {
+          p.name = orig.name;
+          p.limit = orig.limit;
+          p.speed = orig.speed;
+          p.texture = orig.texture;
+          safeSetStorage(APP_STATE);
+          populateDishSelect();
+          renderPresetsTab();
+          showToast(`Reset "${p.name}" to factory specifications.`);
+        }
+      });
+
+      // Profiles Add & Delete
+      document.getElementById('btnAddProfile')?.addEventListener('click', () => {
+        if (APP_STATE.profiles.length >= 4) {
+          showToast('Maximum 4 profiles supported on machine.');
+          return;
+        }
+        const name = prompt('Enter profile name (e.g. Master Chef):');
+        if (!name || !name.trim()) return;
+        const cleanName = name.trim().slice(0, 20);
+        if (APP_STATE.profiles.includes(cleanName)) {
+          showToast('Profile with that name already exists.');
+          return;
+        }
+        APP_STATE.profiles.push(cleanName);
+        safeSetStorage(APP_STATE);
+        showToast(`Profile "${cleanName}" added successfully.`);
+      });
+
+      document.getElementById('btnDeleteProfile')?.addEventListener('click', () => {
+        if (APP_STATE.profiles.length <= 1) {
+          showToast('Cannot delete: At least one profile must be retained.');
+          return;
+        }
+        const removed = APP_STATE.profiles.pop();
+        safeSetStorage(APP_STATE);
+        showToast(`Removed profile "${removed}".`);
+      });
+
+      // Health Firmware Update action
+      document.getElementById('btnCheckUpdate')?.addEventListener('click', () => {
+        const hasRasam = APP_STATE.presets.some(p => p.name === 'Rasam powder');
+        if (hasRasam) {
+          showToast('Firmware is up-to-date (v2.4.2). No new updates.');
+        } else {
+          APP_STATE.presets.push({
+            id: 'p_rasam',
+            name: 'Rasam powder',
+            speed: 4,
+            texture: 'Fine',
+            limit: 39.0,
+            noise: 'Aromatic 72dB'
+          });
+          safeSetStorage(APP_STATE);
+          populateDishSelect();
+          renderPresetsTab();
+          showToast('Firmware updated! Installed new recipe preset: Rasam powder.');
+        }
+      });
+
+      // Dev telemetry toggle
+      document.getElementById('btnToggleDevChart')?.addEventListener('click', () => {
+        const canvas = document.getElementById('liveChartCanvas');
+        if (canvas) {
+          const isHidden = canvas.style.display === 'none';
+          canvas.style.display = isHidden ? 'block' : 'none';
+          showToast(isHidden ? 'Telemetry chart displayed.' : 'Telemetry chart hidden.');
+          if (isHidden) renderLiveChart();
+        }
+      });
 
       // Gallery View
       document.getElementById('btnGalleryViewToggle')?.addEventListener('click', () => openGalleryView('phone'));
@@ -7038,11 +9299,111 @@
         showToast('Sudden power outage simulated! Motor safely stopped.');
       });
 
+      // 3D Blade Studio Architecture Models & Camera Presets
+      const bladeModels = {
+        universal: {
+          title: 'Universal 4-arm Quad-Edge',
+          sub: 'SUS-304 Hardened Stainless Steel • Cap: Speed 5',
+          groupId: 'heroModelUniversal'
+        },
+        wet: {
+          title: 'Wet Batter Hydro-Flow Pro',
+          sub: 'Curved Aerodynamic Lift Winglets • Cap: Speed 5',
+          groupId: 'heroModelWet'
+        },
+        dry: {
+          title: 'Dry Spice Tungsten Carbide 2-Arm',
+          sub: 'Heavy Tungsten-Carbide Micro-Chisel • Cap: Speed 4',
+          groupId: 'heroModelDry'
+        },
+        whipper: {
+          title: 'Star Emulsifier Aeration Disc',
+          sub: '6-Point Fluted Micro-Shear • Cap: Speed 3',
+          groupId: 'heroModelWhipper'
+        }
+      };
+
+      function setBladeModel(modelKey) {
+        if (!bladeModels[modelKey]) return;
+        SIM.activeBladeModel = modelKey;
+        document.querySelectorAll('.blade-model-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.getAttribute('data-model') === modelKey);
+        });
+
+        // Toggle SVG groups in 3D hero
+        Object.keys(bladeModels).forEach(k => {
+          const el = document.getElementById(bladeModels[k].groupId);
+          if (el) el.style.display = (k === modelKey) ? 'block' : 'none';
+        });
+
+        const titleEl = document.getElementById('studioBladeTitle');
+        const subEl = document.getElementById('studioBladeSub');
+        if (titleEl) titleEl.textContent = bladeModels[modelKey].title;
+        if (subEl) subEl.textContent = bladeModels[modelKey].sub;
+
+        showToast(`Equipped ${bladeModels[modelKey].title}`);
+      }
+
+      document.getElementById('btnBladeModUniversal')?.addEventListener('click', () => setBladeModel('universal'));
+      document.getElementById('btnBladeModWet')?.addEventListener('click', () => setBladeModel('wet'));
+      document.getElementById('btnBladeModDry')?.addEventListener('click', () => setBladeModel('dry'));
+      document.getElementById('btnBladeModWhipper')?.addEventListener('click', () => setBladeModel('whipper'));
+
+      function updateGimbalTransform() {
+        const gimEl = document.getElementById('blade3dGimbal');
+        if (gimEl) gimEl.style.transform = `rotateX(${SIM.bladeRotX}deg) rotateY(${SIM.bladeRotY}deg)`;
+      }
+
+      function setCameraAngle(rx, ry, activeBtnId) {
+        SIM.bladeRotX = rx;
+        SIM.bladeRotY = ry;
+        SIM.bladeAutoOrbit = false;
+        document.getElementById('btnCamOrbit')?.classList.remove('active');
+        document.querySelectorAll('.blade-cam-btn').forEach(b => b.classList.remove('active'));
+        if (activeBtnId) document.getElementById(activeBtnId)?.classList.add('active');
+        updateGimbalTransform();
+      }
+
+      document.getElementById('btnCamIso')?.addEventListener('click', () => setCameraAngle(52, -24, 'btnCamIso'));
+      document.getElementById('btnCamTop')?.addEventListener('click', () => setCameraAngle(0, 0, 'btnCamTop'));
+      document.getElementById('btnCamSide')?.addEventListener('click', () => setCameraAngle(82, 0, 'btnCamSide'));
+      document.getElementById('btnCamReset')?.addEventListener('click', () => setCameraAngle(18, 0, 'btnCamIso'));
+
+      document.getElementById('btnCamOrbit')?.addEventListener('click', () => {
+        SIM.bladeAutoOrbit = !SIM.bladeAutoOrbit;
+        document.getElementById('btnCamOrbit')?.classList.toggle('active', SIM.bladeAutoOrbit);
+        showToast(SIM.bladeAutoOrbit ? 'Turntable auto-orbit active.' : 'Auto-orbit paused.');
+      });
+
+      // Studio Dynamics Controls
+      document.getElementById('btnStudioTestSpin')?.addEventListener('click', () => {
+        SIM.bladeStudioSpin = !SIM.bladeStudioSpin;
+        const btn = document.getElementById('btnStudioTestSpin');
+        if (btn) {
+          btn.textContent = SIM.bladeStudioSpin ? '⏹️ Stop Test' : '▶️ Test Spin';
+          btn.classList.toggle('active', SIM.bladeStudioSpin);
+        }
+        showToast(SIM.bladeStudioSpin ? 'Studio blade test spin running.' : 'Studio test spin stopped.');
+      });
+
+      document.getElementById('btnStudioSlowMo')?.addEventListener('click', () => {
+        SIM.bladeSlowMotion = !SIM.bladeSlowMotion;
+        document.getElementById('btnStudioSlowMo')?.classList.toggle('active', SIM.bladeSlowMotion);
+        showToast(SIM.bladeSlowMotion ? 'Slow-motion strobe enabled (0.08x speed).' : 'Normal motion restored.');
+      });
+
+      document.getElementById('btnStudioVortex')?.addEventListener('click', () => {
+        SIM.bladeVortexVisible = !SIM.bladeVortexVisible;
+        document.getElementById('btnStudioVortex')?.classList.toggle('active', SIM.bladeVortexVisible);
+      });
+
       // 3D Blade Studio Dragging Interaction
       const gimbal = document.getElementById('blade3dViewport');
       if (gimbal) {
         gimbal.addEventListener('pointerdown', (e) => {
           SIM.isGimbalDragging = true;
+          SIM.bladeAutoOrbit = false;
+          document.getElementById('btnCamOrbit')?.classList.remove('active');
           SIM.gimbalStartX = e.clientX;
           SIM.gimbalStartY = e.clientY;
           gimbal.setPointerCapture(e.pointerId);
@@ -7055,8 +9416,7 @@
           SIM.bladeRotX -= dy * 0.5;
           SIM.gimbalStartX = e.clientX;
           SIM.gimbalStartY = e.clientY;
-          const gimEl = document.getElementById('blade3dGimbal');
-          if (gimEl) gimEl.style.transform = `rotateX(${SIM.bladeRotX}deg) rotateY(${SIM.bladeRotY}deg)`;
+          updateGimbalTransform();
         });
         const stopDrag = (e) => {
           SIM.isGimbalDragging = false;
