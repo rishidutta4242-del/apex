@@ -32,6 +32,11 @@ const dom = new JSDOM(html, {
 const { window } = dom;
 const { document } = window;
 
+async function runTests() {
+  if (document.readyState === 'loading') {
+    await new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve, { once: true }));
+  }
+
 // Set mock dimensions for mobile viewport (375x667 iPhone standard)
 window.innerWidth = 375;
 window.innerHeight = 667;
@@ -92,6 +97,176 @@ try {
 } catch (err) {
   test('60 Automated Integrity Tests pass', false, err.message);
 }
+
+// Check 2B: Product references and workspace view integrity
+console.log('\n--- Product Reference & Workspace View Tests ---');
+test('Split view option is removed and machine view is the default',
+  document.querySelector('.seg-btn[data-mode="split"]') === null &&
+  !document.body.classList.contains('view-mode-split') &&
+  document.body.classList.contains('view-mode-machine'));
+test('Studio renders detailed vector blade models without pasted product photos',
+  document.getElementById('bladeHeroSvg') !== null &&
+  document.getElementById('bladeEngineeringGuides') !== null &&
+  document.getElementById('bladePrecisionDetails') !== null &&
+  document.getElementById('bladeHeroSvg')?.querySelector('#bladeMachinedSurface') !== null &&
+  document.getElementById('bladeProductPhoto') === null &&
+  document.getElementById('jarProductPhoto') === null &&
+  document.querySelectorAll('img').length === 0 &&
+  document.querySelectorAll('.blade-model-btn[data-model]').length === 6 &&
+  ['Wet', 'Dry', 'Fine', 'Coarse', 'Chutney', 'Whipper'].every(name =>
+    document.getElementById(`heroModel${name}`) !== null
+  ));
+const studioInteractionResults = (() => {
+  document.getElementById('btnTabBladeStudio')?.click();
+  const modelButtons = document.querySelectorAll('.blade-model-btn[data-model]');
+  const zoomIn = document.getElementById('btnStudioZoomIn');
+  const zoomOut = document.getElementById('btnStudioZoomOut');
+  const reset = document.getElementById('btnCamReset');
+  if (modelButtons.length !== 6 || !zoomIn || !zoomOut || !reset) return { zoomInWorks: false, zoomOutWorks: false, keyboardWorks: false, resetWorks: false };
+  zoomIn.click();
+  const zoomInWorks = document.getElementById('studioZoomValue')?.textContent === '110%';
+  zoomOut.click();
+  const zoomOutWorks = document.getElementById('studioZoomValue')?.textContent === '100%';
+  modelButtons[0].focus();
+  const focusedModel = document.activeElement?.getAttribute('data-model');
+  modelButtons[0].dispatchEvent(new window.KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+  const keyboardWorks = document.getElementById('heroModelDry')?.style.display === 'block';
+  reset.click();
+  const resetWorks = document.getElementById('studioZoomValue')?.textContent === '100%';
+  return { zoomInWorks, zoomOutWorks, keyboardWorks, resetWorks };
+})();
+test('3D Studio provides keyboard-accessible model selection and zoom controls',
+  Object.values(studioInteractionResults).every(Boolean),
+  JSON.stringify(studioInteractionResults));
+test('3D Studio expands its inspection viewport and keeps tab selection accessible', (() => {
+  const studioTab = document.getElementById('btnTabBladeStudio');
+  const jarTab = document.getElementById('btnTabJarAssembly');
+  const topGrid = document.querySelector('.machine-top-grid');
+  const stageCard = document.getElementById('jarStageCard');
+  if (!studioTab || !jarTab || !topGrid || !stageCard) return false;
+  studioTab.click();
+  const studioOpen = topGrid.classList.contains('studio-active') &&
+    stageCard.classList.contains('studio-active') &&
+    studioTab.getAttribute('aria-selected') === 'true';
+  jarTab.click();
+  return studioOpen && !topGrid.classList.contains('studio-active') &&
+    !stageCard.classList.contains('studio-active') &&
+    jarTab.getAttribute('aria-selected') === 'true';
+})());
+test('Each blade selector activates matching studio and seated jar vector assemblies', (() => {
+  const keys = ['wet', 'dry', 'fine', 'coarse', 'chutney', 'whipper'];
+  return keys.every(key => {
+    document.querySelector(`.blade-model-btn[data-model="${key}"]`)?.click();
+    const heroId = `heroModel${key[0].toUpperCase()}${key.slice(1)}`;
+    const jarId = `jarBlade${key[0].toUpperCase()}${key.slice(1)}`;
+    return document.getElementById(heroId)?.style.display === 'block' &&
+      document.getElementById(jarId)?.style.display === 'block' &&
+      keys.filter(other => other !== key).every(other => {
+        const otherId = `heroModel${other[0].toUpperCase()}${other.slice(1)}`;
+        return document.getElementById(otherId)?.style.display === 'none';
+      });
+  });
+})());
+test('Fitted jar and attachment selections synchronize the simulated blade', (() => {
+  const jarSelect = document.getElementById('selJarFitted');
+  const attachmentSelect = document.getElementById('selAttachment');
+  if (!jarSelect || !attachmentSelect) return false;
+
+  attachmentSelect.value = '2';
+  attachmentSelect.dispatchEvent(new window.Event('change', { bubbles: true }));
+  const fineAttachmentWorks =
+    document.getElementById('heroModelFine')?.style.display === 'block' &&
+    document.getElementById('jarBladeFine')?.style.display === 'block';
+
+  jarSelect.value = 'jar1';
+  jarSelect.dispatchEvent(new window.Event('change', { bubbles: true }));
+  const smallJarWorks =
+    document.getElementById('heroModelChutney')?.style.display === 'block' &&
+    document.getElementById('jarBladeChutney')?.style.display === 'block';
+
+  jarSelect.value = 'jar2';
+  jarSelect.dispatchEvent(new window.Event('change', { bubbles: true }));
+  return fineAttachmentWorks && smallJarWorks &&
+    document.getElementById('heroModelFine')?.style.display === 'block';
+})());
+test('Dish presets synchronize jar, attachment, and blade', (() => {
+  const presetSelect = document.getElementById('selDishPreset');
+  if (!presetSelect) return false;
+  presetSelect.value = 'p4';
+  presetSelect.dispatchEvent(new window.Event('change', { bubbles: true }));
+  return document.getElementById('selJarFitted')?.value === 'jar2' &&
+    document.getElementById('selAttachment')?.value === '2' &&
+    document.getElementById('heroModelFine')?.style.display === 'block' &&
+    document.getElementById('jarBladeFine')?.style.display === 'block';
+})());
+test('Environment and advanced controls update their live readouts', (() => {
+  const ambient = document.getElementById('inputAmbientTemp');
+  const voltage = document.getElementById('inputSupplyVoltage');
+  const wear = document.getElementById('inputBladeWear');
+  if (!ambient || !voltage || !wear) return false;
+  ambient.value = '34';
+  ambient.dispatchEvent(new window.Event('input', { bubbles: true }));
+  voltage.value = '210';
+  voltage.dispatchEvent(new window.Event('input', { bubbles: true }));
+  wear.value = '20';
+  wear.dispatchEvent(new window.Event('input', { bubbles: true }));
+  return document.getElementById('ambientTempValue')?.textContent === '34 °C' &&
+    document.getElementById('supplyVoltageValue')?.textContent === '210 V' &&
+    document.getElementById('bladeWearValue')?.textContent === '20%';
+})());
+test('Supply voltage and blade wear affect live motor telemetry and load', (() => {
+  const rpm = document.getElementById('valSensorRpm');
+  const trueTemp = document.getElementById('subSensorTrueTemp');
+  if (!rpm || !trueTemp || typeof window.toggleMotorRun !== 'function') return false;
+  const startTemp = Number.parseFloat(trueTemp.textContent.replace('True:', ''));
+  window.toggleMotorRun();
+  window.simulationTick();
+  const activeRpm = Number.parseInt(rpm.textContent.replace(/[^\d]/g, ''), 10);
+  const activeTemp = Number.parseFloat(trueTemp.textContent.replace('True:', ''));
+  window.stopMotorRun();
+  return activeRpm > 0 && activeRpm < 18000 && activeTemp > startTemp;
+})());
+const setupControlValues = [
+  document.getElementById('selJarFitted')?.value,
+  document.getElementById('selAttachment')?.value,
+  document.getElementById('selMotorLoad')?.value,
+  document.getElementById('inputBatchWeight')?.value,
+  document.getElementById('selSimSpeed')?.value
+];
+test('Setup controls remain synchronized with the selected operating conditions',
+  JSON.stringify(setupControlValues) === JSON.stringify(['jar2', '2', '1.0', '350', '10']),
+  `values: ${JSON.stringify(setupControlValues)}`);
+test('Attachment speed cap is enforced and shown on the jar stage', (() => {
+  const attachment = document.getElementById('selAttachment');
+  if (!attachment || typeof window.setMotorSpeed !== 'function') return false;
+  attachment.value = '3';
+  attachment.dispatchEvent(new window.Event('change', { bubbles: true }));
+  window.setMotorSpeed(5);
+  return document.getElementById('speedLabelText')?.textContent === 'Speed 3' &&
+    document.getElementById('stageJarIndicator')?.textContent === 'Cap: Speed 3';
+})());
+test('Environment and Advanced machine tabs reveal their controls', (() => {
+  const environmentTab = document.querySelector('.m-tab-btn[data-tab="environment"]');
+  const advancedTab = document.querySelector('.m-tab-btn[data-tab="advanced"]');
+  if (!environmentTab || !advancedTab) return false;
+  environmentTab.click();
+  const environmentVisible = document.getElementById('tabContentEnv')?.classList.contains('active');
+  advancedTab.click();
+  const advancedVisible = document.getElementById('tabContentAdv')?.classList.contains('active');
+  return environmentVisible && advancedVisible;
+})());
+test('Jar is simulated as vector geometry and preserves engineering views', (() => {
+  const jarIsVector = document.getElementById('jarMainSvg') !== null &&
+    document.getElementById('jarProductPhoto') === null &&
+    document.getElementById('svgJarCylinder') !== null &&
+    document.getElementById('svgJarHandle') !== null;
+  document.getElementById('btnJarCutaway')?.click();
+  const cutawayWorks = !document.getElementById('stageJarContainer')?.classList.contains('photo-mode') &&
+    document.getElementById('selJarVisualMode')?.value === 'cutaway' &&
+    document.getElementById('cutawayContainer')?.style.display === 'block';
+  document.getElementById('btnJarMatte')?.click();
+  return jarIsVector && cutawayWorks;
+})());
 
 // Check 3: Mobile View Dimensions & CSS Constraints
 console.log('\n--- Mobile Dimension & Layout Tests ---');
@@ -205,3 +380,9 @@ if (passedTotal !== total) {
 } else {
   process.exit(0);
 }
+}
+
+runTests().catch(err => {
+  console.error(err);
+  process.exit(1);
+});

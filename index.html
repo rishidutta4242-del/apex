@@ -599,6 +599,13 @@
       padding: 6px;
       gap: 6px;
     }
+    .machine-top-grid.studio-active {
+      min-height: max(420px, min(66vh, 620px));
+    }
+    .jar-stage-card.studio-active {
+      border-color: rgba(49, 197, 183, 0.4);
+      box-shadow: 0 0 0 1px rgba(49, 197, 183, 0.08), 0 20px 46px rgba(0, 0, 0, 0.28);
+    }
     .blade-studio-header-bar {
       width: 100%;
       display: flex;
@@ -609,52 +616,62 @@
       z-index: 2;
     }
     .blade-model-selector-group {
-      display: flex;
-      background: rgba(15, 23, 42, 0.85);
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      border-radius: 6px;
-      padding: 2px;
-      gap: 2px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      flex: 1 1 310px;
+      background: rgba(11, 18, 30, 0.88);
+      border: 1px solid rgba(105, 130, 157, 0.28);
+      border-radius: 9px;
+      padding: 4px;
+      gap: 4px;
     }
     .blade-model-btn {
       background: transparent;
-      border: none;
-      color: var(--text-dim);
+      border: 1px solid transparent;
+      color: #AEBECE;
       font-size: 11px;
       font-weight: 600;
-      padding: 3px 7px;
-      border-radius: 4px;
+      min-height: 30px;
+      padding: 4px 7px;
+      border-radius: 6px;
       cursor: pointer;
       transition: all 0.15s ease;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .blade-model-btn:hover {
       color: var(--text);
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.08);
     }
     .blade-model-btn.active {
-      background: var(--teal);
-      color: #041017;
+      background: linear-gradient(145deg, rgba(49, 197, 183, 0.2), rgba(31, 134, 139, 0.12));
+      color: #78E6DB;
+      border-color: rgba(73, 218, 202, 0.42);
       font-weight: 700;
-      box-shadow: 0 1px 4px rgba(18, 181, 174, 0.4);
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.06), 0 3px 12px rgba(18, 181, 174, 0.12);
     }
     .blade-cam-toolbar {
       display: flex;
+      flex: 0 0 auto;
       gap: 3px;
       align-items: center;
-      background: rgba(15, 23, 42, 0.85);
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      border-radius: 6px;
-      padding: 2px 4px;
+      background: rgba(11, 18, 30, 0.88);
+      border: 1px solid rgba(105, 130, 157, 0.28);
+      border-radius: 9px;
+      padding: 4px;
     }
     .blade-cam-btn {
       background: transparent;
       border: none;
-      color: var(--text-dim);
+      color: #AEBECE;
       font-size: 11px;
       font-weight: 600;
-      padding: 2px 6px;
-      border-radius: 3px;
+      min-height: 30px;
+      min-width: 34px;
+      padding: 4px 7px;
+      border-radius: 6px;
       cursor: pointer;
       transition: all 0.15s ease;
     }
@@ -663,9 +680,17 @@
       background: rgba(255, 255, 255, 0.1);
     }
     .blade-cam-btn.active {
-      background: #38BDF8;
-      color: #041017;
+      background: rgba(71, 154, 224, 0.18);
+      color: #86C9FF;
+      box-shadow: inset 0 0 0 1px rgba(110, 190, 245, 0.3);
       font-weight: 700;
+    }
+    .blade-model-btn:focus-visible,
+    .blade-cam-btn:focus-visible,
+    .blade-dyn-btn:focus-visible,
+    .blade-zoom-btn:focus-visible {
+      outline: 2px solid #65D8CB;
+      outline-offset: 2px;
     }
     .blade-3d-viewport {
       flex: 1;
@@ -678,6 +703,12 @@
       touch-action: none;
       perspective: 750px;
       position: relative;
+      overflow: hidden;
+      border-radius: 12px;
+      background:
+        radial-gradient(ellipse at 50% 46%, rgba(86, 118, 144, 0.14), transparent 52%),
+        linear-gradient(145deg, #0B1421, #080E18 62%, #0E1A27);
+      border: 1px solid rgba(105, 130, 157, 0.24);
     }
     .blade-3d-viewport:active {
       cursor: grabbing;
@@ -698,6 +729,44 @@
       height: 100%;
       object-fit: contain;
       filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.65));
+    }
+    .blade-zoom-controls {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 4;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid rgba(140, 164, 186, 0.2);
+      border-radius: 8px;
+      background: rgba(7, 13, 22, 0.82);
+      backdrop-filter: blur(8px);
+    }
+    .blade-zoom-btn {
+      width: 30px;
+      height: 28px;
+      border: 1px solid transparent;
+      border-radius: 5px;
+      color: #CBD7E3;
+      background: transparent;
+      font: 700 14px var(--font-mono);
+      cursor: pointer;
+    }
+    .blade-zoom-btn:hover {
+      color: #76E2D6;
+      background: rgba(255, 255, 255, 0.07);
+    }
+    .blade-zoom-btn:disabled {
+      opacity: 0.42;
+      cursor: not-allowed;
+    }
+    .blade-zoom-value {
+      min-width: 42px;
+      color: #90A3B7;
+      font: 600 10px var(--font-mono);
+      text-align: center;
     }
     .blade-studio-bottom-deck {
       width: 100%;
@@ -776,7 +845,9 @@
       justify-content: space-between;
       width: 100%;
       align-items: center;
-      white-space: nowrap;
+      white-space: normal;
+      flex-wrap: wrap;
+      gap: 4px 12px;
     }
 
     /* RIGHT: Display & Hardware Controls */
@@ -4429,8 +4500,7 @@
 
       /* Unified Main Workspace for Mobile */
       .main-workspace,
-      body.view-mode-split .main-workspace,
-      body.view-mode-machine .main-workspace,
+        body.view-mode-machine .main-workspace,
       body.mobile-mode-machine .main-workspace,
       body.view-mode-phone .main-workspace,
       body.mobile-mode-app .main-workspace,
@@ -4472,7 +4542,7 @@
         display: none !important;
       }
 
-      /* In default / split on mobile, show machine panel */
+      /* In the default machine view on mobile, show the machine panel */
       body:not(.view-mode-phone):not(.mobile-mode-app):not(.view-mode-display):not(.mobile-mode-display) .phone-column,
       body:not(.view-mode-phone):not(.mobile-mode-app):not(.view-mode-display):not(.mobile-mode-display) .display-concept-panel {
         display: none !important;
@@ -4969,9 +5039,425 @@
       }
     }
 
+    :root {
+      --bg: #080D16;
+      --panel: #111A29;
+      --panel-2: #172338;
+      --panel-3: #21314C;
+      --border: #2A3A54;
+      --border-focus: #31C5B7;
+      --text: #F4F7FA;
+      --text-dim: #A7B4C4;
+      --teal: #31C5B7;
+      --teal-hover: #55D8CB;
+      --green: #42C98A;
+      --amber: #F4B85A;
+      --red: #F16C72;
+      --radius-chassis: 18px;
+      --radius-phone: 40px;
+      --radius-card: 14px;
+      --radius-inner: 10px;
+      --radius-control: 8px;
+    }
+
+    body {
+      background:
+        radial-gradient(ellipse at 18% 0%, rgba(32, 71, 96, 0.18), transparent 40%),
+        var(--bg);
+    }
+    .app-header {
+      background: linear-gradient(180deg, #121C2B, #0E1724);
+      border-bottom-color: #27374D;
+    }
+    .brand-logo {
+      letter-spacing: 0.8px;
+    }
+    .view-switcher-bar {
+      background: rgba(10, 16, 26, 0.96);
+      border-bottom-color: #202F44;
+    }
+    .main-workspace {
+      gap: 18px;
+      padding: 16px 20px;
+      background:
+        radial-gradient(ellipse at 52% 0%, rgba(27, 55, 78, 0.12), transparent 60%),
+        transparent;
+    }
+    .machine-panel {
+      background: linear-gradient(150deg, rgba(20, 31, 47, 0.98), rgba(13, 21, 33, 0.98));
+      border-color: #2B3B53;
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28), inset 0 1px rgba(255, 255, 255, 0.035);
+    }
+    body.view-mode-machine .machine-panel,
+    body.mobile-mode-machine .machine-panel {
+      max-width: 1400px;
+    }
+    .jar-stage-card,
+    .controls-display-card,
+    .machine-tabbed-panel {
+      border-color: #2A3B54;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.16), inset 0 1px rgba(255, 255, 255, 0.035);
+    }
+    .stage-header-row {
+      min-height: 34px;
+    }
+    .stage-tab-btn.active,
+    .jar-view-floating-bar .btn-view-mode.active {
+      background: linear-gradient(135deg, #39C9BA, #20AFA4);
+      color: #061410;
+      box-shadow: 0 3px 12px rgba(49, 197, 183, 0.22);
+    }
+    .phone-frame {
+      border-color: #202A39;
+      border-radius: 42px;
+      background: #070B12;
+      box-shadow:
+        0 0 0 1px rgba(207, 220, 237, 0.2),
+        0 26px 64px rgba(0, 0, 0, 0.48),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    }
+    .phone-status-bar {
+      background: linear-gradient(180deg, #080D15, #070B12);
+    }
+    .phone-header {
+      min-height: 48px;
+      background: linear-gradient(135deg, #172438, #121D2E);
+      border-bottom-color: #2A3A53;
+    }
+    .phone-header-title {
+      letter-spacing: 0.15px;
+    }
+    .phone-header-badge {
+      border-radius: 999px;
+      background: rgba(49, 197, 183, 0.09);
+      border-color: rgba(49, 197, 183, 0.28);
+      color: #65D8CB;
+    }
+    .phone-body {
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(26, 60, 79, 0.2), transparent 46%),
+        #0B111C;
+      padding: 14px 14px 20px;
+    }
+    .phone-tab-screen {
+      gap: 14px;
+    }
+    .live-card-top,
+    .live-chart-box,
+    .live-progress-box,
+    .live-metrics-grid > *,
+    .phone-body .phone-card,
+    .phone-body .history-session-card,
+    .phone-body .health-row-card,
+    .phone-body .preset-card {
+      border-color: #2B3B53;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15), inset 0 1px rgba(255, 255, 255, 0.025);
+    }
+    .live-card-top {
+      background: linear-gradient(145deg, #17263A, #111C2C);
+      border-radius: 14px;
+      padding: 14px;
+    }
+    .live-temp-huge {
+      letter-spacing: -0.035em;
+    }
+    .phone-tab-bar {
+      background: rgba(14, 22, 34, 0.98);
+      border-top-color: #29394F;
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
+    }
+    .phone-tab-bar .tab-bar-item.active {
+      color: #54D2C6;
+      background: rgba(49, 197, 183, 0.08);
+    }
+    .phone-tab-bar .tab-bar-item {
+      min-height: 48px;
+      border-radius: 10px;
+      transition: background 0.18s ease, color 0.18s ease;
+    }
+    .phone-tab-bar .tab-bar-item:focus-visible,
+    .m-tab-btn:focus-visible,
+    .btn-adv-feature:focus-visible {
+      outline: 2px solid var(--teal);
+      outline-offset: 2px;
+    }
+    .phone-body .live-card-top {
+      border-color: rgba(76, 195, 183, 0.34);
+      background: linear-gradient(145deg, #1a2a3d, #121d2c);
+    }
+    .phone-body .live-metrics-grid > * {
+      min-width: 0;
+      background: linear-gradient(145deg, rgba(24, 37, 55, 0.96), rgba(15, 24, 37, 0.96));
+    }
+    .phone-tab-bar {
+      gap: 4px;
+      padding-left: 6px;
+      padding-right: 6px;
+    }
+    .grid-env,
+    .grid-adv {
+      align-items: stretch;
+    }
+    .env-card {
+      min-width: 0;
+      min-height: 38px;
+      padding: 6px 9px;
+      border-radius: 9px;
+      background: linear-gradient(145deg, rgba(23, 35, 52, 0.98), rgba(15, 24, 37, 0.98));
+    }
+    .env-card label {
+      min-width: 0;
+      color: var(--text-dim);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .env-card select {
+      min-width: 0;
+      max-width: 58%;
+      height: 28px;
+      padding: 0 6px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--panel-2);
+      color: var(--text);
+      font-size: 12px;
+    }
+    .env-control-card {
+      align-items: stretch;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+    }
+    .env-control-card label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .env-control-card output {
+      color: var(--teal);
+      font-family: var(--font-mono);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .env-control-card input[type="range"] {
+      width: 100%;
+      height: 20px;
+      margin: 0;
+      accent-color: var(--teal);
+      cursor: pointer;
+    }
+    .btn-adv-feature {
+      min-height: 36px;
+      height: auto;
+      padding: 5px 8px;
+      white-space: normal;
+      text-align: center;
+      background: linear-gradient(145deg, rgba(23, 35, 52, 0.98), rgba(15, 24, 37, 0.98));
+    }
+    .blade-model-selector-group {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 3px;
+      padding: 4px;
+      border-color: rgba(105, 130, 157, 0.3);
+    }
+    .blade-model-btn {
+      min-height: 26px;
+      padding: 4px 8px;
+      border-radius: 5px;
+      color: #B5C2D1;
+    }
+    .blade-model-btn.active {
+      background: linear-gradient(135deg, #38C8B9, #239F97);
+      color: #071411;
+      box-shadow: 0 2px 9px rgba(49, 197, 183, 0.2);
+    }
+    .blade-3d-viewport {
+      padding: 8px 4px;
+      perspective: 1000px;
+    }
+    .blade-3d-gimbal {
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      max-height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.08s ease-out;
+    }
+    .blade-photo-stage {
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(133, 157, 182, 0.2);
+      border-radius: 14px;
+      background: radial-gradient(ellipse at 50% 45%, #26384B, #101A28 74%);
+      box-shadow: 0 18px 46px rgba(0, 0, 0, 0.35), inset 0 1px rgba(255, 255, 255, 0.06);
+      transform-style: preserve-3d;
+    }
+    .blade-photo-stage-heading,
+    .blade-photo-caption {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      z-index: 2;
+      color: #A9B7C7;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .blade-photo-stage-heading {
+      box-sizing: border-box;
+      padding-right: 106px;
+    }
+    .blade-photo-kicker {
+      color: #7F93AA;
+      font-weight: 700;
+    }
+    .blade-photo-status {
+      color: #71DCCE;
+      font: 700 10px var(--font-mono);
+    }
+    .blade-photo-visual {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin: 8px 0;
+      border: 1px solid rgba(133, 157, 182, 0.17);
+      border-radius: 12px;
+      background:
+        radial-gradient(ellipse at 50% 48%, rgba(119, 147, 168, 0.13), transparent 58%),
+        linear-gradient(180deg, rgba(3, 10, 18, 0.1), rgba(3, 8, 15, 0.28));
+      transform-style: preserve-3d;
+    }
+    .blade-hero-svg {
+      display: block;
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
+      overflow: visible;
+      filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.3));
+      user-select: none;
+      pointer-events: none;
+    }
+    .blade-vortex-overlay,
+    .blade-motion-blur {
+      position: absolute;
+      inset: 7%;
+      z-index: 2;
+      border: 1px solid rgba(20, 160, 164, 0.34);
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0.16;
+      background: repeating-radial-gradient(circle, transparent 0 22px, rgba(21, 171, 168, 0.1) 23px 24px);
+      transition: opacity 120ms linear;
+    }
+    .blade-motion-blur {
+      z-index: 3;
+      border: 0;
+      background: radial-gradient(ellipse, transparent 34%, rgba(79, 181, 190, 0.12) 60%, transparent 72%);
+      opacity: 0;
+    }
+    .blade-photo-caption {
+      color: #8B9CB0;
+      font-size: 9px;
+      letter-spacing: 0.025em;
+      text-transform: none;
+    }
+    .blade-photo-caption span:first-child {
+      color: #D0DCE7;
+      font-weight: 600;
+    }
+    .blade-dynamics-toolbar {
+      border-color: #2A3A52;
+      background: linear-gradient(135deg, rgba(17, 28, 45, 0.98), rgba(11, 19, 32, 0.98));
+      padding: 7px 9px;
+    }
+    .blade-spec-pill {
+      border-color: #2A3A52;
+      background: linear-gradient(135deg, #111C2B, #0B121D);
+      padding: 6px 9px;
+    }
+    .app-footer {
+      background: #0D1521;
+      border-top-color: #24334A;
+    }
+
+    @media (max-width: 768px) {
+      .main-workspace {
+        padding: 8px 10px !important;
+        gap: 12px !important;
+      }
+      .machine-panel {
+        padding: 12px !important;
+        border-radius: 14px !important;
+      }
+      .blade-model-selector-group {
+        width: 100%;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        flex: 0 0 auto;
+      }
+      .blade-studio-header-bar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+      .blade-cam-toolbar {
+        justify-content: space-between;
+      }
+      .blade-photo-stage {
+        min-height: 0;
+        padding: 9px;
+      }
+      .blade-photo-stage-heading {
+        font-size: 8px;
+      }
+      .blade-photo-status {
+        display: none;
+      }
+      .machine-top-grid.studio-active {
+        min-height: 0;
+      }
+      .jar-stage-card.studio-active {
+        height: auto !important;
+        min-height: 500px !important;
+      }
+      .blade-studio-wrap {
+        min-height: 470px;
+      }
+      .blade-3d-viewport {
+        min-height: 190px;
+      }
+      .blade-dynamics-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .blade-spec-pill {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .phone-frame {
+        border-radius: 36px;
+      }
+    }
+
 </style>
 </head>
-<body class="view-mode-split">
+<body class="view-mode-machine">
 
   <!-- P1-6 GLOBAL ERROR HANDLER BANNER -->
   <div class="global-error-banner" id="globalErrorBanner" role="alert">
@@ -5032,12 +5518,9 @@
     <!-- 1.2 VIEW SWITCHER (44px) -->
     <nav class="view-switcher-bar" aria-label="Workspace Views">
       <div class="switcher-container">
-        <!-- Desktop segmented control: Split, Machine Only, Phone App Only, Motor Display Concept -->
+        <!-- Desktop workspace views -->
         <div class="segmented-control desktop-view-switch" role="tablist">
-          <button type="button" class="seg-btn active" data-mode="split" role="tab" aria-selected="true">
-            <span>◫ Split View</span>
-          </button>
-          <button type="button" class="seg-btn" data-mode="machine" role="tab" aria-selected="false">
+          <button type="button" class="seg-btn active" data-mode="machine" role="tab" aria-selected="true">
             <span>⚙️ Grinder Machine</span>
           </button>
           <button type="button" class="seg-btn" data-mode="phone" role="tab" aria-selected="false">
@@ -5108,12 +5591,48 @@
               <svg class="jar-svg-element" id="jarMainSvg" viewBox="0 0 300 360" aria-label="Mixer Grinder Jar Assembly">
                 <defs>
                   <linearGradient id="jarGunmetal" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#14161A" />
-                    <stop offset="20%" stop-color="#2B2F36" />
-                    <stop offset="50%" stop-color="#3A3F48" />
-                    <stop offset="80%" stop-color="#2B2F36" />
-                    <stop offset="100%" stop-color="#14161A" />
+                    <stop offset="0%" stop-color="#111820" />
+                    <stop offset="9%" stop-color="#434D57" />
+                    <stop offset="18%" stop-color="#AEB8BF" />
+                    <stop offset="28%" stop-color="#66727B" />
+                    <stop offset="43%" stop-color="#D9E0E4" />
+                    <stop offset="51%" stop-color="#F3F6F7" />
+                    <stop offset="64%" stop-color="#8D989F" />
+                    <stop offset="78%" stop-color="#D5DCE0" />
+                    <stop offset="91%" stop-color="#59636B" />
+                    <stop offset="100%" stop-color="#171F27" />
                   </linearGradient>
+                  <linearGradient id="jarGlass" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#C8D6DF" stop-opacity=".18" />
+                    <stop offset="16%" stop-color="#F4F8FA" stop-opacity=".08" />
+                    <stop offset="50%" stop-color="#C7D5DF" stop-opacity=".03" />
+                    <stop offset="84%" stop-color="#F7FAFC" stop-opacity=".12" />
+                    <stop offset="100%" stop-color="#9EADB8" stop-opacity=".2" />
+                  </linearGradient>
+                  <linearGradient id="jarSteelEdge" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#F7FAFC" />
+                    <stop offset="22%" stop-color="#77838C" />
+                    <stop offset="50%" stop-color="#DCE2E6" />
+                    <stop offset="75%" stop-color="#737F87" />
+                    <stop offset="100%" stop-color="#252F37" />
+                  </linearGradient>
+                  <linearGradient id="jarLidPlastic" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#F1F6F8" stop-opacity=".74" />
+                    <stop offset="42%" stop-color="#AAB8C1" stop-opacity=".32" />
+                    <stop offset="100%" stop-color="#52616D" stop-opacity=".58" />
+                  </linearGradient>
+                  <linearGradient id="jarHandleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#111820" />
+                    <stop offset="38%" stop-color="#313B44" />
+                    <stop offset="68%" stop-color="#202A32" />
+                    <stop offset="100%" stop-color="#0D141B" />
+                  </linearGradient>
+                  <filter id="jarDropShadow" x="-30%" y="-20%" width="160%" height="160%">
+                    <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+                    <feOffset dy="3" />
+                    <feComponentTransfer><feFuncA type="linear" slope=".28" /></feComponentTransfer>
+                    <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
+                  </filter>
                   <linearGradient id="bladeSteel" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stop-color="#475569" />
                     <stop offset="50%" stop-color="#CBD5E1" />
@@ -5126,29 +5645,42 @@
                   </linearGradient>
                 </defs>
 
-                <!-- Base Coupler Platform (y=335 to y=360) -->
-                <path d="M 50 360 L 65 335 L 235 335 L 250 360 Z" fill="url(#couplerGrad)" stroke="#26354F" stroke-width="1.5" />
-                <rect x="70" y="333" width="160" height="4" rx="2" fill="#0B1220" />
-                <circle cx="150" cy="335" r="14" fill="#070B14" stroke="#12B5AE" stroke-width="1" />
+                <ellipse cx="151" cy="350" rx="104" ry="8" fill="#05090F" opacity=".8" />
+                <path d="M 54 358 L 65 331 Q 68 324 80 324 L 220 324 Q 232 324 235 331 L 246 358 Q 247 362 239 362 L 61 362 Q 53 362 54 358Z" fill="url(#couplerGrad)" stroke="#4B5864" stroke-width="1.5" />
+                <path d="M 70 332 Q 150 339 230 332" fill="none" stroke="#88949C" stroke-opacity=".5" stroke-width="2" />
+                <rect x="76" y="327" width="148" height="6" rx="3" fill="#0B1118" stroke="#505D67" stroke-width=".8" />
+                <circle cx="150" cy="329" r="13" fill="#0B1118" stroke="#73818B" stroke-width="1.5" />
 
                 <!-- Jar Assembly Group -->
-                <g id="jarGroup">
-                  <!-- Handle on Right Exterior -->
-                  <path id="svgJarHandle" d="M 255 150 L 290 150 C 298 150 304 156 304 164 L 304 250 C 304 258 298 264 290 264 L 235 264 L 235 250 L 285 250 C 289 250 291 248 291 244 L 291 168 C 291 164 289 162 285 162 L 255 162 Z" fill="#1E2228" stroke="#3A3F48" stroke-width="1.5" />
+                <g id="jarGroup" filter="url(#jarDropShadow)">
+                  <path id="svgJarHandle" d="M 229 111 L 253 111 Q 280 111 282 135 L 285 234 Q 285 256 265 260 L 222 260 L 222 242 L 257 242 Q 266 242 266 232 L 264 140 Q 264 130 252 130 L 229 130 Z" fill="url(#jarHandleGrad)" stroke="#56616A" stroke-width="2" />
+                  <path d="M 234 119 L 251 119 Q 272 119 273 140 L 275 229" fill="none" stroke="#A3ADB4" stroke-opacity=".18" stroke-width="3" />
 
-                  <!-- Lower Base Collar (y=300 to y=334) -->
-                  <rect id="svgJarCollar" x="75" y="300" width="150" height="34" rx="3" fill="url(#jarGunmetal)" stroke="#3A3F48" stroke-width="1" />
-                  <rect id="svgJarCollarWindow" x="96" y="304" width="108" height="26" rx="4" fill="#070B14" opacity="0.88" stroke="#1E293B" stroke-width="0.8" />
+                  <path id="svgJarCone" d="M 64 191 L 236 191 L 215 295 Q 212 307 198 311 L 102 311 Q 88 307 85 295 Z" fill="url(#jarGunmetal)" stroke="#89949B" stroke-width="1.4" />
+                  <path d="M 69 198 L 88 290 Q 90 300 102 303 L 198 303 Q 210 300 212 290 L 231 198" fill="none" stroke="#F0F4F6" stroke-opacity=".5" stroke-width="2" />
+                  <path d="M 81 206 L 97 286" fill="none" stroke="#FFFFFF" stroke-opacity=".28" stroke-width="4" />
+                  <path d="M 210 205 L 200 287" fill="none" stroke="#10171D" stroke-opacity=".32" stroke-width="6" />
 
-                  <!-- Tapered Cone Lower Section (y=200 to y=300) -->
-                  <polygon id="svgJarCone" points="48,200 252,200 225,300 75,300" fill="url(#jarGunmetal)" stroke="#3A3F48" stroke-width="1" />
+                  <path id="svgJarCylinder" d="M 67 72 Q 67 65 76 65 L 224 65 Q 233 65 233 72 L 233 188 Q 233 196 224 196 L 76 196 Q 67 196 67 188 Z" fill="url(#jarGunmetal)" stroke="#AAB4BA" stroke-width="1.5" />
+                  <path d="M 74 75 L 74 183 Q 74 190 82 190 L 217 190" fill="none" stroke="#F7FAFC" stroke-opacity=".55" stroke-width="2" />
+                  <path d="M 90 74 L 90 184" stroke="#FFFFFF" stroke-opacity=".23" stroke-width="9" />
+                  <path d="M 215 76 L 215 186" stroke="#161D24" stroke-opacity=".32" stroke-width="10" />
+                  <path d="M 101 79 L 101 179 M 108 79 L 108 179 M 115 79 L 115 179" stroke="#FFFFFF" stroke-opacity=".06" stroke-width=".7" />
 
-                  <!-- Stepped Shoulder -->
-                  <rect id="svgJarShoulder" x="44" y="190" width="212" height="10" rx="2" fill="#20242B" stroke="#3A3F48" stroke-width="1" />
+                  <path id="svgJarShoulder" d="M 61 185 Q 61 181 68 181 L 232 181 Q 239 181 239 185 L 239 197 Q 239 201 232 201 L 68 201 Q 61 201 61 197 Z" fill="url(#jarSteelEdge)" stroke="#69757D" stroke-width="1" />
+                  <path d="M 68 187 L 232 187" stroke="#F5F7F8" stroke-opacity=".68" stroke-width="1.5" />
 
-                  <!-- Straight Cylinder Upper Section (y=70 to y=190) -->
-                  <rect id="svgJarCylinder" x="40" y="70" width="220" height="120" rx="3" fill="url(#jarGunmetal)" stroke="#3A3F48" stroke-width="1.5" />
-                  <rect id="svgJarHighlight" x="90" y="72" width="25" height="116" fill="rgba(255,255,255,0.06)" />
+                  <path id="svgJarCollar" d="M 84 299 L 216 299 L 213 323 Q 212 329 205 329 L 95 329 Q 88 329 87 323 Z" fill="url(#jarSteelEdge)" stroke="#69757D" stroke-width="1.2" />
+                  <path id="svgJarCollarWindow" d="M 97 307 L 203 307 L 202 322 L 98 322 Z" fill="#111922" stroke="#87939C" stroke-width=".8" />
+                  <path d="M 100 310 L 200 310" stroke="#F1F5F7" stroke-opacity=".42" stroke-width="1" />
+
+                  <path d="M 57 70 Q 58 57 73 55 L 227 55 Q 242 57 243 70 L 239 78 L 61 78 Z" fill="url(#jarSteelEdge)" stroke="#7D8991" stroke-width="1.4" />
+                  <path d="M 64 68 Q 67 59 79 59 L 221 59 Q 233 59 236 68" fill="none" stroke="#F7FAFB" stroke-width="2" />
+                  <ellipse cx="150" cy="58" rx="72" ry="9" fill="url(#jarLidPlastic)" stroke="#CBD5DA" stroke-width="1" />
+                  <ellipse cx="150" cy="57" rx="37" ry="5" fill="#5A6872" fill-opacity=".72" stroke="#D7E0E4" stroke-width="1" />
+                  <ellipse cx="150" cy="56" rx="25" ry="3" fill="#DCE5E9" fill-opacity=".55" />
+                  <path d="M 63 68 Q 150 79 237 68" fill="none" stroke="#34414A" stroke-width="2" />
+                  <path d="M 66 73 L 61 81 M 234 73 L 239 81" stroke="#AEB9BF" stroke-width="4" stroke-linecap="round" />
 
                   <!-- A11 FIX: Authentic Clean Half-Section Cutaway (Left interior, Right exterior, Center axis line) -->
                   <g id="cutawayContainer" style="display: none;">
@@ -5171,16 +5703,34 @@
                     <!-- Blade Precision Rotor (Foreshortened in ground perspective: scale(0.48, 0.22) sits naturally on jar floor) -->
                     <g id="seatedBladePerspective" transform="scale(0.48, 0.22)">
                       <!-- High-Speed Motion Blur Disc (Activates when motor is running) -->
-                      <ellipse id="bladeSpinBlur" cx="0" cy="0" rx="72" ry="72" fill="url(#bladeSteel)" opacity="0"/>
                       <g class="blade-spin-group" id="bladeSpinGroup">
-                        <!-- Arm 1 (Top-Left Serrated with 7 teeth) -->
-                        <path d="M -15 -10 L -65 -60 L -60 -65 L -57 -62 L -53 -66 L -50 -63 L -46 -67 L -43 -64 L -39 -68 L -36 -65 L -32 -69 L -29 -66 L -8 -22 Z" fill="url(#bladeSteel)" stroke="#06090F" stroke-width="1.4" />
-                        <!-- Arm 2 (Bottom-Right Serrated with 7 teeth) -->
-                        <path d="M 15 10 L 65 60 L 60 65 L 57 62 L 53 66 L 50 63 L 46 67 L 43 64 L 39 68 L 36 65 L 32 69 L 29 66 L 8 22 Z" fill="url(#bladeSteel)" stroke="#06090F" stroke-width="1.4" />
-                        <!-- Arm 3 (Top-Right Smooth Beveled) -->
-                        <path d="M 10 -15 L 60 -65 L 75 -52 L 18 -5 Z" fill="url(#bladeSteel)" stroke="#06090F" stroke-width="1.4" />
-                        <!-- Arm 4 (Bottom-Left Smooth Beveled) -->
-                        <path d="M -10 15 L -60 65 L -75 52 L -18 5 Z" fill="url(#bladeSteel)" stroke="#06090F" stroke-width="1.4" />
+                        <g id="jarBladeWet">
+                          <path d="M-12 -8 C-30 -25 -54 -53 -80 -63 Q-89 -65 -91 -56 C-86 -35 -62 -15 -40 -3 Q-24 5 -10 5Z" fill="url(#bladeSteel)" stroke="#18212B" stroke-width="3"/>
+                          <path d="M12 8 C30 25 54 53 80 63 Q89 65 91 56 C86 35 62 15 40 3 Q24 -5 10 -5Z" fill="url(#bladeSteel)" stroke="#18212B" stroke-width="3"/>
+                          <path d="M8 -12 C25 -30 53 -54 63 -80 Q65 -89 56 -91 C35 -86 15 -62 3 -40 Q-5 -24 -5 -10Z" fill="url(#bladeSteel)" stroke="#18212B" stroke-width="3"/>
+                          <path d="M-8 12 C-25 30 -53 54 -63 80 Q-65 89 -56 91 C-35 86 -15 62 -3 40 Q5 24 5 10Z" fill="url(#bladeSteel)" stroke="#18212B" stroke-width="3"/>
+                        </g>
+                        <g id="jarBladeDry" style="display:none">
+                          <path d="M-10 -6 L-83 -61 L-91 -48 L-77 -36 L-83 -29 L-67 -18 L-72 -12 L-55 -2 L-41 8Z" fill="url(#bladeSteel)" stroke="#18212B" stroke-width="3"/>
+                          <path d="M10 6 L83 61 L91 48 L77 36 L83 29 L67 18 L72 12 L55 2 L41 -8Z" fill="url(#bladeSteel)" stroke="#18212B" stroke-width="3"/>
+                        </g>
+                        <g id="jarBladeFine" style="display:none">
+                          <path d="M-12 -7 Q-39 -31 -84 -62 L-92 -51 Q-69 -20 -37 6 Q-21 17 -12 -7Z" fill="url(#bladeSteel)" stroke="#18212B" stroke-width="3"/>
+                          <path d="M12 7 Q39 31 84 62 L92 51 Q69 20 37 -6 Q21 -17 12 7Z" fill="url(#bladeSteel)" stroke="#18212B" stroke-width="3"/>
+                        </g>
+                        <g id="jarBladeCoarse" style="display:none">
+                          <path d="M-12 -8 L-79 -62 L-90 -48 L-80 -38 L-86 -32 L-72 -20 L-78 -14 L-61 -3 L-42 9Z" fill="url(#bladeSteel)" stroke="#18212B" stroke-width="3"/>
+                          <path d="M12 8 L79 62 L90 48 L80 38 L86 32 L72 20 L78 14 L61 3 L42 -9Z" fill="url(#bladeSteel)" stroke="#18212B" stroke-width="3"/>
+                        </g>
+                        <g id="jarBladeChutney" style="display:none">
+                          <path d="M-10 -8 Q-44 -34 -84 -53 Q-94 -56 -91 -45 Q-75 -14 -40 5 Q-20 14 -10 -8Z" fill="url(#bladeSteel)" stroke="#18212B" stroke-width="3"/>
+                          <path d="M10 8 Q44 34 84 53 Q94 56 91 45 Q75 14 40 -5 Q20 -14 10 8Z" fill="url(#bladeSteel)" stroke="#18212B" stroke-width="3"/>
+                        </g>
+                        <g id="jarBladeWhipper" style="display:none">
+                          <path d="M-62 -54 L62 54 M-62 54 L62 -54 M-82 0 L82 0 M0 -82 L0 82" stroke="url(#bladeSteel)" stroke-width="10" stroke-linecap="round"/>
+                          <circle cx="0" cy="-78" r="5" fill="#CBD5E1"/><circle cx="0" cy="78" r="5" fill="#CBD5E1"/>
+                          <circle cx="-78" cy="0" r="5" fill="#CBD5E1"/><circle cx="78" cy="0" r="5" fill="#CBD5E1"/>
+                        </g>
                         <!-- Central Hub Nut & Spindle -->
                         <circle cx="0" cy="0" r="16" fill="#1E293B" stroke="#475569" stroke-width="2" />
                         <polygon points="0,-10 9,-5 9,5 0,10 -9,5 -9,-5" fill="#E2E8F0" stroke="#0F172A" stroke-width="1.2" />
@@ -5190,11 +5740,11 @@
                   </g>
 
                   <!-- Jar Removable Lid Assembly -->
-                  <g id="jarLidGroup">
-                    <rect id="svgJarLidGasket" x="38" y="66" width="224" height="6" rx="2" fill="#0B0F17" stroke="#1E293B" stroke-width="1" />
-                    <path id="svgJarLidDome" d="M 44 66 C 44 52 70 38 150 38 C 230 38 256 52 256 66 Z" fill="#1C2026" stroke="#3A3F48" stroke-width="1.5" />
-                    <ellipse id="svgJarLidFinial" cx="150" cy="38" rx="20" ry="6" fill="#2F3642" stroke="#475569" stroke-width="1" />
-                    <circle id="svgLidInterlockDot" cx="150" cy="28" r="4.5" fill="#12B5AE" />
+                  <g id="jarLidGroup" style="display:none">
+                    <rect id="svgJarLidGasket" x="61" y="73" width="178" height="5" rx="2" fill="#141B21" stroke="#69757D" stroke-width="1" />
+                    <path id="svgJarLidDome" d="M 65 67 Q 69 51 98 48 L 202 48 Q 231 51 235 67 Q 150 79 65 67 Z" fill="url(#jarLidPlastic)" stroke="#D0D9DE" stroke-width="1.4" />
+                    <ellipse id="svgJarLidFinial" cx="150" cy="49" rx="28" ry="5" fill="#AEBAC1" fill-opacity=".74" stroke="#EFF3F5" stroke-width="1" />
+                    <circle id="svgLidInterlockDot" cx="150" cy="28" r="4.5" fill="#31C5B7" />
                   </g>
                 </g>
               </svg>
@@ -5204,121 +5754,200 @@
             <div class="blade-studio-wrap" id="stageStudioContainer">
               <!-- Top Controls: Blade Model Selector & Quick Camera Angles -->
               <div class="blade-studio-header-bar">
-                <div class="blade-model-selector-group" role="radiogroup" aria-label="Blade Architecture">
-                  <button type="button" class="blade-model-btn active" data-model="universal" id="btnBladeModUniversal" title="Universal 4-arm Quad-Edge for multi-purpose heavy milling">Universal</button>
-                  <button type="button" class="blade-model-btn" data-model="wet" id="btnBladeModWet" title="Wet Batter hydrodynamic scoop blade for viscous batters">Batter Pro</button>
-                  <button type="button" class="blade-model-btn" data-model="dry" id="btnBladeModDry" title="Dry Spice Tungsten dual-chisel blade for hard masalas">Dry Spice</button>
-                  <button type="button" class="blade-model-btn" data-model="whipper" id="btnBladeModWhipper" title="6-Point Emulsifier star disc for chutneys and purées">Whipper</button>
+                <div class="blade-model-selector-group" role="group" aria-label="Select blade model">
+                  <button type="button" class="blade-model-btn active" data-model="wet" aria-pressed="true" title="Wet-grind blade reference">Wet Grind</button>
+                  <button type="button" class="blade-model-btn" data-model="dry" aria-pressed="false" title="Dry-grind blade reference">Dry Grind</button>
+                  <button type="button" class="blade-model-btn" data-model="fine" aria-pressed="false" title="Fine-grind blade reference">Fine Grind</button>
+                  <button type="button" class="blade-model-btn" data-model="coarse" aria-pressed="false" title="Coarse-grind blade reference">Coarse Grind</button>
+                  <button type="button" class="blade-model-btn" data-model="chutney" aria-pressed="false" title="Chutney and paste blade reference">Chutney</button>
+                  <button type="button" class="blade-model-btn" data-model="whipper" aria-pressed="false" title="Whipping attachment reference">Whipper</button>
                 </div>
                 <div class="blade-cam-toolbar" aria-label="Camera Presets">
-                  <button type="button" class="blade-cam-btn active" id="btnCamIso" title="Isometric 3D Angle">3D</button>
-                  <button type="button" class="blade-cam-btn" id="btnCamTop" title="Top-Down Plan Angle">Top</button>
-                  <button type="button" class="blade-cam-btn" id="btnCamSide" title="Side Elevation Angle">Side</button>
-                  <button type="button" class="blade-cam-btn" id="btnCamOrbit" title="Toggle Auto-Orbit Turntable">🔄 Orbit</button>
-                  <button type="button" class="blade-cam-btn" id="btnCamReset" title="Reset View Angle">🎯</button>
+                  <button type="button" class="blade-cam-btn active" id="btnCamIso" title="Isometric inspection angle" aria-label="Isometric camera">3D</button>
+                  <button type="button" class="blade-cam-btn" id="btnCamTop" title="Top-down inspection angle" aria-label="Top camera">Top</button>
+                  <button type="button" class="blade-cam-btn" id="btnCamSide" title="Side elevation inspection angle" aria-label="Side camera">Side</button>
+                  <button type="button" class="blade-cam-btn" id="btnCamOrbit" title="Toggle turntable auto-orbit" aria-pressed="false">Orbit</button>
+                  <button type="button" class="blade-cam-btn" id="btnCamReset" title="Reset camera and zoom" aria-label="Reset camera">Reset</button>
                 </div>
               </div>
 
               <!-- Interactive 3D Gimbal Viewport -->
-              <div class="blade-3d-viewport" id="blade3dViewport" title="Click and drag to rotate blade in 3D">
+              <div class="blade-3d-viewport" id="blade3dViewport" title="Drag to orbit the model. Use zoom controls to inspect details.">
+                <div class="blade-zoom-controls" role="group" aria-label="Model zoom">
+                  <button type="button" class="blade-zoom-btn" id="btnStudioZoomOut" aria-label="Zoom out" title="Zoom out">−</button>
+                  <span class="blade-zoom-value" id="studioZoomValue">100%</span>
+                  <button type="button" class="blade-zoom-btn" id="btnStudioZoomIn" aria-label="Zoom in" title="Zoom in">+</button>
+                </div>
                 <div class="blade-3d-gimbal" id="blade3dGimbal">
-                  <svg class="blade-hero-svg" id="bladeHeroSvg" viewBox="0 0 340 300">
-                    <defs>
-                      <linearGradient id="heroBladeSteel" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#475569" />
-                        <stop offset="25%" stop-color="#94A3B8" />
-                        <stop offset="50%" stop-color="#F1F5F9" />
-                        <stop offset="75%" stop-color="#94A3B8" />
-                        <stop offset="100%" stop-color="#334155" />
-                      </linearGradient>
-                      <linearGradient id="heroFacetGleam" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stop-color="#38BDF8" />
-                        <stop offset="50%" stop-color="#FFFFFF" />
-                        <stop offset="100%" stop-color="#12B5AE" />
-                      </linearGradient>
-                      <radialGradient id="vortexGlow" cx="50%" cy="50%" r="50%">
-                        <stop offset="0%" stop-color="rgba(56, 189, 248, 0.4)" />
-                        <stop offset="60%" stop-color="rgba(18, 181, 174, 0.15)" />
-                        <stop offset="100%" stop-color="rgba(18, 181, 174, 0)" />
-                      </radialGradient>
-                    </defs>
-
-                    <!-- Base Floor Shadow & Perspective Ring -->
-                    <ellipse cx="170" cy="255" rx="100" ry="22" fill="rgba(0,0,0,0.6)" filter="blur(5px)" />
-                    <ellipse cx="170" cy="255" rx="75" ry="16" fill="none" stroke="rgba(56, 189, 248, 0.15)" stroke-width="1" stroke-dasharray="3,3" />
-
-                    <!-- Center Gimbal Spindle Assembly at (170, 140) -->
-                    <g id="bladeHeroRotateGroup" transform="translate(170, 140)">
-                      <!-- Dynamic Motion Blur Radial Disc -->
-                      <ellipse id="heroBladeSpinBlur" cx="0" cy="0" rx="130" ry="130" fill="url(#heroBladeSteel)" opacity="0" />
-
-                      <!-- Aerodynamic Vortex Ribbon Trails (toggled via dynamics button) -->
-                      <g id="heroVortexRibbons" opacity="0.6">
-                        <path d="M -90 -80 C -120 -40 -130 30 -80 90" fill="none" stroke="#38BDF8" stroke-width="1.6" stroke-dasharray="6,4" opacity="0.5" />
-                        <path d="M 90 80 C 120 40 130 -30 80 -90" fill="none" stroke="#12B5AE" stroke-width="1.6" stroke-dasharray="6,4" opacity="0.5" />
-                        <circle cx="0" cy="0" r="110" fill="url(#vortexGlow)" opacity="0.3" />
-                      </g>
-
-                      <!-- Spinning Blade Subgroup (Rotates with bladeCurrentAngle) -->
-                      <g class="blade-spin-group" id="heroSpinSubGroup">
-                        <!-- 1. UNIVERSAL 4-ARM QUAD-EDGE (Default Model) -->
-                        <g id="heroModelUniversal">
-                          <!-- Arm 1: Top-Left Serrated (7 Teeth) -->
-                          <path d="M -18 -8 L -100 -90 L -115 -75 L -30 6 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.2" />
-                          <path d="M -100 -90 L -94 -84 L -88 -90 L -82 -84 L -76 -90 L -70 -84 L -64 -90 L -58 -84 L -52 -90 L -46 -84 L -40 -90 L -34 -84 L -28 -90 L -22 -84 L -18 -88" fill="none" stroke="url(#heroFacetGleam)" stroke-width="2.4" stroke-linecap="round" />
-                          <!-- Arm 2: Bottom-Right Serrated (7 Teeth) -->
-                          <path d="M 18 8 L 100 90 L 115 75 L 30 -6 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.2" />
-                          <path d="M 100 90 L 94 84 L 88 90 L 82 84 L 76 90 L 70 84 L 64 90 L 58 84 L 52 90 L 46 84 L 40 90 L 34 84 L 28 90 L 22 84 L 18 88" fill="none" stroke="url(#heroFacetGleam)" stroke-width="2.4" stroke-linecap="round" />
-                          <!-- Arm 3: Top-Right Beveled Chisel Blade -->
-                          <path d="M 12 -14 L 95 -95 L 114 -78 L 26 4 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.2" />
-                          <line x1="12" y1="-14" x2="114" y2="-78" stroke="url(#heroFacetGleam)" stroke-width="2" />
-                          <!-- Arm 4: Bottom-Left Beveled Chisel Blade -->
-                          <path d="M -12 14 L -95 95 L -114 78 L -26 -4 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.2" />
-                          <line x1="-12" y1="14" x2="-114" y2="78" stroke="url(#heroFacetGleam)" stroke-width="2" />
+                  <div class="blade-photo-stage">
+                    <div class="blade-photo-stage-heading">
+                      <span class="blade-photo-kicker">SIMULATED BLADE ASSEMBLY</span>
+                      <span class="blade-photo-status" id="studioPhotoStatus">STATIONARY</span>
+                    </div>
+                    <div class="blade-photo-visual">
+                      <div class="blade-vortex-overlay" id="heroVortexRibbons" aria-hidden="true"></div>
+                      <div class="blade-motion-blur" id="heroBladeSpinBlur" aria-hidden="true"></div>
+                      <svg class="blade-hero-svg" id="bladeHeroSvg" viewBox="0 0 640 420" role="img" aria-label="Interactive simulated stainless-steel grinder blade">
+                        <defs>
+                          <linearGradient id="steelTop" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#F9FCFD"/>
+                            <stop offset="8%" stop-color="#D1D9DE"/>
+                            <stop offset="18%" stop-color="#89969E"/>
+                            <stop offset="29%" stop-color="#F6FAFB"/>
+                            <stop offset="43%" stop-color="#AEB9C0"/>
+                            <stop offset="56%" stop-color="#66747D"/>
+                            <stop offset="70%" stop-color="#E4EAED"/>
+                            <stop offset="83%" stop-color="#9AA6AD"/>
+                            <stop offset="94%" stop-color="#D7DEE2"/>
+                            <stop offset="100%" stop-color="#75838C"/>
+                          </linearGradient>
+                          <linearGradient id="steelSide" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#1D2931"/>
+                            <stop offset="18%" stop-color="#64727B"/>
+                            <stop offset="33%" stop-color="#DCE3E7"/>
+                            <stop offset="47%" stop-color="#89969E"/>
+                            <stop offset="61%" stop-color="#F4F7F8"/>
+                            <stop offset="78%" stop-color="#73818A"/>
+                            <stop offset="100%" stop-color="#202B33"/>
+                          </linearGradient>
+                          <linearGradient id="steelBevel" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#FFFFFF"/>
+                            <stop offset="32%" stop-color="#E1E7EA"/>
+                            <stop offset="58%" stop-color="#A5B1B8"/>
+                            <stop offset="100%" stop-color="#54616A"/>
+                          </linearGradient>
+                          <linearGradient id="steelCutEdge" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#F8FBFC"/>
+                            <stop offset="22%" stop-color="#728089"/>
+                            <stop offset="52%" stop-color="#303C44"/>
+                            <stop offset="78%" stop-color="#AAB5BB"/>
+                            <stop offset="100%" stop-color="#202A31"/>
+                          </linearGradient>
+                          <radialGradient id="hubFace" cx="34%" cy="28%" r="80%">
+                            <stop offset="0%" stop-color="#F8FBFC"/>
+                            <stop offset="18%" stop-color="#C8D1D6"/>
+                            <stop offset="45%" stop-color="#65727B"/>
+                            <stop offset="68%" stop-color="#DCE2E5"/>
+                            <stop offset="100%" stop-color="#37434B"/>
+                          </radialGradient>
+                          <linearGradient id="hubSteel" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#34414A"/>
+                            <stop offset="16%" stop-color="#D5DDE1"/>
+                            <stop offset="30%" stop-color="#75828A"/>
+                            <stop offset="48%" stop-color="#F3F6F7"/>
+                            <stop offset="63%" stop-color="#68757E"/>
+                            <stop offset="82%" stop-color="#DCE3E6"/>
+                            <stop offset="100%" stop-color="#39464E"/>
+                          </linearGradient>
+                          <filter id="bladeMachinedSurface" x="-45%" y="-45%" width="190%" height="200%" color-interpolation-filters="sRGB">
+                            <feMorphology in="SourceAlpha" operator="dilate" radius="2.2" result="expandedEdge"/>
+                            <feFlood flood-color="#111A21" flood-opacity=".96" result="edgeColor"/>
+                            <feComposite in="edgeColor" in2="expandedEdge" operator="in" result="edgeMetal"/>
+                            <feOffset in="edgeMetal" dy="7" result="bladeThickness"/>
+                            <feGaussianBlur in="SourceAlpha" stdDeviation="5" result="softShadow"/>
+                            <feOffset in="softShadow" dy="12" result="offsetShadow"/>
+                            <feComponentTransfer in="offsetShadow" result="castShadow">
+                              <feFuncA type="linear" slope=".42"/>
+                            </feComponentTransfer>
+                            <feSpecularLighting in="SourceAlpha" surfaceScale="2.4" specularConstant=".55" specularExponent="20" lighting-color="#FFFFFF" result="metalGlint">
+                              <feDistantLight azimuth="225" elevation="52"/>
+                            </feSpecularLighting>
+                            <feComposite in="metalGlint" in2="SourceAlpha" operator="in" result="surfaceGlint"/>
+                            <feMerge>
+                              <feMergeNode in="castShadow"/>
+                              <feMergeNode in="bladeThickness"/>
+                              <feMergeNode in="SourceGraphic"/>
+                              <feMergeNode in="surfaceGlint"/>
+                            </feMerge>
+                          </filter>
+                        </defs>
+                        <g id="bladeEngineeringGuides" fill="none" stroke="#88A1B5" aria-hidden="true">
+                          <circle cx="320" cy="198" r="178" stroke-opacity=".13" stroke-width="1" stroke-dasharray="2 7"/>
+                          <circle cx="320" cy="198" r="128" stroke-opacity=".09" stroke-width="1" stroke-dasharray="3 8"/>
+                          <circle cx="320" cy="198" r="78" stroke-opacity=".07" stroke-width="1"/>
+                          <path d="M92 198H548 M320 40V356" stroke-opacity=".1" stroke-width="1" stroke-dasharray="4 8"/>
+                          <path d="M320 20V35 M320 361V376 M82 198H97 M543 198H558" stroke="#70D9CF" stroke-opacity=".38" stroke-width="1.5"/>
                         </g>
-
-                        <!-- 2. WET BATTER PRO (Curved Hydrodynamic Scoops) -->
-                        <g id="heroModelWet" style="display:none;">
-                          <path d="M -15 -10 C -50 -70 -90 -85 -118 -60 C -105 -45 -70 -40 -25 8 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.2" />
-                          <path d="M 15 10 C 50 70 90 85 118 60 C 105 45 70 40 25 -8 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.2" />
-                          <path d="M 10 -15 C 70 -50 85 -90 60 -118 C 45 -105 40 -70 -8 -25 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.2" />
-                          <path d="M -10 15 C -70 50 -85 90 -60 118 C -45 105 -40 70 8 25 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.2" />
-                          <circle cx="-100" cy="-55" r="4" fill="#38BDF8" opacity="0.8" />
-                          <circle cx="100" cy="55" r="4" fill="#38BDF8" opacity="0.8" />
-                          <circle cx="55" cy="-100" r="4" fill="#38BDF8" opacity="0.8" />
-                          <circle cx="-55" cy="100" r="4" fill="#38BDF8" opacity="0.8" />
+                        <ellipse cx="320" cy="337" rx="178" ry="31" fill="#03070B" opacity=".58"/>
+                        <ellipse cx="320" cy="333" rx="136" ry="21" fill="none" stroke="#718493" stroke-opacity=".3" stroke-width="2"/>
+                        <g transform="translate(320 198)">
+                          <g id="heroSpinSubGroup" class="blade-spin-group" filter="url(#bladeMachinedSurface)">
+                            <g id="heroModelWet">
+                              <path d="M-19 -13 C-51 -41 -91 -92 -151 -116 C-169 -123 -184 -112 -181 -95 C-176 -65 -146 -28 -112 -5 C-77 19 -43 17 -18 9 Z" fill="url(#steelTop)" stroke="#59666E" stroke-width="3"/>
+                              <path d="M-163 -106 C-132 -95 -95 -69 -59 -38 C-94 -54 -131 -75 -163 -106Z" fill="url(#steelBevel)" opacity=".78"/>
+                              <path d="M-159 -95 C-123 -69 -86 -44 -53 -25" fill="none" stroke="#FFFFFF" stroke-opacity=".72" stroke-width="3"/>
+                              <path d="M19 13 C51 41 91 92 151 116 C169 123 184 112 181 95 C176 65 146 28 112 5 C77 -19 43 -17 18 -9 Z" fill="url(#steelTop)" stroke="#59666E" stroke-width="3"/>
+                              <path d="M163 106 C132 95 95 69 59 38 C94 54 131 75 163 106Z" fill="url(#steelBevel)" opacity=".78"/>
+                              <path d="M159 95 C123 69 86 44 53 25" fill="none" stroke="#FFFFFF" stroke-opacity=".72" stroke-width="3"/>
+                              <path d="M13 -19 C41 -51 92 -91 116 -151 C123 -169 112 -184 95 -181 C65 -176 28 -146 5 -112 C-19 -77 -17 -43 -9 -18 Z" fill="url(#steelSide)" stroke="#59666E" stroke-width="3"/>
+                              <path d="M106 -163 C95 -132 69 -95 38 -59 C54 -94 75 -131 106 -163Z" fill="url(#steelBevel)" opacity=".78"/>
+                              <path d="M95 -159 C69 -123 44 -86 25 -53" fill="none" stroke="#FFFFFF" stroke-opacity=".72" stroke-width="3"/>
+                              <path d="M-13 19 C-41 51 -92 91 -116 151 C-123 169 -112 184 -95 181 C-65 176 -28 146 -5 112 C19 77 17 43 9 18 Z" fill="url(#steelSide)" stroke="#59666E" stroke-width="3"/>
+                              <path d="M-106 163 C-95 132 -69 95 -38 59 C-54 94 -75 131 -106 163Z" fill="url(#steelBevel)" opacity=".78"/>
+                              <path d="M-95 159 C-69 123 -44 86 -25 53" fill="none" stroke="#FFFFFF" stroke-opacity=".72" stroke-width="3"/>
+                            </g>
+                            <g id="heroModelDry" style="display:none">
+                              <path d="M-23 -17 L-158 -108 L-169 -90 L-143 -70 L-149 -64 L-137 -52 L-143 -46 L-130 -34 L-136 -28 L-122 -16 L-128 -10 L-92 15 L-35 22 Z" fill="url(#steelTop)" stroke="#56636B" stroke-width="3"/>
+                              <path d="M-156 -105 L-133 -80 L-119 -66 L-105 -52 L-90 -38 L-71 -20" fill="none" stroke="#FFFFFF" stroke-width="3"/>
+                              <path d="M23 17 L158 108 L169 90 L143 70 L149 64 L137 52 L143 46 L130 34 L136 28 L122 16 L128 10 L92 -15 L35 -22 Z" fill="url(#steelSide)" stroke="#56636B" stroke-width="3"/>
+                              <path d="M156 105 L133 80 L119 66 L105 52 L90 38 L71 20" fill="none" stroke="#FFFFFF" stroke-width="3"/>
+                            </g>
+                            <g id="heroModelFine" style="display:none">
+                              <path d="M-21 -12 C-61 -46 -113 -87 -165 -116 L-172 -103 C-149 -62 -99 -25 -48 13 C-34 20 -23 9 -21 -12Z" fill="url(#steelTop)" stroke="#53616A" stroke-width="3"/>
+                              <path d="M-157 -106 C-120 -79 -82 -48 -42 -17" fill="none" stroke="#FFFFFF" stroke-width="3"/>
+                              <path d="M21 12 C61 46 113 87 165 116 L172 103 C149 62 99 25 48 -13 C34 -20 23 -9 21 12Z" fill="url(#steelSide)" stroke="#53616A" stroke-width="3"/>
+                              <path d="M157 106 C120 79 82 48 42 17" fill="none" stroke="#FFFFFF" stroke-width="3"/>
+                            </g>
+                            <g id="heroModelCoarse" style="display:none">
+                              <path d="M-24 -17 L-155 -112 L-169 -93 L-153 -79 L-160 -72 L-145 -59 L-152 -52 L-137 -39 L-144 -32 L-129 -18 L-136 -11 L-98 17 L-38 25Z" fill="url(#steelTop)" stroke="#53616A" stroke-width="3"/>
+                              <path d="M-153 -104 L-137 -84 L-121 -71 L-106 -56 L-91 -43 L-76 -28" fill="none" stroke="#FFFFFF" stroke-width="3"/>
+                              <path d="M24 17 L155 112 L169 93 L153 79 L160 72 L145 59 L152 52 L137 39 L144 32 L129 18 L136 11 L98 -17 L38 -25Z" fill="url(#steelSide)" stroke="#53616A" stroke-width="3"/>
+                              <path d="M153 104 L137 84 L121 71 L106 56 L91 43 L76 28" fill="none" stroke="#FFFFFF" stroke-width="3"/>
+                            </g>
+                            <g id="heroModelChutney" style="display:none">
+                              <path d="M-18 -14 C-55 -41 -110 -77 -161 -100 C-177 -107 -188 -94 -180 -77 C-163 -42 -122 -7 -76 12 C-51 22 -29 14 -18 3Z" fill="url(#steelTop)" stroke="#53616A" stroke-width="3"/>
+                              <path d="M-163 -91 C-131 -71 -98 -50 -57 -23" fill="none" stroke="#FFFFFF" stroke-width="3"/>
+                              <path d="M18 14 C55 41 110 77 161 100 C177 107 188 94 180 77 C163 42 122 7 76 -12 C51 -22 29 -14 18 -3Z" fill="url(#steelSide)" stroke="#53616A" stroke-width="3"/>
+                              <path d="M163 91 C131 71 98 50 57 23" fill="none" stroke="#FFFFFF" stroke-width="3"/>
+                            </g>
+                            <g id="heroModelWhipper" style="display:none">
+                              <path d="M-12 -22 L-12 -135 Q-12 -151 0 -151 Q12 -151 12 -135 L12 -22 M-12 22 L-12 135 Q-12 151 0 151 Q12 151 12 135 L12 22" fill="none" stroke="url(#steelSide)" stroke-width="12" stroke-linecap="round"/>
+                              <path d="M-22 -13 L-126 -13 Q-143 -13 -143 0 Q-143 13 -126 13 L-22 13 M22 -13 L126 -13 Q143 -13 143 0 Q143 13 126 13 L22 13" fill="none" stroke="url(#steelTop)" stroke-width="12" stroke-linecap="round"/>
+                              <path d="M-125 -7 L-125 7 M125 -7 L125 7 M-7 -137 L7 -137 M-7 137 L7 137" stroke="#F7FAFC" stroke-width="2"/>
+                              <path d="M-15 -25 L15 -25 L15 25 L-15 25Z" fill="url(#steelSide)" stroke="#52616A" stroke-width="3"/>
+                              <path d="M-10 -25 L-10 25 M10 -25 L10 25" stroke="#FFFFFF" stroke-opacity=".65" stroke-width="2"/>
+                            </g>
+                            <g id="bladePrecisionDetails" pointer-events="none">
+                              <circle cx="0" cy="-31" r="13" fill="none" stroke="#F5F8F9" stroke-opacity=".7" stroke-width="1.2"/>
+                              <circle cx="0" cy="-31" r="10" fill="none" stroke="#34414A" stroke-opacity=".8" stroke-width="1"/>
+                              <path d="M-5 -31H5 M0 -36V-26" stroke="#243039" stroke-width="1.5" stroke-linecap="round"/>
+                              <path d="M-31 6 Q-25 -14 0 -18 Q25 -14 31 6" fill="none" stroke="#F8FBFC" stroke-opacity=".62" stroke-width="1.1"/>
+                              <path d="M-35 9 Q-27 -17 0 -22 Q27 -17 35 9" fill="none" stroke="#26323A" stroke-opacity=".75" stroke-width="1.2"/>
+                              <g fill="url(#hubFace)" stroke="#37434B" stroke-width="1">
+                                <circle cx="-24" cy="-4" r="3.1"/><circle cx="24" cy="-4" r="3.1"/>
+                              </g>
+                              <g stroke="#34414A" stroke-width="1" stroke-linecap="round">
+                                <path d="M-25 -4H-23 M23 -4H25"/>
+                              </g>
+                            </g>
+                            <ellipse cx="0" cy="8" rx="40" ry="22" fill="#25313A" stroke="#46545D" stroke-width="3"/>
+                            <path d="M-34 0 Q-31 -24 0 -27 Q31 -24 34 0 L28 16 Q0 26 -28 16Z" fill="url(#hubFace)" stroke="#46545D" stroke-width="3"/>
+                            <path d="M-27 4 Q0 15 27 4" fill="none" stroke="#F4F7F8" stroke-opacity=".62" stroke-width="1.4"/>
+                            <ellipse cx="0" cy="-19" rx="24" ry="9" fill="url(#steelCutEdge)" stroke="#74818A" stroke-width="2"/>
+                            <ellipse cx="0" cy="-21" rx="19" ry="6.5" fill="none" stroke="#F5F8F9" stroke-opacity=".68" stroke-width="1"/>
+                            <path d="M-16 -23 L-10 -32 L10 -32 L16 -23 L12 -7 L-12 -7Z" fill="url(#hubSteel)" stroke="#59666E" stroke-width="2"/>
+                            <path d="M-11 -29 H11 M-13 -21 H13 M-12 -12 H12" fill="none" stroke="#FFFFFF" stroke-opacity=".28" stroke-width="1"/>
+                            <ellipse cx="0" cy="-31" rx="10" ry="4" fill="url(#hubFace)" stroke="#77848D" stroke-width="1.5"/>
+                            <circle cx="0" cy="-31" r="2" fill="#34414A"/>
+                          </g>
                         </g>
-
-                        <!-- 3. DRY SPICE TUNGSTEN 2-ARM (Heavy Chisel) -->
-                        <g id="heroModelDry" style="display:none;">
-                          <path d="M -22 -16 L -120 -82 L -126 -52 L -32 16 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.5" />
-                          <polygon points="-120,-82 -126,-52 -95,-45 -22,-16" fill="#64748B" />
-                          <path d="M 22 16 L 120 82 L 126 52 L 32 -16 Z" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.5" />
-                          <polygon points="120,82 126,52 95,45 22,16" fill="#64748B" />
-                          <line x1="-120" y1="-82" x2="-32" y2="16" stroke="url(#heroFacetGleam)" stroke-width="2.5" />
-                          <line x1="120" y1="82" x2="32" y2="-16" stroke="url(#heroFacetGleam)" stroke-width="2.5" />
-                        </g>
-
-                        <!-- 4. STAR EMULSIFIER DISC (6-Point Fluted Aerator) -->
-                        <g id="heroModelWhipper" style="display:none;">
-                          <polygon points="0,-115 28,-50 100,-60 55,-10 90,45 30,35 0,115 -28,50 -100,60 -55,10 -90,-45 -30,-35" fill="url(#heroBladeSteel)" stroke="#0F172A" stroke-width="1.2" />
-                          <circle cx="0" cy="-65" r="5" fill="#0F172A" />
-                          <circle cx="56" cy="-32" r="5" fill="#0F172A" />
-                          <circle cx="56" cy="32" r="5" fill="#0F172A" />
-                          <circle cx="0" cy="65" r="5" fill="#0F172A" />
-                          <circle cx="-56" cy="32" r="5" fill="#0F172A" />
-                          <circle cx="-56" cy="-32" r="5" fill="#0F172A" />
-                          <circle cx="0" cy="0" r="48" fill="none" stroke="url(#heroFacetGleam)" stroke-width="1.5" stroke-dasharray="4,4" />
-                        </g>
-
-                        <!-- Central Hex Locking Nut & Rotor Hub -->
-                        <circle cx="0" cy="0" r="28" fill="#1E242E" stroke="#475569" stroke-width="2" />
-                        <polygon points="0,-18 15,-9 15,9 0,18 -15,9 -15,-9" fill="#E2E8F0" stroke="#0F172A" stroke-width="1.5" />
-                        <circle cx="0" cy="0" r="12" fill="#070B14" stroke="#12B5AE" stroke-width="1.5" />
-                        <circle cx="0" cy="0" r="5" fill="#38BDF8" />
-                      </g>
-                    </g>
-                  </svg>
+                      </svg>
+                    </div>
+                    <div class="blade-photo-caption">
+                      <span id="studioPhotoCaption">Wet-grind rotor · machined-metal concept visualization</span>
+                      <span>Concept geometry · not to scale</span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -5338,8 +5967,8 @@
                 </div>
 
                 <div class="blade-spec-pill">
-                  <span id="studioBladeTitle" style="font-weight:700;color:var(--teal);">Universal 4-arm Quad-Edge</span>
-                  <span id="studioBladeSub" style="color:var(--text-dim);">SUS-304 Hardened Stainless Steel • Cap: Speed 5</span>
+                  <span id="studioBladeTitle" style="font-weight:700;color:var(--teal);">Wet Grind Blade</span>
+                  <span id="studioBladeSub" style="color:var(--text-dim);">Swept 4-arm profile · raised cutting-edge study</span>
                 </div>
               </div>
             </div>
@@ -5540,17 +6169,30 @@
 
           <!-- TAB 4: ENVIRONMENT -->
           <div class="m-tab-content grid-env" id="tabContentEnv">
+            <div class="env-card env-control-card">
+              <label for="inputAmbientTemp">Room temperature <output id="ambientTempValue">28 °C</output></label>
+              <input type="range" id="inputAmbientTemp" min="18" max="40" step="1" value="28">
+            </div>
+            <div class="env-card env-control-card">
+              <label for="selAirflow">Cooling airflow</label>
+              <select id="selAirflow">
+                <option value="0.8">Still air</option>
+                <option value="1" selected>Natural airflow</option>
+                <option value="1.25">Ventilated</option>
+                <option value="1.5">Strong airflow</option>
+              </select>
+            </div>
             <div class="env-card">
-              <span style="font-size:12px;font-weight:500;">Warm Jar (+6 °C)</span>
+              <label for="chkWarmJar">Pre-warmed jar (+6 °C)</label>
               <input type="checkbox" id="chkWarmJar" title="Simulate Pre-heated Jar">
             </div>
             <div class="env-card">
-              <span style="font-size:12px;font-weight:500;">Load Cell Installed</span>
+              <label for="chkLoadCellInstalled">Load cell installed</label>
               <input type="checkbox" id="chkLoadCellInstalled" checked title="Hardware Base Load Cell">
             </div>
             <div class="env-card">
-              <label for="selJarVisualMode" style="font-size:12px;font-weight:500;">Jar View</label>
-              <select id="selJarVisualMode" style="height:24px;font-size:12px;padding:0 4px;background:var(--panel-2);color:var(--text);border:1px solid var(--border);border-radius:4px;">
+              <label for="selJarVisualMode">Jar rendering</label>
+              <select id="selJarVisualMode">
                 <option value="opaque">Matte Finish</option>
                 <option value="xray">X-Ray Transparent</option>
                 <option value="cutaway">Engineering Cutaway</option>
@@ -5560,6 +6202,14 @@
 
           <!-- TAB 5: ADVANCED -->
           <div class="m-tab-content grid-adv" id="tabContentAdv">
+            <div class="env-card env-control-card">
+              <label for="inputSupplyVoltage">Supply voltage <output id="supplyVoltageValue">230 V</output></label>
+              <input type="range" id="inputSupplyVoltage" min="190" max="250" step="5" value="230">
+            </div>
+            <div class="env-card env-control-card">
+              <label for="inputBladeWear">Blade wear <output id="bladeWearValue">0%</output></label>
+              <input type="range" id="inputBladeWear" min="0" max="40" step="5" value="0">
+            </div>
             <button type="button" class="btn-adv-feature" id="btnLaunchExperiment">
               <span>🔬 Experiment Mode</span>
             </button>
@@ -6090,10 +6740,10 @@
                   <!-- Row 3 & 4: Progress Bar & Status Labels -->
                   <div class="oled-progress-wrap">
                     <div class="oled-progress-track">
-                      <div class="oled-progress-fill" id="dispOledProgressFill" style="width: 2%;"></div>
+                      <div class="oled-progress-fill" id="dispOledProgressFill" style="width: 0%;"></div>
                     </div>
                     <div class="oled-progress-labels">
-                      <span id="dispOledProgressText">Progress: 2%</span>
+                      <span id="dispOledProgressText">Progress: 0%</span>
                       <span id="dispOledPausesText">Pauses: 0</span>
                     </div>
                   </div>
@@ -6168,23 +6818,23 @@
                 <div class="disp-metrics-grid">
                   <div class="disp-metric-tile">
                     <span class="disp-metric-label">Actual RPM</span>
-                    <span class="disp-metric-val" id="dispCardRpm">10,800</span>
+                    <span class="disp-metric-val" id="dispCardRpm">0</span>
                     <span class="disp-metric-sub">Closed-Loop Hall Feedback</span>
                   </div>
                   <div class="disp-metric-tile">
                     <span class="disp-metric-label">Food Temp</span>
-                    <span class="disp-metric-val" id="dispCardTemp">31.4 °C</span>
+                    <span class="disp-metric-val" id="dispCardTemp">28.0 °C</span>
                     <span class="disp-metric-sub">Lag-Compensated Digital Est.</span>
                   </div>
                   <div class="disp-metric-tile">
                     <span class="disp-metric-label">Torque Load</span>
-                    <span class="disp-metric-val" id="dispCardTorque">62%</span>
-                    <span class="disp-metric-sub">480W Current Draw</span>
+                    <span class="disp-metric-val" id="dispCardTorque">0%</span>
+                    <span class="disp-metric-sub" id="dispCardTorqueSub">0 W · 0.0 A @ 230 V</span>
                   </div>
                   <div class="disp-metric-tile">
                     <span class="disp-metric-label">Thermal Delta</span>
-                    <span class="disp-metric-val" id="dispCardDelta">+0.22 °C/s</span>
-                    <span class="disp-metric-sub">Predictive Guard Armed</span>
+                    <span class="disp-metric-val" id="dispCardDelta">+0.00 °C/s</span>
+                    <span class="disp-metric-sub" id="dispCardDeltaSub">Ambient baseline: 28 °C</span>
                   </div>
                 </div>
               </div>
@@ -6525,6 +7175,12 @@
       simSpeedMultiplier: 10,
       trueTemp: CONFIG.ambient,
       sensorTemp: CONFIG.ambient,
+      ambientTempC: CONFIG.ambient,
+      airflowFactor: 1.0,
+      supplyVoltage: 230,
+      bladeWearPercent: 0,
+      loadCellInstalled: true,
+      thermalRateCps: 0,
       limit: 34,
       progress: 0.0,
       pausesCount: 0,
@@ -6548,10 +7204,11 @@
       // 3D Blade Studio Gimbal Rotations & Dynamics
       bladeRotX: 18,
       bladeRotY: 0,
+      bladeZoom: 1.0,
       isGimbalDragging: false,
       gimbalStartX: 0,
       gimbalStartY: 0,
-      activeBladeModel: 'universal',
+      activeBladeModel: 'wet',
       bladeSlowMotion: false,
       bladeAutoOrbit: false,
       bladeStudioSpin: false,
@@ -6872,7 +7529,7 @@
       let targetVelocity = 0;
       const isSpinning = (SIM.motorOn && SIM.status === 'Grinding') || SIM.bladeStudioSpin;
       if (isSpinning) {
-        targetVelocity = 800 + (SIM.speed * 650);
+        targetVelocity = (800 + (SIM.speed * 650)) * (SIM.supplyVoltage / 230) * (1 - SIM.bladeWearPercent / 500);
         if (SIM.bladeSlowMotion) {
           targetVelocity *= 0.08; // Stroboscopic Slow-Motion Mode (0.08x)
         }
@@ -6889,14 +7546,14 @@
       if (SIM.bladeAutoOrbit) {
         SIM.bladeRotY = (SIM.bladeRotY + 24 * dt) % 360;
         const gimEl = document.getElementById('blade3dGimbal');
-        if (gimEl) gimEl.style.transform = `rotateX(${SIM.bladeRotX}deg) rotateY(${SIM.bladeRotY}deg)`;
+        if (gimEl) gimEl.style.transform = `rotateX(${SIM.bladeRotX}deg) rotateY(${SIM.bladeRotY}deg) scale(${SIM.bladeZoom})`;
       }
 
       const spinGroup = document.getElementById('bladeSpinGroup');
       const heroSub = document.getElementById('heroSpinSubGroup');
-      const blurDisc = document.getElementById('bladeSpinBlur');
       const heroBlur = document.getElementById('heroBladeSpinBlur');
       const vortexRibbons = document.getElementById('heroVortexRibbons');
+      const studioPhotoStatus = document.getElementById('studioPhotoStatus');
 
       if (bladeAngularVelocity > 0.1) {
         bladeCurrentAngle = (bladeCurrentAngle + bladeAngularVelocity * dt) % 360;
@@ -6907,23 +7564,19 @@
           if (spinGroup.style.transform) spinGroup.style.transform = '';
           if (spinGroup.style.transformOrigin) spinGroup.style.transformOrigin = '';
         }
-        if (heroSub) {
-          heroSub.setAttribute('transform', `rotate(${rotVal}, 0, 0)`);
-          if (heroSub.style.transform) heroSub.style.transform = '';
-          if (heroSub.style.transformOrigin) heroSub.style.transformOrigin = '';
-        }
+        if (heroSub) heroSub.setAttribute('transform', `rotate(${rotVal}, 0, 0)`);
 
         // Motion blur disc opacity scales delicately with blade speed
         const blurOpacity = SIM.bladeSlowMotion ? 0.04 : Math.min(0.32, (bladeAngularVelocity / 4100) * 0.36);
-        if (blurDisc) blurDisc.setAttribute('opacity', blurOpacity.toFixed(2));
-        if (heroBlur) heroBlur.setAttribute('opacity', blurOpacity.toFixed(2));
+        if (heroBlur) heroBlur.style.opacity = blurOpacity.toFixed(2);
+        if (studioPhotoStatus) studioPhotoStatus.textContent = SIM.bladeSlowMotion ? 'SLOW MOTION' : 'SPINNING';
 
         // Aerodynamic vortex ribbons
         if (vortexRibbons) {
           if (SIM.bladeVortexVisible) {
             vortexRibbons.style.display = 'block';
-            vortexRibbons.setAttribute('opacity', Math.min(0.85, 0.2 + (bladeAngularVelocity / 4100) * 0.65).toFixed(2));
-            vortexRibbons.setAttribute('transform', `rotate(${(-rotVal * 0.6).toFixed(1)}, 0, 0)`);
+            vortexRibbons.style.opacity = Math.min(0.85, 0.2 + (bladeAngularVelocity / 4100) * 0.65).toFixed(2);
+            vortexRibbons.style.transform = `rotate(${(-rotVal * 0.6).toFixed(1)}deg)`;
           } else {
             vortexRibbons.style.display = 'none';
           }
@@ -6955,9 +7608,13 @@
           pGroup.innerHTML = pSvg;
         }
       } else {
-        if (blurDisc) blurDisc.setAttribute('opacity', '0');
-        if (heroBlur) heroBlur.setAttribute('opacity', '0');
-        if (vortexRibbons) vortexRibbons.setAttribute('opacity', '0');
+        if (heroBlur) heroBlur.style.opacity = '0';
+        if (heroSub) heroSub.setAttribute('transform', `rotate(${bladeCurrentAngle.toFixed(1)}, 0, 0)`);
+        if (studioPhotoStatus) studioPhotoStatus.textContent = 'STATIONARY';
+        if (vortexRibbons) {
+          vortexRibbons.style.display = SIM.bladeVortexVisible ? 'block' : 'none';
+          vortexRibbons.style.opacity = SIM.bladeVortexVisible ? '0.16' : '0';
+        }
         const pGroup = document.getElementById('cutawayParticlesGroup');
         if (pGroup && pGroup.innerHTML) pGroup.innerHTML = '';
       }
@@ -6965,7 +7622,7 @@
       // Live Telemetry updates in 3D Blade Studio
       const rpmVal = Math.round(bladeAngularVelocity * 4.2);
       const tipVal = (bladeAngularVelocity * 0.024).toFixed(1);
-      const cutsPerRev = (SIM.activeBladeModel === 'dry') ? 2 : ((SIM.activeBladeModel === 'whipper') ? 6 : 4);
+      const cutsPerRev = SIM.activeBladeModel === 'whipper' ? 4 : (['dry', 'fine', 'coarse', 'chutney'].includes(SIM.activeBladeModel) ? 2 : 4);
       const cutsVal = Math.round((rpmVal / 60) * cutsPerRev);
 
       const rEl = document.getElementById('studioTelemRpm');
@@ -7055,6 +7712,30 @@
       });
     }
 
+    function getMotorRpm(speed = SIM.speed) {
+      const voltageFactor = Math.max(0.82, Math.min(1.09, SIM.supplyVoltage / 230));
+      const wearFactor = 1 - (SIM.bladeWearPercent / 500);
+      return Math.round(speed * 3600 * voltageFactor * wearFactor);
+    }
+
+    function getAttachmentCurrentFactor() {
+      const attachment = CONFIG.ATTACHMENTS.find(item => item.id === SIM.attachmentId);
+      return attachment ? attachment.currentFactor : 1;
+    }
+
+    function getMotorPowerWatts(speed = SIM.speed) {
+      const baseWatts = CONFIG.powerWatts[speed] || 450;
+      const batchFactor = SIM.batchWeight / 350;
+      const wearFactor = 1 + (SIM.bladeWearPercent / 400);
+      return Math.round(baseWatts * SIM.motorLoadFactor * batchFactor * wearFactor * getAttachmentCurrentFactor());
+    }
+
+    function getMotorSpeedCap() {
+      if (SIM.jar === 'jar1') return CONFIG.jar1SpeedCap;
+      const attachment = CONFIG.ATTACHMENTS.find(item => item.id === SIM.attachmentId);
+      return attachment ? attachment.speedCap : 5;
+    }
+
     function simulationTick() {
       const dtSim = (CONFIG.tickIntervalMs / 1000) * SIM.simSpeedMultiplier;
 
@@ -7077,7 +7758,7 @@
         stopMotorRun();
         return;
       }
-      if (SIM.simulateDryRun && SIM.batchWeight < 20) {
+      if (SIM.simulateDryRun && SIM.loadCellInstalled && SIM.batchWeight < 20) {
         SIM.activeFaultCode = 'E6';
         setSystemStatus('Fault');
         stopMotorRun();
@@ -7085,26 +7766,28 @@
       }
 
       // 2. Physics & Thermal Heat Equation
-      const ambient = CONFIG.ambient + (document.getElementById('chkWarmJar')?.checked ? CONFIG.warmJarOffset : 0);
+      const ambient = SIM.ambientTempC + (document.getElementById('chkWarmJar')?.checked ? CONFIG.warmJarOffset : 0);
 
       if (SIM.motorOn) {
         SIM.elapsedSimSec += dtSim;
-        const speedPowerFactor = SIM.speed * 0.45;
-        const loadFactor = SIM.motorLoadFactor;
+        const speedPowerFactor = SIM.speed * 0.45 * (SIM.supplyVoltage / 230);
+        const loadFactor = SIM.motorLoadFactor * getAttachmentCurrentFactor() * (1 + SIM.bladeWearPercent / 400);
         const heatRate = CONFIG.baseHeatFactor * speedPowerFactor * loadFactor;
-        const coolingRate = CONFIG.coolingCoeff * (SIM.trueTemp - ambient);
+        const coolingRate = CONFIG.coolingCoeff * SIM.airflowFactor * (SIM.trueTemp - ambient);
+        const previousTemp = SIM.trueTemp;
         SIM.trueTemp += (heatRate - coolingRate) * dtSim;
+        SIM.thermalRateCps = (SIM.trueTemp - previousTemp) / dtSim;
 
         // Power consumption model (Watts)
-        const baseW = CONFIG.powerWatts[SIM.speed] || 450;
-        SIM.activeWatts = Math.round(baseW * loadFactor * (SIM.batchWeight / 350));
+        SIM.activeWatts = getMotorPowerWatts();
         
         // Battery discharge calculation based on active wattage
         const drainPercent = ((SIM.activeWatts * dtSim) / 3600 / SIM.batteryCapacityWh) * 100;
         SIM.batteryPercent = Math.max(2.0, SIM.batteryPercent - drainPercent);
 
         // Texture progress advancement
-        const progressIncrement = (dtSim / 28) * (SIM.speed / 2) * CONFIG.textureMultipliers[SIM.texture];
+        const wearEfficiency = Math.max(0.6, 1 - SIM.bladeWearPercent / 100);
+        const progressIncrement = (dtSim / 28) * (SIM.speed / 2) * CONFIG.textureMultipliers[SIM.texture] * wearEfficiency;
         SIM.progress = Math.min(100.0, SIM.progress + progressIncrement);
 
         // Check if finished (100% progress)
@@ -7121,8 +7804,10 @@
       } else {
         // Standby power draw (2W) and natural convective cooling
         SIM.activeWatts = 2;
-        const coolDown = CONFIG.coolingCoeff * (SIM.trueTemp - ambient) * dtSim;
+        const previousTemp = SIM.trueTemp;
+        const coolDown = CONFIG.coolingCoeff * SIM.airflowFactor * (SIM.trueTemp - ambient) * dtSim;
         SIM.trueTemp = Math.max(ambient, SIM.trueTemp - coolDown);
+        SIM.thermalRateCps = (SIM.trueTemp - previousTemp) / dtSim;
         if (SIM.batteryPercent < 100.0) {
           SIM.batteryPercent = Math.min(100.0, SIM.batteryPercent + 0.12 * dtSim);
         }
@@ -7189,7 +7874,7 @@
       playChime('done');
 
       // P2-5: Post-run cooling advisory calculation
-      const deltaT = Math.max(0, SIM.sensorTemp - CONFIG.ambient);
+      const deltaT = Math.max(0, SIM.sensorTemp - SIM.ambientTempC);
       const estCooldownMins = Math.max(1, Math.round(deltaT / 1.5));
       const advisoryText = `Cool-down: ~${estCooldownMins} min to ambient before next batch`;
       const advNote = document.getElementById('screenAdvisoryNote');
@@ -7213,7 +7898,7 @@
         peakTemp: SIM.lastRunPeakTemp,
         limit: SIM.limit,
         batchWeight: SIM.batchWeight,
-        energyKwh: Number(((CONFIG.powerWatts[SIM.speed] * (SIM.elapsedSimSec / 3600)) / 1000).toFixed(3)),
+        energyKwh: Number(((SIM.activeWatts * (SIM.elapsedSimSec / 3600)) / 1000).toFixed(3)),
         estFineFraction: estFine,
         measuredFineFraction: null,
         telemetry: JSON.parse(JSON.stringify(SIM.telemetry))
@@ -7346,7 +8031,9 @@
     function setMotorSpeed(spd) {
       playKnobClick();
       // Allow dynamic speed adjustment at any time, including while actively grinding!
-      SIM.speed = Math.max(1, Math.min(5, spd));
+      const speedCap = getMotorSpeedCap();
+      SIM.speed = Math.max(1, Math.min(speedCap, spd));
+      if (spd > speedCap) showToast(`Speed limited to level ${speedCap} for the fitted jar and attachment.`);
       document.querySelectorAll('.speed-tick').forEach(tick => {
         const val = parseInt(tick.getAttribute('data-speed'), 10);
         tick.classList.toggle('active', val <= SIM.speed);
@@ -7362,6 +8049,11 @@
       if (knobWrap) knobWrap.setAttribute('aria-valuenow', SIM.speed);
       const chip = document.getElementById('liveChipSpeed');
       if (chip) chip.textContent = `Speed ${SIM.speed}`;
+      const jarCap = document.getElementById('stageJarIndicator');
+      if (jarCap) jarCap.textContent = `Cap: Speed ${speedCap}`;
+      document.querySelectorAll('.disp-ctrl-btn[data-disp-spd]').forEach(btn => {
+        btn.classList.toggle('active', Number(btn.getAttribute('data-disp-spd')) === SIM.speed);
+      });
 
       // If motor is actively running / grinding, update acoustic pitch & sensor telemetry in real time
       if (SIM.motorOn) {
@@ -7420,20 +8112,22 @@
       if (sTrue) sTrue.textContent = `True: ${SIM.trueTemp.toFixed(1)} °C`;
 
       const sRpm = document.getElementById('valSensorRpm');
-      if (sRpm) sRpm.textContent = SIM.motorOn ? `${SIM.speed * 3600} RPM` : '0 RPM';
+      if (sRpm) sRpm.textContent = SIM.motorOn ? `${getMotorRpm().toLocaleString()} RPM` : '0 RPM';
+      const targetSpeed = document.getElementById('subSensorTargetSpeed');
+      if (targetSpeed) targetSpeed.textContent = `Level: ${SIM.speed} · cap ${getMotorSpeedCap()}`;
 
       const sAmps = document.getElementById('valSensorAmps');
-      const amps = SIM.motorOn ? (CONFIG.powerWatts[SIM.speed] / 230 * SIM.motorLoadFactor).toFixed(1) : '0.0';
+      const amps = SIM.motorOn ? (SIM.activeWatts / SIM.supplyVoltage).toFixed(1) : '0.0';
       if (sAmps) sAmps.textContent = `${amps} A`;
       const sWatts = document.getElementById('subSensorWatts');
-      if (sWatts) sWatts.textContent = SIM.motorOn ? `${Math.round(CONFIG.powerWatts[SIM.speed] * SIM.motorLoadFactor)} W (est.)` : '0 W (est.)';
+      if (sWatts) sWatts.textContent = `${SIM.motorOn ? SIM.activeWatts : 2} W (est.)`;
 
       const sVib = document.getElementById('valSensorVib');
-      const vib = SIM.motorOn ? (0.04 + SIM.speed * 0.08 + (SIM.simulateHighVib ? 0.8 : 0)).toFixed(2) : '0.02';
+      const vib = SIM.motorOn ? (0.04 + SIM.speed * 0.08 + SIM.bladeWearPercent * 0.005 + (SIM.simulateHighVib ? 0.8 : 0)).toFixed(2) : '0.02';
       if (sVib) sVib.textContent = `${vib} g`;
 
       const sWeight = document.getElementById('valSensorWeight');
-      if (sWeight) sWeight.textContent = `${SIM.batchWeight} g`;
+      if (sWeight) sWeight.textContent = SIM.loadCellInstalled ? `${SIM.batchWeight} g` : 'Unavailable';
 
       // Keep digital motor display concept in live sync
       updateDigitalMotorDisplay();
@@ -7499,9 +8193,11 @@
         const cTemp = document.getElementById('dispCardTemp');
         const cTorque = document.getElementById('dispCardTorque');
         const cDelta = document.getElementById('dispCardDelta');
+        const cTorqueSub = document.getElementById('dispCardTorqueSub');
+        const cDeltaSub = document.getElementById('dispCardDeltaSub');
 
         let activeSpd = SIM.speed;
-        let activeRpm = SIM.motorOn ? SIM.speed * 3600 : 0;
+        let activeRpm = SIM.motorOn ? getMotorRpm() : 0;
         let activeTemp = SIM.sensorTemp;
         let activeProg = SIM.progress;
         let activeStatus = SIM.status;
@@ -7519,7 +8215,7 @@
           safetyText = 'Standby Safe';
         } else if (stateToUse === 'grinding') {
           activeSpd = Math.max(3, SIM.speed);
-          activeRpm = activeSpd * 3600;
+          activeRpm = getMotorRpm(activeSpd);
           activeStatus = 'GRINDING';
           statusBadgeClass = 'grinding';
           haloClass = 'halo-grinding';
@@ -7612,11 +8308,11 @@
         if (oledRpm) {
           oledRpm.textContent = activeRpm > 0 ? `${activeRpm.toLocaleString()} RPM` : '0 RPM';
         }
-        const activeWatts = Math.round(CONFIG.powerWatts[activeSpd] * (activeRpm > 0 ? (SIM.motorLoadFactor || 1) : 0));
+        const activeWatts = activeRpm > 0 ? getMotorPowerWatts(activeSpd) : 0;
         if (oledWatts) {
           oledWatts.textContent = `${activeWatts} W`;
         }
-        const activeCurrent = activeRpm > 0 ? ((CONFIG.powerWatts[activeSpd] / 230) * (SIM.motorLoadFactor || 1)).toFixed(1) : '0.0';
+        const activeCurrent = activeRpm > 0 ? (activeWatts / SIM.supplyVoltage).toFixed(1) : '0.0';
         if (oledCurrent) {
           oledCurrent.textContent = `${activeCurrent} A`;
         }
@@ -7676,8 +8372,10 @@
         // Metrics cards on right
         if (cRpm) cRpm.textContent = activeRpm > 0 ? activeRpm.toLocaleString() : '0';
         if (cTemp) cTemp.textContent = `${activeTemp.toFixed(1)} °C`;
-        if (cTorque) cTorque.textContent = activeRpm > 0 ? `${Math.round((SIM.motorLoadFactor || 1) * 65)}%` : '0%';
-        if (cDelta) cDelta.textContent = activeRpm > 0 ? `+0.22 °C/s` : 'Cooling (Ambient)';
+        if (cTorque) cTorque.textContent = activeRpm > 0 ? `${Math.round(Math.min(100, (SIM.motorLoadFactor || 1) * 65 + SIM.bladeWearPercent * 0.25))}%` : '0%';
+        if (cTorqueSub) cTorqueSub.textContent = `${activeWatts} W · ${activeCurrent} A @ ${SIM.supplyVoltage} V`;
+        if (cDelta) cDelta.textContent = `${SIM.thermalRateCps >= 0 ? '+' : ''}${SIM.thermalRateCps.toFixed(2)} °C/s`;
+        if (cDeltaSub) cDeltaSub.textContent = `Ambient baseline: ${SIM.ambientTempC} °C`;
       } catch (err) {
         // Silently absorb rendering quirks on hidden views
       }
@@ -7711,7 +8409,7 @@
         ctx.clearRect(0, 0, w, h);
 
         // Auto-fit Y-axis range: [ambient - 1, limit + 2] (A8 FIX)
-        const yMin = CONFIG.ambient - 1.0;
+        const yMin = SIM.ambientTempC - 1.0;
         const yMax = Math.max(yMin + 4, SIM.limit + 2.0);
         const padLeft = 26;
         const padRight = 8;
@@ -8983,10 +9681,10 @@
        INITIALIZATION & EVENT BINDINGS
        ------------------------------------------------------------- */
     function initApp() {
-      // 1. Unified View Switcher Handler (Split | Machine | Phone | Display Concept)
+      // 1. Unified View Switcher Handler (Machine | Phone | Display Concept)
       function setAppViewMode(mode) {
         document.body.classList.remove(
-          'view-mode-split', 'view-mode-machine', 'view-mode-phone', 'view-mode-display',
+          'view-mode-machine', 'view-mode-phone', 'view-mode-display',
           'mobile-mode-machine', 'mobile-mode-app', 'mobile-mode-display'
         );
         document.body.classList.add(`view-mode-${mode}`);
@@ -9154,10 +9852,16 @@
       const btnStudioTab = document.getElementById('btnTabBladeStudio');
       const jarStageCont = document.getElementById('stageJarContainer');
       const studioStageCont = document.getElementById('stageStudioContainer');
+      const machineTopGrid = document.querySelector('.machine-top-grid');
+      const jarStageCard = document.getElementById('jarStageCard');
 
       btnJarTab?.addEventListener('click', () => {
         btnJarTab.classList.add('active');
         btnStudioTab?.classList.remove('active');
+        btnJarTab.setAttribute('aria-selected', 'true');
+        btnStudioTab?.setAttribute('aria-selected', 'false');
+        machineTopGrid?.classList.remove('studio-active');
+        jarStageCard?.classList.remove('studio-active');
         if (jarStageCont) jarStageCont.style.display = 'flex';
         if (studioStageCont) studioStageCont.style.display = 'none';
       });
@@ -9165,30 +9869,49 @@
       btnStudioTab?.addEventListener('click', () => {
         btnStudioTab.classList.add('active');
         btnJarTab?.classList.remove('active');
+        btnStudioTab.setAttribute('aria-selected', 'true');
+        btnJarTab?.setAttribute('aria-selected', 'false');
+        machineTopGrid?.classList.add('studio-active');
+        jarStageCard?.classList.add('studio-active');
         if (jarStageCont) jarStageCont.style.display = 'none';
         if (studioStageCont) studioStageCont.style.display = 'flex';
+        updateGimbalTransform();
       });
 
-      // Jar Visual Mode (Matte, X-Ray, Cutaway)
+      // Jar Visual Mode
       function setJarVisualMode(mode) {
+        const modeButtonIds = {
+          opaque: 'btnJarMatte',
+          xray: 'btnJarXRay',
+          cutaway: 'btnJarCutaway'
+        };
+        if (!modeButtonIds[mode]) {
+          console.error(`Unsupported jar visual mode: ${mode}`);
+          return;
+        }
         const jarSvg = document.getElementById('jarMainSvg');
         const cutaway = document.getElementById('cutawayContainer');
         const cone = document.getElementById('svgJarCone');
         const cyl = document.getElementById('svgJarCylinder');
 
-        document.querySelectorAll('.btn-view-mode').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.btn-view-mode').forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-checked', 'false');
+        });
+        const activeButton = document.getElementById(modeButtonIds[mode]);
+        activeButton?.classList.add('active');
+        activeButton?.setAttribute('aria-checked', 'true');
+        if (jarSvg) jarSvg.setAttribute('aria-hidden', 'false');
+
         if (mode === 'opaque') {
-          document.getElementById('btnJarMatte')?.classList.add('active');
           if (cutaway) cutaway.style.display = 'none';
           if (cone) cone.setAttribute('fill', 'url(#jarGunmetal)');
           if (cyl) cyl.setAttribute('fill', 'url(#jarGunmetal)');
         } else if (mode === 'xray') {
-          document.getElementById('btnJarXRay')?.classList.add('active');
           if (cutaway) cutaway.style.display = 'none';
           if (cone) cone.setAttribute('fill', 'rgba(43, 47, 54, 0.4)');
           if (cyl) cyl.setAttribute('fill', 'rgba(43, 47, 54, 0.4)');
         } else if (mode === 'cutaway') {
-          document.getElementById('btnJarCutaway')?.classList.add('active');
           if (cutaway) cutaway.style.display = 'block';
           if (cone) cone.setAttribute('fill', 'url(#jarGunmetal)');
           if (cyl) cyl.setAttribute('fill', 'url(#jarGunmetal)');
@@ -9250,7 +9973,14 @@
             b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
           });
           document.querySelectorAll('.m-tab-content').forEach(c => c.classList.remove('active'));
-          const target = document.getElementById('tabContent' + tab.charAt(0).toUpperCase() + tab.slice(1));
+          const tabContentIds = {
+            setup: 'tabContentSetup',
+            sensors: 'tabContentSensors',
+            faults: 'tabContentFaults',
+            environment: 'tabContentEnv',
+            advanced: 'tabContentAdv'
+          };
+          const target = document.getElementById(tabContentIds[tab]);
           if (target) target.classList.add('active');
         });
       });
@@ -9551,6 +10281,12 @@
         if (p) {
           SIM.currentDish = p.name;
           SIM.limit = p.limit;
+          SIM.attachmentId = p.requiredAttachmentId || SIM.attachmentId;
+          const attachmentSelect = document.getElementById('selAttachment');
+          if (attachmentSelect) attachmentSelect.value = String(SIM.attachmentId);
+          const jarSelect = document.getElementById('selJarFitted');
+          if (jarSelect) jarSelect.value = p.jar || 'jar2';
+          setJarMode(p.jar || 'jar2', true);
           setMotorSpeed(p.speed);
           setMotorTexture(p.texture);
           const title = document.getElementById('screenDishTitle');
@@ -9560,6 +10296,76 @@
           updateMachineDisplay();
           updateAppLiveDisplay();
         }
+      });
+
+      document.getElementById('selJarFitted')?.addEventListener('change', (e) => {
+        setJarMode(e.target.value, false);
+        setMotorSpeed(SIM.speed);
+        updateMachineDisplay();
+        updateAppLiveDisplay();
+      });
+
+      document.getElementById('selAttachment')?.addEventListener('change', (e) => {
+        SIM.attachmentId = Number(e.target.value);
+        setBladeForAttachment();
+        setMotorSpeed(SIM.speed);
+        updateMachineDisplay();
+        updateAppLiveDisplay();
+      });
+
+      document.getElementById('selMotorLoad')?.addEventListener('change', (e) => {
+        SIM.motorLoadFactor = Number(e.target.value);
+        updateMachineDisplay();
+      });
+
+      document.getElementById('inputBatchWeight')?.addEventListener('change', (e) => {
+        const weight = Number(e.target.value);
+        if (!Number.isFinite(weight)) {
+          e.target.value = String(SIM.batchWeight);
+          showToast('Batch weight must be a number from 20 to 1000 g.');
+          return;
+        }
+        SIM.batchWeight = Math.max(20, Math.min(1000, weight));
+        e.target.value = String(SIM.batchWeight);
+        updateMachineDisplay();
+      });
+
+      document.getElementById('selSimSpeed')?.addEventListener('change', (e) => {
+        SIM.simSpeedMultiplier = Number(e.target.value);
+      });
+
+      document.getElementById('inputAmbientTemp')?.addEventListener('input', (e) => {
+        SIM.ambientTempC = Number(e.target.value);
+        const value = document.getElementById('ambientTempValue');
+        if (value) value.textContent = `${SIM.ambientTempC} °C`;
+        updateMachineDisplay();
+        updateAppLiveDisplay();
+        renderLiveChart();
+      });
+
+      document.getElementById('selAirflow')?.addEventListener('change', (e) => {
+        SIM.airflowFactor = Number(e.target.value);
+      });
+
+      document.getElementById('chkWarmJar')?.addEventListener('change', updateMachineDisplay);
+      document.getElementById('chkLoadCellInstalled')?.addEventListener('change', (e) => {
+        SIM.loadCellInstalled = e.target.checked;
+        updateMachineDisplay();
+      });
+
+      document.getElementById('inputSupplyVoltage')?.addEventListener('input', (e) => {
+        SIM.supplyVoltage = Number(e.target.value);
+        const value = document.getElementById('supplyVoltageValue');
+        if (value) value.textContent = `${SIM.supplyVoltage} V`;
+        updateMachineDisplay();
+        updateAppLiveDisplay();
+      });
+
+      document.getElementById('inputBladeWear')?.addEventListener('input', (e) => {
+        SIM.bladeWearPercent = Number(e.target.value);
+        const value = document.getElementById('bladeWearValue');
+        if (value) value.textContent = `${SIM.bladeWearPercent}%`;
+        updateMachineDisplay();
       });
 
       // Send Preset to machine
@@ -9599,57 +10405,122 @@
 
       // 3D Blade Studio Architecture Models & Camera Presets
       const bladeModels = {
-        universal: {
-          title: 'Universal 4-arm Quad-Edge',
-          sub: 'SUS-304 Hardened Stainless Steel • Cap: Speed 5',
-          groupId: 'heroModelUniversal'
-        },
         wet: {
-          title: 'Wet Batter Hydro-Flow Pro',
-          sub: 'Curved Aerodynamic Lift Winglets • Cap: Speed 5',
-          groupId: 'heroModelWet'
+          title: 'Wet Grind Blade',
+          sub: 'Swept 4-arm profile · raised cutting-edge study',
+          caption: 'Wet-grind rotor · machined-metal concept visualization',
+          groupId: 'heroModelWet',
+          jarGroupId: 'jarBladeWet'
         },
         dry: {
-          title: 'Dry Spice Tungsten Carbide 2-Arm',
-          sub: 'Heavy Tungsten-Carbide Micro-Chisel • Cap: Speed 4',
-          groupId: 'heroModelDry'
+          title: 'Dry Grind Blade',
+          sub: 'Offset 2-wing profile · stepped edge study',
+          caption: 'Dry-grind rotor · faceted edge concept visualization',
+          groupId: 'heroModelDry',
+          jarGroupId: 'jarBladeDry'
+        },
+        fine: {
+          title: 'Fine Grind Blade',
+          sub: 'Opposed bevel profile · narrow cutting-edge study',
+          caption: 'Fine-grind rotor · paired bevel concept visualization',
+          groupId: 'heroModelFine',
+          jarGroupId: 'jarBladeFine'
+        },
+        coarse: {
+          title: 'Coarse Grind Blade',
+          sub: 'Stepped paddle profile · blunt impact-edge study',
+          caption: 'Coarse-grind rotor · notched paddle concept visualization',
+          groupId: 'heroModelCoarse',
+          jarGroupId: 'jarBladeCoarse'
+        },
+        chutney: {
+          title: 'Chutney & Paste Blade',
+          sub: 'Curved 2-wing profile · low-lift shear-edge study',
+          caption: 'Chutney rotor · swept shear concept visualization',
+          groupId: 'heroModelChutney',
+          jarGroupId: 'jarBladeChutney'
         },
         whipper: {
-          title: 'Star Emulsifier Aeration Disc',
-          sub: '6-Point Fluted Micro-Shear • Cap: Speed 3',
-          groupId: 'heroModelWhipper'
+          title: 'Whipping Attachment',
+          sub: 'Wire-frame cage profile · multi-plane loop study',
+          caption: 'Whipping cage · formed-wire concept visualization',
+          groupId: 'heroModelWhipper',
+          jarGroupId: 'jarBladeWhipper'
         }
       };
 
-      function setBladeModel(modelKey) {
+      const attachmentBladeModels = {
+        1: 'wet',
+        2: 'fine',
+        3: 'wet',
+        4: 'coarse',
+        5: 'dry',
+        6: 'chutney'
+      };
+
+      function setBladeModel(modelKey, announce = true) {
         if (!bladeModels[modelKey]) return;
         SIM.activeBladeModel = modelKey;
         document.querySelectorAll('.blade-model-btn').forEach(btn => {
-          btn.classList.toggle('active', btn.getAttribute('data-model') === modelKey);
+          const isActive = btn.getAttribute('data-model') === modelKey;
+          btn.classList.toggle('active', isActive);
+          btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
         });
 
-        // Toggle SVG groups in 3D hero
-        Object.keys(bladeModels).forEach(k => {
-          const el = document.getElementById(bladeModels[k].groupId);
-          if (el) el.style.display = (k === modelKey) ? 'block' : 'none';
-        });
-
+        const caption = document.getElementById('studioPhotoCaption');
         const titleEl = document.getElementById('studioBladeTitle');
         const subEl = document.getElementById('studioBladeSub');
+        Object.values(bladeModels).forEach(model => {
+          const studioShape = document.getElementById(model.groupId);
+          const seatedShape = document.getElementById(model.jarGroupId);
+          if (studioShape) studioShape.style.display = model.groupId === bladeModels[modelKey].groupId ? 'block' : 'none';
+          if (seatedShape) seatedShape.style.display = model.jarGroupId === bladeModels[modelKey].jarGroupId ? 'block' : 'none';
+        });
+        if (caption) caption.textContent = bladeModels[modelKey].caption;
         if (titleEl) titleEl.textContent = bladeModels[modelKey].title;
         if (subEl) subEl.textContent = bladeModels[modelKey].sub;
 
-        showToast(`Equipped ${bladeModels[modelKey].title}`);
+        if (announce) showToast(`Equipped ${bladeModels[modelKey].title}`);
       }
 
-      document.getElementById('btnBladeModUniversal')?.addEventListener('click', () => setBladeModel('universal'));
-      document.getElementById('btnBladeModWet')?.addEventListener('click', () => setBladeModel('wet'));
-      document.getElementById('btnBladeModDry')?.addEventListener('click', () => setBladeModel('dry'));
-      document.getElementById('btnBladeModWhipper')?.addEventListener('click', () => setBladeModel('whipper'));
+      function setBladeForAttachment() {
+        setBladeModel(attachmentBladeModels[SIM.attachmentId] || 'wet', false);
+      }
+
+      function setJarMode(jarMode, usePresetAttachment) {
+        SIM.jar = jarMode === 'jar1' ? 'jar1' : 'jar2';
+        const attachmentSelect = document.getElementById('selAttachment');
+        if (attachmentSelect) {
+          attachmentSelect.disabled = SIM.jar === 'jar1';
+          attachmentSelect.setAttribute('aria-describedby', 'selJarFitted');
+        }
+        const jarCap = document.getElementById('stageJarIndicator');
+        if (jarCap) jarCap.textContent = `Cap: Speed ${getMotorSpeedCap()}`;
+        if (SIM.jar === 'jar1' && !usePresetAttachment) {
+          setBladeModel('chutney', false);
+        } else {
+          setBladeForAttachment();
+        }
+      }
+
+      document.querySelectorAll('.blade-model-btn[data-model]').forEach(btn => {
+        btn.addEventListener('click', () => setBladeModel(btn.getAttribute('data-model')));
+      });
 
       function updateGimbalTransform() {
         const gimEl = document.getElementById('blade3dGimbal');
-        if (gimEl) gimEl.style.transform = `rotateX(${SIM.bladeRotX}deg) rotateY(${SIM.bladeRotY}deg)`;
+        if (gimEl) gimEl.style.transform = `rotateX(${SIM.bladeRotX}deg) rotateY(${SIM.bladeRotY}deg) scale(${SIM.bladeZoom})`;
+        const zoomText = document.getElementById('studioZoomValue');
+        if (zoomText) zoomText.textContent = `${Math.round(SIM.bladeZoom * 100)}%`;
+        const zoomOut = document.getElementById('btnStudioZoomOut');
+        const zoomIn = document.getElementById('btnStudioZoomIn');
+        if (zoomOut) zoomOut.disabled = SIM.bladeZoom <= 0.8;
+        if (zoomIn) zoomIn.disabled = SIM.bladeZoom >= 1.6;
+      }
+
+      function setStudioZoom(nextZoom) {
+        SIM.bladeZoom = Math.max(0.8, Math.min(1.6, nextZoom));
+        updateGimbalTransform();
       }
 
       function setCameraAngle(rx, ry, activeBtnId) {
@@ -9657,19 +10528,53 @@
         SIM.bladeRotY = ry;
         SIM.bladeAutoOrbit = false;
         document.getElementById('btnCamOrbit')?.classList.remove('active');
-        document.querySelectorAll('.blade-cam-btn').forEach(b => b.classList.remove('active'));
-        if (activeBtnId) document.getElementById(activeBtnId)?.classList.add('active');
+        document.querySelectorAll('.blade-cam-btn').forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        if (activeBtnId) {
+          const activeButton = document.getElementById(activeBtnId);
+          activeButton?.classList.add('active');
+          activeButton?.setAttribute('aria-pressed', 'true');
+        }
+        document.getElementById('btnCamOrbit')?.setAttribute('aria-pressed', 'false');
         updateGimbalTransform();
       }
 
       document.getElementById('btnCamIso')?.addEventListener('click', () => setCameraAngle(52, -24, 'btnCamIso'));
       document.getElementById('btnCamTop')?.addEventListener('click', () => setCameraAngle(0, 0, 'btnCamTop'));
       document.getElementById('btnCamSide')?.addEventListener('click', () => setCameraAngle(82, 0, 'btnCamSide'));
-      document.getElementById('btnCamReset')?.addEventListener('click', () => setCameraAngle(18, 0, 'btnCamIso'));
+      document.getElementById('btnCamReset')?.addEventListener('click', () => {
+        SIM.bladeZoom = 1;
+        setCameraAngle(52, -24, 'btnCamIso');
+      });
+
+      document.getElementById('btnStudioZoomOut')?.addEventListener('click', () => setStudioZoom(SIM.bladeZoom - 0.1));
+      document.getElementById('btnStudioZoomIn')?.addEventListener('click', () => setStudioZoom(SIM.bladeZoom + 0.1));
+      document.getElementById('blade3dViewport')?.addEventListener('wheel', (event) => {
+        event.preventDefault();
+        setStudioZoom(SIM.bladeZoom + (event.deltaY < 0 ? 0.1 : -0.1));
+      }, { passive: false });
+
+      document.querySelector('.blade-model-selector-group')?.addEventListener('keydown', (event) => {
+        if (!['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
+        const buttons = Array.from(document.querySelectorAll('.blade-model-btn[data-model]'));
+        const currentIndex = buttons.indexOf(document.activeElement);
+        if (currentIndex < 0 || buttons.length === 0) return;
+        event.preventDefault();
+        const direction = event.key === 'ArrowRight' || event.key === 'ArrowDown' ? 1 : -1;
+        const nextIndex = event.key === 'Home' ? 0 :
+          event.key === 'End' ? buttons.length - 1 :
+          (currentIndex + direction + buttons.length) % buttons.length;
+        const nextButton = buttons[nextIndex];
+        nextButton.focus();
+        setBladeModel(nextButton.getAttribute('data-model'), false);
+      });
 
       document.getElementById('btnCamOrbit')?.addEventListener('click', () => {
         SIM.bladeAutoOrbit = !SIM.bladeAutoOrbit;
         document.getElementById('btnCamOrbit')?.classList.toggle('active', SIM.bladeAutoOrbit);
+        document.getElementById('btnCamOrbit')?.setAttribute('aria-pressed', SIM.bladeAutoOrbit ? 'true' : 'false');
         showToast(SIM.bladeAutoOrbit ? 'Turntable auto-orbit active.' : 'Auto-orbit paused.');
       });
 
@@ -9731,6 +10636,33 @@
 
       // Initial renders
       populateDishSelect();
+      const jarSelect = document.getElementById('selJarFitted');
+      const attachmentSelect = document.getElementById('selAttachment');
+      if (jarSelect) jarSelect.value = SIM.jar;
+      if (attachmentSelect) attachmentSelect.value = String(SIM.attachmentId);
+      const motorLoadSelect = document.getElementById('selMotorLoad');
+      if (motorLoadSelect) {
+        const matchingLoad = Array.from(motorLoadSelect.options).find(option => Number(option.value) === SIM.motorLoadFactor);
+        if (matchingLoad) motorLoadSelect.value = matchingLoad.value;
+      }
+      const batchWeightInput = document.getElementById('inputBatchWeight');
+      if (batchWeightInput) batchWeightInput.value = String(SIM.batchWeight);
+      const simSpeedSelect = document.getElementById('selSimSpeed');
+      if (simSpeedSelect) simSpeedSelect.value = String(SIM.simSpeedMultiplier);
+      const ambientInput = document.getElementById('inputAmbientTemp');
+      if (ambientInput) ambientInput.value = String(SIM.ambientTempC);
+      const ambientLabel = document.getElementById('ambientTempValue');
+      if (ambientLabel) ambientLabel.textContent = `${SIM.ambientTempC} °C`;
+      const supplyVoltageInput = document.getElementById('inputSupplyVoltage');
+      if (supplyVoltageInput) supplyVoltageInput.value = String(SIM.supplyVoltage);
+      const supplyVoltageLabel = document.getElementById('supplyVoltageValue');
+      if (supplyVoltageLabel) supplyVoltageLabel.textContent = `${SIM.supplyVoltage} V`;
+      const bladeWearInput = document.getElementById('inputBladeWear');
+      if (bladeWearInput) bladeWearInput.value = String(SIM.bladeWearPercent);
+      const bladeWearLabel = document.getElementById('bladeWearValue');
+      if (bladeWearLabel) bladeWearLabel.textContent = `${SIM.bladeWearPercent}%`;
+      setJarMode(SIM.jar, true);
+      updateGimbalTransform();
       renderHistoryTab();
       renderPresetsTab();
       updateMachineDisplay();
