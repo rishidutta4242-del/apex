@@ -3568,11 +3568,12 @@
       padding: var(--card-pad-md);
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      height: 100%;
+      justify-content: flex-start;
+      height: auto;
       min-height: 0;
+      align-self: start;
       overflow: hidden;
-      gap: 8px;
+      gap: 12px;
       box-shadow: var(--surface-specular);
     }
 
@@ -4116,10 +4117,10 @@
       box-shadow: var(--surface-specular);
     }
     .live-chart-box {
-      flex: 1 1 auto;
-      min-height: 100px;
-      max-height: 180px;
-      flex-shrink: 0;
+      flex: 0 0 auto;
+      height: 190px;
+      min-height: 190px;
+      max-height: none;
       background: var(--panel-2);
       border: 1px solid var(--border);
       border-radius: var(--radius-card);
@@ -5457,11 +5458,10 @@
 
     /* Live grind profile fills the unused display-to-controls space. */
     .grind-insight-panel {
-      flex: 1 1 auto;
-      min-height: 0;
+      flex: 0 0 auto;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start;
       gap: 7px;
       padding: 2px;
     }
@@ -5622,6 +5622,357 @@
       }
       .grind-metric {
         padding: 8px;
+      }
+    }
+    @media (min-width: 769px) {
+      #appRoot {
+        height: auto !important;
+        min-height: 100dvh;
+        grid-template-rows: 48px 44px auto 24px !important;
+        align-content: start;
+        overflow: visible;
+      }
+      body.view-mode-machine .main-workspace {
+        height: auto !important;
+        min-height: 0;
+        overflow: visible;
+      }
+      body.view-mode-machine .machine-panel {
+        height: auto !important;
+        min-height: 0;
+        overflow: visible;
+      }
+      body.view-mode-machine .machine-top-grid {
+        height: auto !important;
+        min-height: 330px;
+        flex: 0 0 auto !important;
+      }
+      body.view-mode-machine .jar-svg-element {
+        max-height: 420px;
+      }
+      body.view-mode-machine .machine-tabbed-panel {
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        flex: 0 0 auto !important;
+      }
+      body.view-mode-machine .m-tab-content {
+        flex: 0 0 auto;
+        min-height: 0;
+        overflow: visible;
+      }
+      body.view-mode-machine .m-tab-content.active {
+        overflow: visible;
+      }
+    }
+    @media (max-width: 768px) {
+      .machine-panel {
+        min-height: 0 !important;
+        overflow: visible !important;
+      }
+      .jar-stage-card:not(.studio-active) {
+        height: 190px !important;
+      }
+      .controls-display-card {
+        overflow: visible !important;
+        gap: 12px !important;
+      }
+      .grind-insight-panel {
+        gap: 8px;
+      }
+    }
+    @media (max-width: 360px) {
+      #appRoot {
+        grid-template-rows: 44px 38px minmax(0, 1fr) 22px !important;
+      }
+      .app-header {
+        height: 44px !important;
+        padding: 0 6px !important;
+        gap: 4px !important;
+      }
+      .brand-group {
+        flex: 0 1 auto;
+        min-width: 0;
+      }
+      .brand-logo {
+        gap: 3px !important;
+        font-size: 11px !important;
+        white-space: nowrap;
+      }
+      .brand-logo svg {
+        width: 15px;
+        height: 15px;
+      }
+      .header-actions {
+        flex: 0 0 auto;
+        margin-left: auto;
+        gap: 3px !important;
+      }
+      .header-actions #btnShortcutsHelp,
+      .header-actions #btnAboutPrototype {
+        display: none !important;
+      }
+      .header-actions #btnHeaderAudio {
+        width: 27px !important;
+        min-width: 27px !important;
+        padding: 0 !important;
+      }
+      .header-actions #btnHeaderAudio span {
+        display: inline-block;
+        width: 13px;
+        overflow: hidden;
+        white-space: nowrap;
+        font-size: 12px !important;
+        vertical-align: middle;
+      }
+      .header-live-pill {
+        min-width: 22px;
+        justify-content: center;
+        padding: 3px 5px !important;
+      }
+      .header-live-pill #headerLiveStatus {
+        display: none;
+      }
+      .view-switcher-bar {
+        height: 38px !important;
+        min-height: 38px !important;
+        gap: 0 !important;
+      }
+      .switcher-container,
+      .mobile-seg-switch {
+        width: 100%;
+        min-width: 0;
+      }
+      .mobile-seg-switch {
+        justify-content: space-between;
+      }
+      .mobile-seg-switch .seg-btn {
+        flex: 1 1 0;
+        min-width: 0;
+        height: 27px !important;
+        padding: 0 4px !important;
+        font-size: 10px !important;
+      }
+      .switcher-aux-actions {
+        display: none !important;
+      }
+      .main-workspace,
+      body.view-mode-machine .main-workspace,
+      body.mobile-mode-machine .main-workspace {
+        height: 100% !important;
+        min-height: 0 !important;
+        padding: 5px !important;
+      }
+      .machine-panel {
+        min-height: 0 !important;
+        padding: 7px !important;
+        gap: 8px !important;
+      }
+      .machine-top-grid {
+        gap: 8px !important;
+      }
+      .jar-stage-card:not(.studio-active) {
+        height: 190px !important;
+        padding: 8px !important;
+      }
+      .stage-header-row {
+        height: 26px !important;
+        min-height: 26px !important;
+        gap: 4px !important;
+      }
+      .stage-tabs {
+        min-width: 0;
+        gap: 1px !important;
+      }
+      .stage-tab-btn {
+        height: 20px !important;
+        padding: 0 4px !important;
+        font-size: 9px !important;
+        gap: 2px !important;
+      }
+      .stage-jar-indicator {
+        display: none !important;
+      }
+      .jar-view-floating-bar {
+        max-width: calc(100% - 8px);
+      }
+      .btn-view-mode {
+        height: 20px !important;
+        padding: 0 5px !important;
+        font-size: 9px !important;
+      }
+      .controls-display-card {
+        padding: 8px !important;
+        gap: 10px !important;
+        overflow: visible !important;
+      }
+      .machine-touchscreen {
+        padding: 8px !important;
+      }
+      .screen-dish-title {
+        font-size: 11px !important;
+      }
+      .screen-temp-row {
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 2px 6px;
+      }
+      .screen-temp-val {
+        font-size: 18px !important;
+      }
+      .screen-temp-limit {
+        padding: 1px 5px !important;
+        font-size: 9px !important;
+      }
+      .screen-progress-labels {
+        font-size: 9px !important;
+      }
+      .grind-insight-panel {
+        gap: 7px !important;
+        padding: 0 !important;
+      }
+      .grind-insight-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 5px;
+      }
+      .grind-insight-kicker {
+        font-size: 8px;
+        letter-spacing: 0.8px;
+      }
+      .grind-insight-title {
+        font-size: 15px;
+      }
+      .grind-auto-badge {
+        padding: 3px 7px;
+        font-size: 9px;
+      }
+      .grind-profile-card {
+        min-height: 0 !important;
+        padding: 9px !important;
+        gap: 4px;
+      }
+      .grind-profile-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .grind-profile-name {
+        font-size: 11px;
+      }
+      .grind-profile-subtitle {
+        font-size: 9px;
+      }
+      .grind-profile-texture {
+        padding: 3px 6px;
+        font-size: 8px;
+      }
+      .grind-profile-chart {
+        height: 54px;
+      }
+      .grind-profile-axis {
+        font-size: 8px;
+      }
+      .grind-metrics {
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 5px !important;
+      }
+      .grind-metric {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 7px 8px !important;
+      }
+      .grind-metric-label {
+        font-size: 9px;
+      }
+      .grind-metric-value {
+        margin-top: 0;
+        font-size: 12px;
+      }
+      .grind-guard-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+        padding: 0;
+      }
+      #profileCycleStatus {
+        max-width: 100%;
+        text-align: left;
+        white-space: normal;
+      }
+      .machine-quick-controls {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+      }
+      .knob-stop-group {
+        justify-content: center !important;
+      }
+      .quick-params-group {
+        width: 100%;
+        min-width: 0;
+      }
+      .texture-pill-row {
+        width: 100%;
+        min-width: 0;
+      }
+      .btn-texture-pill {
+        min-width: 0;
+        padding: 0 2px !important;
+        font-size: 9px !important;
+      }
+      .speed-bars-row {
+        min-width: 0;
+        gap: 3px !important;
+      }
+      .speed-label-text {
+        min-width: 38px;
+        font-size: 10px !important;
+      }
+      .machine-tabbed-panel {
+        min-height: 0 !important;
+        padding: 7px !important;
+        gap: 6px !important;
+      }
+      .machine-tabs-bar {
+        min-width: 0;
+        overflow-x: auto !important;
+        scrollbar-width: none;
+      }
+      .machine-tabs-bar::-webkit-scrollbar {
+        display: none;
+      }
+      .m-tab-btn {
+        flex: 0 0 auto;
+        min-width: 48px;
+        padding: 0 5px !important;
+        font-size: 10px !important;
+      }
+      .grid-setup,
+      .grid-sensors,
+      .grid-env,
+      .grid-adv,
+      .grid-faults {
+        grid-template-columns: minmax(0, 1fr) !important;
+      }
+      .form-item label {
+        font-size: 11px !important;
+      }
+      .form-item select,
+      .form-item input {
+        height: 30px !important;
+        font-size: 12px !important;
+      }
+      .sensor-card {
+        min-height: 64px;
+      }
+      .footer-left {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 9px !important;
       }
     }
 
